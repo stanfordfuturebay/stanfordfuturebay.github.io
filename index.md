@@ -1,31 +1,16 @@
-<ul>
-        
-            
-                <li><a href="/">/</a></li>
-            
-        
-            
-                <li><a href="/404">/404</a></li>
-            
-        
-            
-        
-            
-                <li><a href="/blog">/blog</a></li>
-            
-        
-            
-                <li><a href="/design">/design</a></li>
-            
-        
-            
-        
-            
-                <li><a href="/raw">/raw</a></li>
-            
-        
-            
-                <li><a href="/works">/works</a></li>
-            
-        
-    </ul>
+<html>
+  <body>
+    <script>
+      (async () => {
+        const response = await fetch('https://api.github.com/repos/:user/:repo/contents/');
+        const data = await response.json();
+        let htmlString = '<ul>';
+        for (let file of data) {
+          htmlString += `<li><a href="${file.path}">${file.name}</a></li>`;
+        }
+        htmlString += '</ul>';
+        document.getElementsByTagName('body')[0].innerHTML = htmlString;
+      })()
+    </script>
+  <body>
+</html>
