@@ -14,5 +14,7 @@
         document.getElementsByTagName('body')[0].innerHTML = htmlString;
       })()
     </script>
+    
+    htmlString
   <body>
 </html>
