@@ -1,7 +1,6 @@
 <html>
-  <body>
-    
-        <script type="text/javascript">
+  
+          <script type="text/javascript">
       // Single Page Apps for GitHub Pages
       // https://github.com/rafrex/spa-github-pages
       // Copyright (c) 2016 Rafael Pedicini, licensed under the MIT License
@@ -31,6 +30,10 @@
       }(window.location))
     </script>
     
+  
+  <body>
+    
+
     <script>
       (async () => {
         const response = await fetch('https://api.github.com/repos/stanfordfuturebay/stanfordfuturebay.github.io/data/contents/');
