@@ -364,7 +364,7 @@ summary {
 
 <h1 class="title toc-ignore">San Jose Dashboard FAQ</h1>
 <h4 class="author">Stanford Future Bay Initiative</h4>
-<h4 class="date">4/22/2020</h4>
+<h4 class="date">Last updated: April 22</h4>
 
 </div>
 
@@ -372,13 +372,13 @@ summary {
 <div id="frequently-asked-questions" class="section level2">
 <h2>Frequently Asked Questions</h2>
 <p><strong>Is there a “grace area” that allows a phone to travel, say, around the block (for a walk) but still registers as “completely at home”?</strong></p>
-<p>Safegraph does not use the same block group boundaries as those defined by the City of San Jose for their data collection. Instead, their “blocks” are based upon a grid called Geohash-7, with one “block” being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 block in which their home is located. Ultimately, it is difficult to determine whether a resident will leave their Geohash-7 “block” when taking a walk around their neighborhood, and as a result not be counted as staying at home. We are currently working to address this limitation in the data.</p>
+<p>Answer: Safegraph, as part of its data anonymization, does not directly tie its device location to city blocks or buildings. Instead, they aggregate their device locations to standardized <a href="https://www.movable-type.co.uk/scripts/geohash.html">Geohash-7 grids</a>, one grid being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 grid in which their home is located. The data will register movement into any other Geohash-7 grid, and we can see counts and distances traveled of devices as such. Ultimately, the “grace area” for a phone is different for every person, depending on where that person lives within a larger standardized Geohash-7 grid, and “walking around the block” may not be detectable if the walking route happens to stay within that grid.</p>
 <p><strong>What can this tool tell us in regard to compliance as orders shift?</strong></p>
 <p>Answer: This tool allows one to examine the level of compliance within San Jose districts and individual block groups. When orders change, you can easily see the before/after shifts in the percentage of people staying at home, both on the interactive map and time series. The shift in trends may shine light on the efficacy of the order.</p>
 <p><strong>Why are there peaks in the percentage of people that stay at home on weekends, even after the COVID-19 shelter-in-place order was enacted?</strong></p>
-<p>Answer: The peaks in the percentage of people staying at home on the weekends are likely attributed to the movement behavior of essential workers. Although others working from home may increase their out-of-house movements over the weekends, the overall bump is driven by the significant number of essential workers who reduce their movement on the weekends.</p>
+<p>Answer: The peaks in the percentage of people staying at home on the weekends are likely attributed to the movement behavior of essential workers. Although others working from home may increase their out-of-house movements over the weekends, the overall bump is likely driven by the significant number of essential workers who reduce their movement on the weekends.</p>
 <p><strong>Are fully closed parks (Alum Rock and Communications Hill Staircase/Trail) and closed/locked areas (dog parks, sports fields, tennis/pickleball/futsal courts) visited at all, and what days/times would be best for proactive visits to key hotspots?</strong></p>
-<p>Answer: We should be able to provide park visits directly on the dashboard by the end of this week. We’ll be able to drill down to the hour (though we may not see hourly patterns week by week) and have some sense of where they’re coming from (only if there are more than 2 visitors from a block group in their device pool). Analyzing subsections of the park is currently not possible with the data, but we’ve reached out to Safegraph’s backend team to discuss specifics on how we could give them sub-park geometries and they could incorporate them into future data sharing.</p>
+<p>Answer: We are working on providing park visits directly on the dashboard. We’ll be able to drill down to the hour (though we may not see patterns for a given hour week by week) and have some sense of where they’re coming from (only if there are 2 or more visitors from an origin census block group in their device pool). Analyzing subsections of the park is currently not possible with the data, but if City staff can provide a detailed list of sub-park amenities and locations, we can work with Safegraph to incorporate them into the dataset.</p>
 <p><strong>How do we account for unhoused individuals in parks and trails?</strong></p>
 <p>Answer: This unfortunately is unlikely to be accountable using the Safegraph data.</p>
 </div>
