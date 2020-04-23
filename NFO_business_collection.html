@@ -5223,45 +5223,92 @@ patterns_Oct19 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted D
 patterns_Nov19 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Nov19-AllPatterns-PATTERNS-2019_11-2020-03-23/ca_patterns.rds'
 patterns_Dec19 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Dec19-AllPatterns-PATTERNS-2019_12-2020-03-23/ca_patterns.rds'
 patterns_Jan20 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Jan20-AllPatterns-PATTERNS-2020_01-2020-03-23/ca_patterns.rds'
-patterns_Feb20 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Feb20-AllPatterns-PATTERNS-2020_02-2020-03-23/ca_patterns.rds'</code></pre>
+patterns_Feb20 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Feb20-AllPatterns-PATTERNS-2020_02-2020-03-23/ca_patterns.rds'
+patterns_Mar20 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/March2020-PATTERNS-2020_03-2020/ca_patterns.rds'
+patterns_Jan19 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Jan19-AllRecords-PATTERNS-2019_01-2020-03-26/ca_patterns.rds'
+patterns_Feb19 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Feb19-AllRecords-PATTERNS-2019_02-2020-03-26/ca_patterns.rds'
+
+# weekly patterns
+patterns_0301 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-03-01-ca-weekly-patterns.rds'
+patterns_0308 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-03-08-ca-weekly-patterns.rds'
+patterns_0315 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-03-15-ca-weekly-patterns.rds'
+patterns_0322 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-03-22-ca-weekly-patterns.rds'
+patterns_0329 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-03-29-ca-weekly-patterns.rds'
+patterns_0405 &lt;- '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-04-05-corrected-ca-weekly-patterns.rds'</code></pre>
 <p>In the code below, we load the weekly pattern data, subset to Redwood City, Menlo Park, and Atherton, and append latitude, longitude, and NAICS code. We then select places that are in North Fair Oaks, directly on Middlefield Road, and on or near Middlefield Road.</p>
-<pre class="r"><code>#Load the SafeGraph places dataset.
-poi_ca &lt;- readRDS(poi_url)
+<pre class="r"><code># uncomment if need to load data again or update it
+# #Load the SafeGraph places dataset.
+# poi_ca &lt;- readRDS(poi_url)
+# 
+# #Load the SafeGraph patterns datasets, filtering to Redwood City
+# sg &lt;- readRDS(patterns_Mar19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgApr &lt;- readRDS(patterns_Apr19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgMay &lt;- readRDS(patterns_May19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgJune &lt;- readRDS(patterns_June19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgJuly &lt;- readRDS(patterns_July19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgAug &lt;- readRDS(patterns_Aug19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgSept &lt;- readRDS(patterns_Sept19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgOct &lt;- readRDS(patterns_Oct19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgNov &lt;- readRDS(patterns_Nov19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgDec &lt;- readRDS(patterns_Dec19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgJan &lt;- readRDS(patterns_Jan20) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgFeb &lt;- readRDS(patterns_Feb20) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgJan19 &lt;- readRDS(patterns_Jan19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgFeb19 &lt;- readRDS(patterns_Feb19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sgMar20 &lt;- readRDS(patterns_Mar20) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sg0301 &lt;- readRDS(patterns_0301) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sg0308 &lt;- readRDS(patterns_0308) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sg0315 &lt;- readRDS(patterns_0315) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sg0322 &lt;- readRDS(patterns_0322) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sg0329 &lt;- readRDS(patterns_0329) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# sg0405 &lt;- readRDS(patterns_0405) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) %&gt;%
+# dplyr::select(safegraph_place_id, location_name, street_address, city, postal_code)
+# 
+# 
+# # combine all datasets and select unique locations, joining with the poi dataset
+# selectedPlacesNFO &lt;- sg %&gt;% rbind(sgApr, sgMay, sgJune, sgJuly, sgAug, sgSept, sgOct, sgNov, sgDec, sgJan, sgFeb, sgJan19, sgFeb19, sgMar20, sg0301, sg0308, sg0315, sg0322, sg0329, sg0405) %&gt;%
+#   filter(!duplicated(safegraph_place_id)) %&gt;%
+#   left_join(
+#     poi_ca %&gt;% 
+#       dplyr::select(
+#         safegraph_place_id,
+#         latitude,
+#         longitude,
+#         top_category,
+#         sub_category, 
+#         naics_code,
+#         phone_number,
+#         open_hours
+#       ),
+#     by = &quot;safegraph_place_id&quot;
+#   ) %&gt;% filter(!is.na(latitude) &amp; !is.na(longitude)) %&gt;%
+#   st_as_sf(coords = c('longitude', 'latitude'), crs = 4326)
+# 
+# # save the file for faster loading
+# saveRDS(selectedPlacesNFO, file = &quot;NFO_places_Safegraph.rds&quot;)
 
-#Load the SafeGraph patterns datasets, filtering to Redwood City
-sg &lt;- readRDS(patterns_Mar19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgApr &lt;- readRDS(patterns_Apr19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;) 
-sgMay &lt;- readRDS(patterns_May19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgJune &lt;- readRDS(patterns_June19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgJuly &lt;- readRDS(patterns_July19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgAug &lt;- readRDS(patterns_Aug19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgSept &lt;- readRDS(patterns_Sept19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgOct &lt;- readRDS(patterns_Oct19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgNov &lt;- readRDS(patterns_Nov19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgDec &lt;- readRDS(patterns_Dec19) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgJan &lt;- readRDS(patterns_Jan20) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-sgFeb &lt;- readRDS(patterns_Feb20) %&gt;% filter(city == &quot;Redwood City&quot; | city == &quot;Menlo Park&quot; | city == &quot;Atherton&quot;)
-
-# combine all datasets and select unique locations, joining with the poi dataset
-selectedPlaces &lt;- sg %&gt;% rbind(sgApr) %&gt;% rbind(sgMay) %&gt;% rbind(sgJune) %&gt;% rbind(sgJuly) %&gt;% rbind(sgAug) %&gt;% rbind(sgSept) %&gt;% rbind(sgOct) %&gt;% rbind(sgNov) %&gt;% rbind(sgDec) %&gt;% rbind(sgJan) %&gt;% rbind(sgFeb) %&gt;%
-  group_by(safegraph_place_id, location_name, street_address, city, postal_code) %&gt;%
-  summarize() %&gt;%
-  left_join(
-    poi_ca %&gt;% 
-      dplyr::select(
-        safegraph_place_id,
-        latitude,
-        longitude,
-        top_category,
-        sub_category, 
-        naics_code,
-        phone_number,
-        open_hours
-      ),
-    by = &quot;safegraph_place_id&quot;
-  ) %&gt;%
-  st_as_sf(coords = c('longitude', 'latitude'), crs = 4326) %&gt;%
-  ungroup()
+# load the NFO places file
+selectedPlaces &lt;- readRDS(&quot;/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/NFO/NFO_places_Safegraph.rds&quot;)
 
 # get North Fair Oaks geometry
 NFOgeom &lt;- places(&quot;CA&quot;, cb = F, progress_bar = FALSE) %&gt;% 
@@ -5269,33 +5316,37 @@ NFOgeom &lt;- places(&quot;CA&quot;, cb = F, progress_bar = FALSE) %&gt;%
   st_transform(4326)
 
 # select all places in NFO
-NFOplaces &lt;- selectedPlaces[st_contains(NFOgeom, selectedPlaces)[[1]],]
+NFOplaces &lt;- selectedPlaces[st_contains(NFOgeom, selectedPlaces)[[1]],] %&gt;% st_set_crs(4326)
 
 # select all places directly on Middlefield Road
 MiddlefieldPlaces &lt;- NFOplaces %&gt;% filter(grepl('Middlefield', street_address, fixed = TRUE))
 
 # now select places near Middlefield Road
-# pick out a region manually near Middlefield Road
-nearMiddlefieldPts &lt;- rbind(c(-122.21086, 37.47653), c(-122.21226, 37.47581), c(-122.20717, 37.47222), c(-122.20305, 37.47011), c(-122.20084, 37.47081), c(-122.20827, 37.47653), c(-122.21086, 37.47653))
-nearMiddlefield &lt;- st_polygon(list(nearMiddlefieldPts)) %&gt;% 
-  st_sfc() %&gt;% st_set_crs(4326)
+# get region near Middlefield Road
+projection &lt;- &quot;+proj=utm +zone=10 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=ft +no_defs&quot;
+nearMiddlefieldregion &lt;-
+  MiddlefieldPlaces %&gt;% 
+  st_transform(projection) %&gt;% 
+  st_buffer(250) %&gt;% 
+  st_union() %&gt;% 
+  st_transform(4326)
 
 # select places in this region
-nearMiddlefieldPlaces &lt;- NFOplaces[st_contains(nearMiddlefield, NFOplaces)[[1]],]
+nearMiddlefieldPlaces &lt;- NFOplaces[st_contains(nearMiddlefieldregion, NFOplaces)[[1]],]
 
 # uncomment if need to re-save an updated version
 # # save the results as csv files
-# write.csv(NFOplaces %&gt;% dplyr::select(location_name, street_address, city, postal_code, naics_code, phone_number), '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Data Library/NFO/NFO_businesses_safegraph.csv')
-# write.csv(MiddlefieldPlaces %&gt;% dplyr::select(location_name, street_address, city, postal_code, naics_code, phone_number), '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Data Library/NFO/Middlefield_businesses_safegraph.csv')
-# write.csv(nearMiddlefieldPlaces %&gt;% dplyr::select(location_name, street_address, city, postal_code, naics_code, phone_number), '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Data Library/NFO/near_Middlefield_businesses_safegraph.csv')</code></pre>
+# write.csv(NFOplaces %&gt;% dplyr::select(location_name, street_address, city, postal_code, naics_code, top_category, sub_category, open_hours, phone_number), '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/NFO/NFO_businesses_safegraph.csv')
+# write.csv(MiddlefieldPlaces %&gt;% dplyr::select(location_name, street_address, city, postal_code, naics_code, top_category, sub_category, open_hours, phone_number), '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/NFO/Middlefield_businesses_safegraph.csv')
+# write.csv(nearMiddlefieldPlaces %&gt;% dplyr::select(location_name, street_address, city, postal_code, naics_code, top_category, sub_category, open_hours, phone_number), '/Users/simonespeizer/pCloud Drive/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/NFO/near_Middlefield_businesses_safegraph.csv')</code></pre>
 <p>Now we will map the resulting places, specifically the ones near or on Middlefield Road.</p>
 <pre class="r"><code>map &lt;- leaflet(data = nearMiddlefieldPlaces) %&gt;% 
   addProviderTiles(providers$CartoDB.Positron) %&gt;%
   addMarkers(popup = ~location_name, label = ~location_name)
 
 map</code></pre>
-<div id="htmlwidget-c7a75b6f874e241c9dba" style="width:672px;height:480px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c7a75b6f874e241c9dba">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["CartoDB.Positron",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addMarkers","args":[[37.475468,37.476064,37.47225,37.473583,37.476176,37.474033,37.471471,37.474584,37.475401,37.471066,37.471692,37.47571,37.474254,37.472037,37.471344,37.472731,37.474555,37.472527,37.473055,37.472478,37.470648,37.47333,37.475425,37.475662,37.470621,37.472577,37.470658,37.470631,37.47102,37.471718,37.473712,37.475253,37.475323,37.472037,37.47211,37.47441,37.472872,37.473775,37.472045,37.471898,37.47581,37.474682,37.473629,37.470582,37.47425,37.475123,37.473822,37.476136,37.470797,37.475483,37.470966,37.471099,37.475207,37.474812,37.470772,37.476035,37.472401,37.471154,37.472628,37.471919],[-122.209298,-122.208353,-122.205234,-122.206168,-122.210347,-122.208083,-122.203944,-122.207973,-122.209137,-122.203359,-122.203356,-122.208232,-122.207312,-122.204789,-122.202827,-122.205051,-122.208486,-122.203417,-122.20562,-122.204668,-122.202831,-122.206931,-122.207169,-122.211881,-122.203327,-122.204816,-122.20282,-122.201559,-122.202247,-122.204353,-122.207368,-122.209699,-122.209892,-122.204806,-122.20476,-122.208319,-122.207261,-122.206594,-122.204885,-122.204783,-122.210351,-122.208853,-122.205582,-122.201591,-122.207031,-122.20949,-122.208288,-122.210197,-122.202812,-122.210198,-122.202186,-122.203472,-122.207318,-122.208984,-122.20321,-122.210951,-122.204558,-122.20345,-122.205558,-122.203982],null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["Cuco's Burritos","Taco's Jalisco","One Stop Liquors","Inglesia Ni Cristo Church of Christ","Connoisseur Coffee","El Guanaco Mexican & Salvadorean Restaurant","Pauline Books and Media Menlo Park","JC Auto Body","La Tiendita Market","Tere's Boutique","Olympian Gas Station","Torre Fuerte Iron Works","Best Price Furniture","United Paleteria","Snacks el Guapo","Los Manguitos","La Casita Chilanga","Ihsd Inc Menlo Park Head Start Center","Luis M Meza DDS","Hometown Noodle","Michoacam Supermarket","Euro & American Motors","L & M Factory Transmissions","Fair Oaks Health Clinic","Chavez Supermarket","Martin's","Michoacan Produce Market","Quik Stop","Donut Depot","Mendozas Restaurant Menlo Park","Tacos El Grullense E&E","El Paisano","Muebleria Uruapan","Monarca Ice Cream and Snacks","Pena Meat & Food Market","El Grullense","Krazee Kitchen","Meineke Car Care Centers","Taqueria Gonzalez","Morales Upholstery","Mazzocco's Club","Gonzalez Auto Sales","Bambi Daycare","Pizza Hut","San Luis Auto Glass","Express Car Wash","Guizar Delivery","7 Mares Mexican Seafood Restaurant","Taqueria El Jarochito","Joshua Charles Catering","Tacos El Fogon","Panaderia Michoacan","Farias Painting","Maldonado's Auto Body & Paint & Towing Service","Las Parrillas Restaurant","AMA Tires","Shoe Club","Mgm Jewelry","One Stop Liquors","Mexcal Taqueria"],null,null,null,["Cuco's Burritos","Taco's Jalisco","One Stop Liquors","Inglesia Ni Cristo Church of Christ","Connoisseur Coffee","El Guanaco Mexican &amp; Salvadorean Restaurant","Pauline Books and Media Menlo Park","JC Auto Body","La Tiendita Market","Tere's Boutique","Olympian Gas Station","Torre Fuerte Iron Works","Best Price Furniture","United Paleteria","Snacks el Guapo","Los Manguitos","La Casita Chilanga","Ihsd Inc Menlo Park Head Start Center","Luis M Meza DDS","Hometown Noodle","Michoacam Supermarket","Euro &amp; American Motors","L &amp; M Factory Transmissions","Fair Oaks Health Clinic","Chavez Supermarket","Martin's","Michoacan Produce Market","Quik Stop","Donut Depot","Mendozas Restaurant Menlo Park","Tacos El Grullense E&amp;E","El Paisano","Muebleria Uruapan","Monarca Ice Cream and Snacks","Pena Meat &amp; Food Market","El Grullense","Krazee Kitchen","Meineke Car Care Centers","Taqueria Gonzalez","Morales Upholstery","Mazzocco's Club","Gonzalez Auto Sales","Bambi Daycare","Pizza Hut","San Luis Auto Glass","Express Car Wash","Guizar Delivery","7 Mares Mexican Seafood Restaurant","Taqueria El Jarochito","Joshua Charles Catering","Tacos El Fogon","Panaderia Michoacan","Farias Painting","Maldonado's Auto Body &amp; Paint &amp; Towing Service","Las Parrillas Restaurant","AMA Tires","Shoe Club","Mgm Jewelry","One Stop Liquors","Mexcal Taqueria"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[37.470582,37.476176],"lng":[-122.211881,-122.201559]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d0a00ce211740be8c748" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d0a00ce211740be8c748">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["CartoDB.Positron",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addMarkers","args":[[37.472731,37.47425,37.476347,37.470797,37.471692,37.47441,37.475483,37.471154,37.471718,37.477483,37.472577,37.473712,37.475563,37.47333,37.476035,37.478387,37.477486,37.473822,37.471919,37.472045,37.473775,37.477557,37.477775,37.470658,37.472037,37.475253,37.47102,37.475468,37.471344,37.47802,37.474033,37.470648,37.470631,37.475401,37.47225,37.473583,37.471471,37.473629,37.474254,37.476845,37.471066,37.474555,37.47808,37.476791,37.472628,37.470582,37.470621,37.473055,37.472401,37.476861,37.476176,37.47581,37.470772,37.476851,37.475662,37.476136,37.475323,37.476125,37.472478,37.470966,37.469825,37.47211,37.469923,37.472037,37.469596,37.474682,37.475123,37.474584,37.474812,37.471099,37.471898,37.472872,37.477489,37.474717,37.474419,37.471865,37.475709],[-122.205051,-122.207031,-122.213272,-122.202812,-122.203356,-122.208319,-122.210198,-122.20345,-122.204353,-122.211649,-122.204816,-122.207368,-122.213351,-122.206931,-122.210951,-122.214581,-122.2113,-122.208288,-122.203982,-122.204885,-122.206594,-122.212287,-122.212633,-122.20282,-122.204806,-122.209699,-122.202247,-122.209298,-122.202827,-122.21429,-122.208083,-122.202831,-122.201559,-122.209137,-122.205234,-122.206168,-122.203944,-122.205582,-122.207312,-122.216377,-122.203359,-122.208486,-122.211902,-122.211285,-122.205558,-122.201591,-122.203327,-122.20562,-122.204558,-122.211289,-122.210347,-122.210351,-122.20321,-122.211251,-122.211881,-122.210197,-122.209892,-122.214999,-122.204668,-122.202186,-122.202776,-122.20476,-122.201023,-122.204789,-122.201298,-122.208853,-122.20949,-122.207973,-122.208984,-122.203472,-122.204783,-122.207261,-122.211248,-122.208168,-122.208369,-122.203684,-122.208903],null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["Los Manguitos","San Luis Auto Glass","Redwood Catering","Taqueria El Jarochito","Olympian Gas Station","El Grullense","Joshua Charles Catering","Mgm Jewelry","Mendozas Restaurant Menlo Park","Redwood City Transmissions","Martin's","Tacos El Grullense E&E","Bayshore Elite Gymnastics","Euro & American Motors","AMA Tires","Cocola Bakery","HVAC Services Redwood","Guizar Delivery","Mexcal Taqueria","Taqueria Gonzalez","Meineke Car Care Centers","Beltran Tire Service","Panaderia Munguia","Michoacan Produce Market","Monarca Ice Cream and Snacks","El Paisano","Donut Depot","Cuco's Burritos","Snacks el Guapo","Autostrada Motorsport","El Guanaco Mexican & Salvadorean Restaurant","Michoacam Supermarket","Quik Stop","La Tiendita Market","One Stop Liquors","Inglesia Ni Cristo Church of Christ","Pauline Books and Media Menlo Park","Bambi Daycare","Best Price Furniture","Superior Pool Products","Tere's Boutique","La Casita Chilanga","El Dorado Towing","California Ems Academy","One Stop Liquors","Pizza Hut","Chavez Supermarket","Luis M Meza DDS","Shoe Club","All American Muffler and Auto Repair","Connoisseur Coffee","Mazzocco's Club","Las Parrillas Restaurant","Peninsula Smog","Fair Oaks Health Clinic","7 Mares Mexican Seafood Restaurant","Muebleria Uruapan","California Baseball Farm Club","Hometown Noodle","Tacos El Fogon","Garfield Elementary","Pena Meat & Food Market","Ihsd Inc Fair Oaks Head Start Center","United Paleteria","St Anthony's Church","Gonzalez Auto Sales","Express Car Wash","JC Auto Body","Maldonado's Auto Body & Paint & Towing Service","Panaderia Michoacan","Morales Upholstery","Krazee Kitchen","Bg Flather Construction","C G & E Autobody","Panaderia Michoacan 2","Cricket Wireless","Magic Auto Paint & Body"],null,null,null,["Los Manguitos","San Luis Auto Glass","Redwood Catering","Taqueria El Jarochito","Olympian Gas Station","El Grullense","Joshua Charles Catering","Mgm Jewelry","Mendozas Restaurant Menlo Park","Redwood City Transmissions","Martin's","Tacos El Grullense E&amp;E","Bayshore Elite Gymnastics","Euro &amp; American Motors","AMA Tires","Cocola Bakery","HVAC Services Redwood","Guizar Delivery","Mexcal Taqueria","Taqueria Gonzalez","Meineke Car Care Centers","Beltran Tire Service","Panaderia Munguia","Michoacan Produce Market","Monarca Ice Cream and Snacks","El Paisano","Donut Depot","Cuco's Burritos","Snacks el Guapo","Autostrada Motorsport","El Guanaco Mexican &amp; Salvadorean Restaurant","Michoacam Supermarket","Quik Stop","La Tiendita Market","One Stop Liquors","Inglesia Ni Cristo Church of Christ","Pauline Books and Media Menlo Park","Bambi Daycare","Best Price Furniture","Superior Pool Products","Tere's Boutique","La Casita Chilanga","El Dorado Towing","California Ems Academy","One Stop Liquors","Pizza Hut","Chavez Supermarket","Luis M Meza DDS","Shoe Club","All American Muffler and Auto Repair","Connoisseur Coffee","Mazzocco's Club","Las Parrillas Restaurant","Peninsula Smog","Fair Oaks Health Clinic","7 Mares Mexican Seafood Restaurant","Muebleria Uruapan","California Baseball Farm Club","Hometown Noodle","Tacos El Fogon","Garfield Elementary","Pena Meat &amp; Food Market","Ihsd Inc Fair Oaks Head Start Center","United Paleteria","St Anthony's Church","Gonzalez Auto Sales","Express Car Wash","JC Auto Body","Maldonado's Auto Body &amp; Paint &amp; Towing Service","Panaderia Michoacan","Morales Upholstery","Krazee Kitchen","Bg Flather Construction","C G &amp; E Autobody","Panaderia Michoacan 2","Cricket Wireless","Magic Auto Paint &amp; Body"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[37.469596,37.478387],"lng":[-122.216377,-122.201023]}},"evals":[],"jsHooks":[]}</script>
 
 
 
