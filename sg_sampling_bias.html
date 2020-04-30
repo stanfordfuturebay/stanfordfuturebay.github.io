@@ -201,6 +201,15 @@ acs_var &lt;- load_variables(acs_year, 'acs5', cache = T)</code></pre>
 <p>We now load the various datasets.</p>
 <p>The first dataset is a Safegraph monthly panel summary for March 2019. It shows the number of devices residing in each blockgroup during that month.</p>
 <p>The second dataset is the Census compilation of the 2018 population by blockgroup in California.</p>
+<pre class="r"><code>panel &lt;- readRDS(home_panel_M0319) %&gt;%
+        filter(state == 'ca')
+
+
+bg_pop &lt;- get_acs(geography = &quot;block group&quot;, variables = &quot;B01003_001&quot;, year = acs_year, state = 'CA') %&gt;%
+  as.data.frame() %&gt;%
+  rename(geoid = GEOID, pop = estimate) %&gt;%
+  dplyr::select(-c(variable, moe)) %&gt;%
+  filter(pop &gt; 0)</code></pre>
 <pre><code>## Getting data from the 2014-2018 5-year ACS</code></pre>
 </div>
 <div id="comparison-across-different-fips-scales" class="section level2">
