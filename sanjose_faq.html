@@ -190,6 +190,66 @@ window.buildTabsets = function(tocID) {
 };
 
 </script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia');
+  rCodeBlocks.each(function() {
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    if (show || $(this)[0].classList.contains('fold-show'))
+      div.addClass('in');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide' : 'Code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+    });
+  });
+
+}
+</script>
 <style type="text/css">.hljs-literal {
 color: #990073;
 }
@@ -344,6 +404,9 @@ summary {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -360,26 +423,49 @@ summary {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">San Jose Dashboard FAQ</h1>
 <h4 class="author">Stanford Future Bay Initiative</h4>
-<h4 class="date">Last updated: April 22</h4>
+<h4 class="date">4/30/2020</h4>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#data-collection">Data Collection</a></li>
+<li><a href="#data-trends">Data Trends</a></li>
+<li><a href="#parks">Parks</a></li>
+</ul>
+</div>
 
-<div id="frequently-asked-questions" class="section level2">
-<h2>Frequently Asked Questions</h2>
-<p><strong>Is there a “grace area” that allows a phone to travel, say, around the block (for a walk) but still registers as “completely at home”?</strong></p>
-<p>Answer: Safegraph, as part of its data anonymization, does not directly tie its device location to city blocks or buildings. Instead, they aggregate their device locations to standardized <a href="https://www.movable-type.co.uk/scripts/geohash.html">Geohash-7 grids</a>, one grid being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 grid in which their home is located. The data will register movement into any other Geohash-7 grid, and we can see counts and distances traveled of devices as such. Ultimately, the “grace area” for a phone is different for every person, depending on where that person lives within a larger standardized Geohash-7 grid, and “walking around the block” may not be detectable if the walking route happens to stay within that grid.</p>
-<p><strong>What can this tool tell us in regard to compliance as orders shift?</strong></p>
-<p>Answer: This tool allows one to examine the level of compliance within San Jose districts and individual block groups. When orders change, you can easily see the before/after shifts in the percentage of people staying at home, both on the interactive map and time series. The shift in trends may shine light on the efficacy of the order.</p>
-<p><strong>Why are there peaks in the percentage of people that stay at home on weekends, even after the COVID-19 shelter-in-place order was enacted?</strong></p>
+<div id="data-collection" class="section level1">
+<h1>Data Collection</h1>
+<p><strong>Question: Is there a “grace area” that allows a phone to travel, say, around the block (for a walk) but still registers as “completely at home”?</strong></p>
+<p>Answer: Safegraph, as part of its data anonymization, does not directly tie its device location to city blocks or buildings. Instead, they aggregate their device locations to standardized Geohash-7 grids, one grid being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 grid in which their home is located. The data will register movement into any other Geohash-7 grid, and we can see counts and distances traveled of devices as such. Ultimately, the “grace area” for a phone is different for every person, depending on where that person lives within a larger standardized Geohash-7 grid, and “walking around the block” may not be detectable if the walking route happens to stay within that grid.</p>
+<p><strong>Question: How are visits counted in parks that do not have cell service (for example, Alum Rock Park)?</strong></p>
+<p>Answer: The visits are not tracked by phone reception per se, but rather GPS reception. It’s possible to have an accurate GPS reading even when you don’t have phone service, and the GPS data will be synced once cell service or wifi is regained. However if you are in a big canyon or if GPS is obscured for other reasons then we may see undersampling, and depending on how the battery saving mechanisms are implemented, lack of cell service may mean fewer GPS pings are collected.</p>
+</div>
+<div id="data-trends" class="section level1">
+<h1>Data Trends</h1>
+<p><strong>Question: Why are there peaks in the percentage of people that stay at home on weekends, even after the COVID-19 shelter-in-place order was enacted?</strong></p>
 <p>Answer: The peaks in the percentage of people staying at home on the weekends are likely attributed to the movement behavior of essential workers. Although others working from home may increase their out-of-house movements over the weekends, the overall bump is likely driven by the significant number of essential workers who reduce their movement on the weekends.</p>
-<p><strong>Are fully closed parks (Alum Rock and Communications Hill Staircase/Trail) and closed/locked areas (dog parks, sports fields, tennis/pickleball/futsal courts) visited at all, and what days/times would be best for proactive visits to key hotspots?</strong></p>
+<p><strong>Question: What can this tool tell us in regard to compliance as orders shift?</strong></p>
+<p>Answer: This tool allows one to examine the level of compliance within San Jose districts and individual block groups. When orders change, you can easily see the before/after shifts in the percentage of people staying at home, both on the interactive map and time series. The shift in trends may shine light on the efficacy of the order.</p>
+</div>
+<div id="parks" class="section level1">
+<h1>Parks</h1>
+<p><strong>Question: Are fully closed parks (Alum Rock and Communications Hill Staircase/Trail) and closed/locked areas (dog parks, sports fields, tennis/pickleball/futsal courts) visited at all, and what days/times would be best for proactive visits to key hotspots?</strong></p>
 <p>Answer: We are working on providing park visits directly on the dashboard. We’ll be able to drill down to the hour (though we may not see patterns for a given hour week by week) and have some sense of where they’re coming from (only if there are 2 or more visitors from an origin census block group in their device pool). Analyzing subsections of the park is currently not possible with the data, but if City staff can provide a detailed list of sub-park amenities and locations, we can work with Safegraph to incorporate them into the dataset.</p>
-<p><strong>How do we account for unhoused individuals in parks and trails?</strong></p>
+<p><strong>Question: How do we account for unhoused individuals in parks and trails?</strong></p>
 <p>Answer: This unfortunately is unlikely to be accountable using the Safegraph data.</p>
 </div>
 
@@ -416,6 +502,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
