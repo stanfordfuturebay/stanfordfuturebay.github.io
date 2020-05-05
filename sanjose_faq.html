@@ -435,14 +435,14 @@ summary {
 
 <h1 class="title toc-ignore">San Jose Dashboard FAQ</h1>
 <h4 class="author">Stanford Future Bay Initiative</h4>
-<h4 class="date">4/30/2020</h4>
+<h4 class="date">Last updated: May 04</h4>
 
 </div>
 
 <div id="TOC">
 <ul>
 <li><a href="#data-collection">Data Collection</a></li>
-<li><a href="#data-trends">Data Trends</a></li>
+<li><a href="#data-interpretation">Data Interpretation</a></li>
 <li><a href="#parks">Parks</a></li>
 </ul>
 </div>
@@ -451,15 +451,21 @@ summary {
 <h1>Data Collection</h1>
 <p><strong>Question: Is there a “grace area” that allows a phone to travel, say, around the block (for a walk) but still registers as “completely at home”?</strong></p>
 <p>Answer: Safegraph, as part of its data anonymization, does not directly tie its device location to city blocks or buildings. Instead, they aggregate their device locations to standardized Geohash-7 grids, one grid being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 grid in which their home is located. The data will register movement into any other Geohash-7 grid, and we can see counts and distances traveled of devices as such. Ultimately, the “grace area” for a phone is different for every person, depending on where that person lives within a larger standardized Geohash-7 grid, and “walking around the block” may not be detectable if the walking route happens to stay within that grid.</p>
-<p><strong>Question: How are visits counted in parks that do not have cell service (for example, Alum Rock Park)?</strong></p>
+<p><strong>Question: How are visits counted in places that do not have cell service (for example, Alum Rock Park)?</strong></p>
 <p>Answer: The visits are not tracked by phone reception per se, but rather GPS reception. It’s possible to have an accurate GPS reading even when you don’t have phone service, and the GPS data will be synced once cell service or wifi is regained. However if you are in a big canyon or if GPS is obscured for other reasons then we may see undersampling, and depending on how the battery saving mechanisms are implemented, lack of cell service may mean fewer GPS pings are collected.</p>
+<p><strong>Question: Would it be possible to look at simultaneous visits to a specific destination (e.g. park)?</strong></p>
+<p>Answer: Due to Safegraph’s data collection methods and the format of their datasets, we are unable to analyze and display simultaneous visits to a destination. The Safegraph data only outlines weekly, daily, and hourly visits to each destination, and does not specify if certain visits from different origins overlap in a particular time frame.</p>
+<p><strong>Question: Do you make population adjustments based on the estimated numbers of devices?</strong></p>
+<p>Answer: Yes, we do make population adjustments. We first find the ratio between the number of devices that Safegraph monitors for a specific geography (e.g. census block group), which they report, and the total Census population for that same geography (using 2018 American Communities Survey 5-Year Summaries). We then take this ratio and multiply it by the daily visit counts reported by Safegraph (always a subset of the devices they monitor). The result is a normalized visit estimation for each destination of interest.</p>
 </div>
-<div id="data-trends" class="section level1">
-<h1>Data Trends</h1>
+<div id="data-interpretation" class="section level1">
+<h1>Data Interpretation</h1>
 <p><strong>Question: Why are there peaks in the percentage of people that stay at home on weekends, even after the COVID-19 shelter-in-place order was enacted?</strong></p>
 <p>Answer: The peaks in the percentage of people staying at home on the weekends are likely attributed to the movement behavior of essential workers. Although others working from home may increase their out-of-house movements over the weekends, the overall bump is likely driven by the significant number of essential workers who reduce their movement on the weekends.</p>
 <p><strong>Question: What can this tool tell us in regard to compliance as orders shift?</strong></p>
 <p>Answer: This tool allows one to examine the level of compliance within San Jose districts and individual block groups. When orders change, you can easily see the before/after shifts in the percentage of people staying at home, both on the interactive map and time series. The shift in trends may shine light on the efficacy of the order.</p>
+<p><strong>Question: What would the trigger point be to set an alert or recommendation to modify compliance?</strong></p>
+<p>Answer: Currently, we have no specific trigger point, but have chosen to report under “Key Insights” the weekends when the percentage of people leaving home has exceeded the lowest observed weekend amount since the county shelter-in-place order took effect. The lowest percentage of people leaving home occurred on Sunday, April 5th, so every Sunday since then has been worth “alerting” City staff to, in our opinion. With more discussion, we can incorporate more nuanced trigger points into the dashboard, including by specific geographies and destination types.</p>
 </div>
 <div id="parks" class="section level1">
 <h1>Parks</h1>
@@ -467,6 +473,8 @@ summary {
 <p>Answer: We are working on providing park visits directly on the dashboard. We’ll be able to drill down to the hour (though we may not see patterns for a given hour week by week) and have some sense of where they’re coming from (only if there are 2 or more visitors from an origin census block group in their device pool). Analyzing subsections of the park is currently not possible with the data, but if City staff can provide a detailed list of sub-park amenities and locations, we can work with Safegraph to incorporate them into the dataset.</p>
 <p><strong>Question: How do we account for unhoused individuals in parks and trails?</strong></p>
 <p>Answer: This unfortunately is unlikely to be accountable using the Safegraph data.</p>
+<p><strong>Question: Why do some parks appear divided into separate subsections?</strong></p>
+<p>Answer: In a previous version, we used City GIS data in which some parks were broken up into separate subsections. The Safegraph data does not necessarily provide visits to particular subsections. We recently received Safegraph’s own geometries; moving forward, we will implement these new geometries in the dashboard, and the parks will no longer appear to be split into multiple pieces. Additionally, we will now have a more accurate area count and visit per acre value for each park.</p>
 </div>
 
 
