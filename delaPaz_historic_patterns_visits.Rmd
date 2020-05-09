@@ -1,0 +1,292 @@
+---
+title: "draft"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r library}
+library(censusapi)
+library(colorspace)
+library(dplyr)
+library(jsonlite)
+library(mapview)
+library(raster)
+library(rgeos)
+library(readr)
+library(stringr)
+library(sf)
+library(sp)
+library(tidycensus)
+library(tidyverse)
+library(tigris)
+library(tmap)
+library(tmaptools)
+library(usmap)
+library(splitstackshape)
+library(tidyr)
+install.packages("qdap")
+library(qdap)
+
+
+census_key <- "5e188bf6fd2d0fbf95ecabc753b82960d946530f"
+#census_api_key(census_key, install = TRUE)
+Sys.getenv("CENSUS_KEY")
+
+mapview::mapviewOptions(basemaps = "OpenStreetMap")
+options(
+  tigris_class = "sf",
+  tigris_use_cache = TRUE
+)
+mapviewOptions(basemaps = "OpenStreetMap")
+```
+
+```{r urls}
+
+#COVID-19
+
+scc_url <- 'P:/Shared/SFBI/Restricted Data Library/COVID-19/scc_city_cases.rds'
+
+#SAFEGRAPH
+poi_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/ca_poi.rds'
+
+#weekly patterns, as of 28 April
+patterns_041220 <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-04-12-ca-weekly-patterns.rds'
+
+home_panel_041220 <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-04-20-home-panel-summary.rds'
+
+normalization_041220 <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/weekly-patterns/2020-04-12-normalization-summary.rds'
+
+block_groups_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/bay_blockgroups.rds'
+
+#social distancing
+bay_sd_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/bay_socialdistancing.rds'
+bay_sd_url_2 <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/bay_socialdistancing_v2.rds'
+sj_sd_url <- bay_sd_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/sj_socialdistancing.rds'
+sj_sd_url_2 <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/sj_socialdistancing.rds'
+
+
+counties = c(fips('CA', 'Alameda County'),
+             fips('CA', 'Contra Costa County'),
+             fips('CA', 'Marin County'),
+             fips('CA', 'Napa County'),
+             fips('CA', 'San Francisco County'),
+             fips('CA', 'San Mateo County'),
+             fips('CA', 'Santa Clara County'),
+             fips('CA', 'Sonoma County'),
+             fips('CA', 'Solano County'))
+```
+
+```{r historic patterns-- urls}
+april19_patterns_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Apr19-AllPatterns-PATTERNS-2019_04-2020-03-23/ca_patterns.rds'
+
+april19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Apr19-AllPatterns-PATTERNS-2019_04-2020-03-23/visit_panel_summary.rds'
+
+may19_patterns_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/May19-AllPatterns-PATTERNS-2019_05-2020-03-23/ca_patterns.rds'
+
+may19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/May19-AllPatterns-PATTERNS-2019_05-2020-03-23/visit_panel_summary.rds'
+
+june19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Jun19-AllPatterns-PATTERNS-2019_06-2020-03-23/ca_patterns.rds'
+
+june19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/May19-AllPatterns-PATTERNS-2019_06-2020-03-23/visit_panel_summary.rds'
+
+july19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Jul19-AllPatterns-PATTERNS-2019_07-2020-03-23/ca_patterns.rds'
+
+july19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Jul19-AllPatterns-PATTERNS-2019_07-2020-03-23/visit_panel_summary.rds'
+
+aug19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Aug19-AllPatterns-PATTERNS-2019_08-2020-03-23/ca_patterns.rds'
+
+aug19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Aug19-AllPatterns-PATTERNS-2019_08-2020-03-23/visit_panel_summary.rds'
+
+sept19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Sept19-AllPatterns-PATTERNS-2019_09-2020-03-23/ca_patterns.rds'
+
+sept19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Sept19-AllPatterns-PATTERNS-2019_09-2020-03-23/visit_panel_summary.rds'
+
+oct19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Oct19-AllPatterns-PATTERNS-2019_10-2020-03-23/ca_patterns.rds'
+
+oct19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Oct19-AllPatterns-PATTERNS-2019_10-2020-03-23/visit_panel_summary.rds'
+
+nov19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Nov19-AllPatterns-PATTERNS-2019_11-2020-03-23/ca_patterns.rds'
+
+nov19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Nov19-AllPatterns-PATTERNS-2019_11-2020-03-23/visit_panel_summary.rds'
+
+dec19_pattern_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Dec19-AllPatterns-PATTERNS-2019_12-2020-03-23/ca_patterns.rds'
+
+dec19_visit_url <- 'P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/historicpatterns/Dec19-AllPatterns-PATTERNS-2019_12-2020-03-23/visit_panel_summary.rds'
+
+```
+
+```{r load historic patterns}
+april19_patterns <- readRDS(april19_patterns_url)
+may19_patterns <- readRDS(may19_patterns_url)
+june19_patterns <- readRDS(june19_pattern_url)
+july19_patterns <- readRDS(july19_pattern_url)
+aug19_patterns <- readRDS(aug19_pattern_url)
+sept19_patterns <- readRDS(sept19_pattern_url)
+oct19_patterns <- readRDS(oct19_pattern_url)
+nov19_patterns <- readRDS(nov19_pattern_url)
+dec19_patterns <- readRDS(dec19_pattern_url)
+
+```
+
+```{r load historic visits}
+april19_visits <- readRDS(april19_visit_url)
+may19_visits <- readRDS(may19_visit_url)
+june19_visits <- readRDS(june19_visit_url)
+july19_visits <- readRDS(july19_visit_url)
+aug19_visits <- readRDS(aug19_visit_url)
+sept19_visits <- readRDS(sept19_visit_url)
+oct19_visits <- readRDS(oct19_visit_url)
+nov19_visits <- readRDS(nov19_visit_url)
+dec19_visits <- readRDS(dec19_visit_url)
+
+```
+
+```{r cleaning}
+
+poi_ca <- readRDS(poi_url)
+
+poi_clean <-
+  poi_ca %>%
+  dplyr::select(safegraph_place_id, location_name, top_category, sub_category, naics_code, postal_code)
+
+april19_patterns_clean <-
+  april19_patterns %>%
+  dplyr::select(safegraph_place_id, related_same_day_brand, related_same_month_brand, popularity_by_day)
+
+april19_category_popularity <-
+  poi_clean %>%
+  merge(april19_patterns_clean, by = "safegraph_place_id") %>%
+  cSplit('related_same_day_brand', ',', 'long') 
+
+  
+related_same_day_brand_name <- 
+  gsub(" ", "_", april19_category_popularity$related_same_day_brand)
+
+
+
+#to find most popular 
+
+april19_mostpop_spread <-
+  april19_category_popularity %>%
+  dplyr::select(-c(related_same_day_brand, related_same_month_brand)) %>%
+  cbind(related_same_day_brand) %>%
+  separate(related_same_day_brand, c("related_same_day_brand_name", "related_same_day_brand_counts"), sep = ":", remove = TRUE, convert = FALSE)
+
+  
+april19_related_same_day_brand_name <-
+  april19_mostpop_spread %>%
+  group_by(safegraph_place_id, location_name) %>%
+  summarize(related_same_day_brand_name = paste(related_same_day_brand_name, collapse = ", "))%>%
+  separate(related_same_day_brand_name, c("most_related_same_day_brand_name",NA), ",", extra = "drop") 
+
+most_related_same_day_brand_name_v <- 
+  gsub("[^[:alnum:]]", " ", april19_related_same_day_brand_name$most_related_same_day_brand_name)
+ 
+
+april19_related_same_day_brand_counts <-
+  april19_mostpop_spread %>%
+  group_by(safegraph_place_id, location_name) %>%
+  summarize(related_same_day_brand_counts = paste(related_same_day_brand_counts, collapse = ", ")) %>%
+  separate(related_same_day_brand_counts, c("counts",NA), extra = "drop")
+
+april19_mostpop_sameday <-
+  april19_related_same_day_brand_name %>%
+  dplyr::select(-c(location_name)) %>%
+  #cbind(most_related_same_day_brand_name_v) %>%
+  merge(april19_related_same_day_brand_counts, by = "safegraph_place_id") %>%
+  dplyr::select(-c(most_related_same_day_brand_name)) %>%
+  cbind(most_related_same_day_brand_name_v) 
+ 
+#reordering columns
+april19_mostpop_sameday <-
+  april19_mostpop_sameday[c(1, 2, 4, 3)] %>%
+  merge(april19_category_popularity, by=c("safegraph_place_id", "location_name")) %>%
+  dplyr::select(-c(related_same_day_brand, related_same_month_brand, popularity_by_day)) %>%
+  unique(by = "safegraph_place_id") 
+
+
+```
+
+```{r}
+  #cleaned places data set (location and top category)-- this is the reference column
+
+reference_df <-
+    poi_clean %>%
+  merge(april19_patterns_clean, by = "safegraph_place_id") %>%
+  dplyr::select(c(location_name, sub_category))
+
+names(reference_df) <-
+  c("reference", "subcategory")
+  
+  #join to patterns (cleaned up same day brand) -- this matches
+april19_most_related_same_day_spaces <-
+  april19_mostpop_sameday %>%
+  dplyr::select(c(safegraph_place_id, most_related_same_day_brand_name_v))
+
+names <-
+substring(april19_most_related_same_day_spaces$most_related_same_day_brand_name_v, 3)
+
+april19_most_related_same_day_clean <-
+  april19_most_related_same_day_spaces %>%
+  dplyr::select(c("safegraph_place_id")) %>%
+  cbind(names)
+
+names(april19_most_related_same_day_clean) <-
+  c("safegraph_place_id", "reference")
+
+
+  
+#to get the index of the row in reference of the most related brand: match("Interlink Supply", reference[, "location_name"])
+#to get the full column in reference: (reference[77321,])
+
+most_related <-
+  april19_most_related_same_day_clean %>%
+  left_join(reference_df, by="reference")
+  # for(row in april19_most_related_same_day_clean$most_related_same_day_brand_name_v[1:10]){
+  #   i = match(most_related_same_day_brand_name_v, reference[, "location_name"])
+  #   most_related_vector <- i
+  # }
+  
+  
+#do a group by on top category of top category for location + top category for related --> get counts
+  #remember to push to repository!
+  
+```
+
+
+
+```{r functions}
+
+appendSGLatLong <- function(sg_data, core_locations)
+{
+  try_cols = c('lat', 'lon', 'long', 'longitude', 'latitude', 'naics_code')
+  for (w in try_cols) {
+    if (w %in% colnames(sg_data)) {
+      sg_data[, w] = NULL
+    }
+  }
+  
+  sg_data <- merge(sg_data, core_locations[,c('safegraph_place_id', 'latitude', 'longitude', 'naics_code')], 
+                   by = 'safegraph_place_id', suffix = NULL)
+  return(sg_data)
+}
+```
+
+```{r load datasets}
+
+poi_ca <- readRDS(poi_url)
+april20_patterns <- readRDS(patterns_041220)
+#sg_home <- readRDS(home_panel_041220)
+april20_norm <- readRDS(normalization_041220)
+bay_sd <- readRDS(bay_sd_url)
+bay_sd_2 <- readRDS(bay_sd_url_2)
+sj_sd <- readRDS(sj_sd_url)
+sj_sd <- readRDS(sj_sd_url_2)
+
+```
+
