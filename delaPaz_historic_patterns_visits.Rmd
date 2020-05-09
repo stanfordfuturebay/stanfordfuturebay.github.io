@@ -158,6 +158,7 @@ april19_patterns_clean <-
   april19_patterns %>%
   dplyr::select(safegraph_place_id, related_same_day_brand, related_same_month_brand, popularity_by_day)
 
+#combined datasets, split to give each related same day brand its own line
 april19_category_popularity <-
   poi_clean %>%
   merge(april19_patterns_clean, by = "safegraph_place_id") %>%
@@ -194,6 +195,7 @@ april19_related_same_day_brand_counts <-
   summarize(related_same_day_brand_counts = paste(related_same_day_brand_counts, collapse = ", ")) %>%
   separate(related_same_day_brand_counts, c("counts",NA), extra = "drop")
 
+#final product
 april19_mostpop_sameday <-
   april19_related_same_day_brand_name %>%
   dplyr::select(-c(location_name)) %>%
@@ -218,37 +220,45 @@ april19_mostpop_sameday <-
 reference_df <-
     poi_clean %>%
   merge(april19_patterns_clean, by = "safegraph_place_id") %>%
-  dplyr::select(c(location_name, sub_category))
+  dplyr::select(c(location_name, sub_category)) %>%
+  unique(by="location_name") 
 
 names(reference_df) <-
   c("reference", "subcategory")
   
-  #join to patterns (cleaned up same day brand) -- this matches
+#to be matched
 april19_most_related_same_day_spaces <-
   april19_mostpop_sameday %>%
   dplyr::select(c(safegraph_place_id, most_related_same_day_brand_name_v))
 
 names <-
-substring(april19_most_related_same_day_spaces$most_related_same_day_brand_name_v, 3)
+substring(april19_most_related_same_day_spaces$most_related_same_day_brand_name_v, 3)%>%
+  as.character(names)
 
 april19_most_related_same_day_clean <-
   april19_most_related_same_day_spaces %>%
   dplyr::select(c("safegraph_place_id")) %>%
-  cbind(names)
+  cbind(names) 
 
 names(april19_most_related_same_day_clean) <-
   c("safegraph_place_id", "reference")
 
-
+#now the matching part 
   
 #to get the index of the row in reference of the most related brand: match("Interlink Supply", reference[, "location_name"])
 #to get the full column in reference: (reference[77321,])
 
-most_related <-
-  april19_most_related_same_day_clean %>%
-  left_join(reference_df, by="reference")
-  # for(row in april19_most_related_same_day_clean$most_related_same_day_brand_name_v[1:10]){
-  #   i = match(most_related_same_day_brand_name_v, reference[, "location_name"])
+lookUp1 <- setNames(as.character(reference_df$subcategory), reference_df$reference)
+
+related_subcat <-
+  data.frame(lapply(april19_most_related_same_day_clean, function(i) lookUp1[i])) %>%
+  cbind(april19_most_related_same_day_clean$reference)
+rownames(res) <- NULL 
+  
+  # april19_most_related_same_day_clean %>%
+  # left_join(reference_df, by="reference")
+  # for(row in april19_most_related_same_day_clean$reference[1:10]){
+  #   i = match(reference, reference_df[, "reference"])
   #   most_related_vector <- i
   # }
   
