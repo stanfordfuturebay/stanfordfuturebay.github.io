@@ -36,11 +36,22 @@ Sys.setenv(CENSUS_KEY="10dcd73d7c043e91bac9fb8d3989cbff54b08790")
 ```
 
 # Mapping distribution of essential workers by block group for San Jose
-Using the LODES dataset and the list of essential workers to map the distribution of essential workers by block group in San Jose
+Analysis: Using the CA Essential Business Guidelines,the LODES dataset and the QWI dataset, the % of essential workers (by NAICS code) was mapped to each block group in San Jose.
+
+#Methodology
+The data used to assess the % of workers deemed essential was determined using the following approach. The CA Essential proportion of 6-digit NAICS codes in each 4-digit NAICS was assessed here using a data set prepared by the CEE 218Z Vulnerability Team (linked here:https://docs.google.com/spreadsheets/d/1piMnUpohkY-HquAhuKEzeJVhCdmxTX75b8S6mnNjxQY/edit#gid=0). 
+The CEE 218Z team read through the "Essential Critical Infrastructure Order" March 22nd 2020 and manually assigned the "essential"/"nonessential" designation by reading the order and control "F" searching through the list of 6-digit NAICS codes. 
+There were two methods of analysis.
+Method 1: 4-digit NAICS codes were weighted by fraction of 6-digit NAICS codes in the 4-digit NAICS code. Then this fraction was multiplied by the number of employees in each 4-digit NAICS code (using LODES data). Then proportion of essential workers in each 2-digit NAICS code was calculated by dividing number of essential employees in each 4-digit NAICS code by the number of total employees.  
+
+Method 2: Only 2-digit NAICS codes with >= 50% of the 6-digit sub-codes were marked as essential.
+
+Following calculation of the fraction of essential workers in each block group. It was mapped using leaflet.
+
+
 
 First get the block groups in San Jose
 ``` {r}
-?block_groups
 scc_blockgroups <- block_groups("CA","Santa Clara", cb=F, progress_bar=F)
 
 # Use tracts sent to us by San Jose
@@ -84,15 +95,16 @@ LODES_NAICS <- c('11', '21', '22', '23', '31', '32', '33', '42', '44', '45', '48
 LODES_keys <- data.frame(LODES_variable, LODES_NAICS)
 
 # get the LODES data
-grab_lodes(
-  state = "ca", 
-  year = 2017, 
-  lodes_type = "rac", 
-  job_type = "JT01",
-  segment = "S000", 
-  state_part = "main",
-  agg_geo = "bg"
-) %>% 
+sj_rac <- 
+  grab_lodes(
+    state = "ca", 
+    year = 2017, 
+    lodes_type = "rac", 
+    job_type = "JT01",
+    segment = "S000", 
+    state_part = "main",
+    agg_geo = "bg"
+  ) %>% 
   left_join(sj_blockgroups, by = c("h_bg" = "GEOID")) %>% 
   filter(!is.na(DISTRICTS)) %>%
   dplyr::select(-c(contains("CE"),contains("CA"),contains("CR"), contains("CT"),contains("CS"),contains("CD")))
@@ -252,7 +264,7 @@ ca_map1 <- leaflet(data = sj_rac_essential_ca1) %>%
       opacity = 1
     )
   )%>% 
-  addLegend(pal = blue_pal, values = ~fracEssential_2dig, opacity = 1, title = "% Workers in Essential Bus.") %>% 
+  addLegend(pal = blue_pal, values = ~fracEssential_2dig, opacity = 1, title = "% Workers in Essential Bus.") 
 ca_map1
 ```
 
