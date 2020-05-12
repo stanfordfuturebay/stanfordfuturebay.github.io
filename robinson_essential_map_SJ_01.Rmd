@@ -17,12 +17,12 @@ opts_chunk$set(echo = TRUE, warning = F, message = F)
 ```
 
 ``` {r}
+library(plotly)
 library(tidyverse)
 library(tigris)
 library(censusapi)
 library(sf)
 library(mapview)
-library(plotly)
 library(leaflet)
 library(lehdr)
 library(ggplot2)
@@ -40,6 +40,7 @@ Using the LODES dataset and the list of essential workers to map the distributio
 
 First get the block groups in San Jose
 ``` {r}
+?block_groups
 scc_blockgroups <- block_groups("CA","Santa Clara", cb=F, progress_bar=F)
 
 # Use tracts sent to us by San Jose
@@ -83,16 +84,15 @@ LODES_NAICS <- c('11', '21', '22', '23', '31', '32', '33', '42', '44', '45', '48
 LODES_keys <- data.frame(LODES_variable, LODES_NAICS)
 
 # get the LODES data
-sj_rac <- 
-  grab_lodes(
-    state = "ca", 
-    year = 2017, 
-    lodes_type = "rac", 
-    job_type = "JT01",
-    segment = "S000", 
-    state_part = "main",
-    agg_geo = "bg"
-  ) %>% 
+grab_lodes(
+  state = "ca", 
+  year = 2017, 
+  lodes_type = "rac", 
+  job_type = "JT01",
+  segment = "S000", 
+  state_part = "main",
+  agg_geo = "bg"
+) %>% 
   left_join(sj_blockgroups, by = c("h_bg" = "GEOID")) %>% 
   filter(!is.na(DISTRICTS)) %>%
   dplyr::select(-c(contains("CE"),contains("CA"),contains("CR"), contains("CT"),contains("CS"),contains("CD")))
@@ -145,23 +145,32 @@ CA_essential$`CA Essential` <-  as.logical(CA_essential$`CA Essential`)
 DE_essential <- read_csv(file.path(dir, 'Essential Designations/delaware_essential_designations.csv'))
 ```
 
-Method 1: Use the QWI data to find the distribution of workers in NAICS 4-digit codes in Santa Clara County, and use this to weight the contributions of each 2-digit code. 
-```{r, fig.width=20,fig.height=11}
-#CA Fraction Employed; CA designations
-CA_essential_weighted_grouped_ca1 <- CA_essential %>% 
-  mutate(NAICS = str_sub(NAICS, 1,4)) %>% 
-  full_join(qwi_scc, by = c('NAICS' = 'industry')) %>%
-  mutate(NAICS_2_dig = substr(NAICS, 1, 2)) %>%
-  full_join(LODES_keys, by = c('NAICS_2_dig' = 'LODES_NAICS')) %>% 
-  mutate(EmpS = replace_na(EmpS, 0)) %>% # assume if not listed it is not essential, and if no employees listed that the number is zero
-  group_by(LODES_variable, `CA Essential`) %>% 
-  summarize(totalWorkers = sum(EmpS)) %>% # get number of 4 digit codes within each 2 digit code that are essential and nonessential and total workers essential/nonessential 
-  ungroup() %>% 
-  spread(`CA Essential`, totalWorkers, fill = 0) %>%
-  rename(c("Essential" = "TRUE", "Nonessential" = "FALSE")) %>% 
-  mutate(totalCount = Essential + Nonessential, fracEssential = Essential / totalCount) %>% 
-  mutate(df = "CA")
+Spencer Method 1: Use CA Essential 6-digit NAICS codes to assess Fraction-A: Fraction of 6-digit NAICS codes in each 4-digit NAICS code. Use QWI data to assess Fraction-B: Fraction of 4-digit NAICS code workers in each 2-digit NAICS code category (corresponds to LODES data). To determine % essential workers we multiply Fraction-A by Fraction-B. 
 
+```{r}
+CA_essential_weighted_grouped_ca1<- CA_essential %>% 
+  mutate(NAICS_4_dig = str_sub(NAICS, 1,4)) %>%
+  group_by(NAICS_4_dig, `CA Essential`) %>% 
+  summarize(count = n()) %>% 
+  ungroup() %>% 
+  spread(`CA Essential`,count) %>% 
+  mutate(`FALSE` = replace_na(`FALSE`, 0), `TRUE` = replace_na(`TRUE`, 0)) %>% 
+  rename(c("essential" = "TRUE", "nonessential" = "FALSE")) %>% 
+  mutate(totalCount = essential + nonessential, fracEssential_4dig = essential / totalCount) %>% #FractionA 
+  full_join(qwi_scc, by = c('NAICS_4_dig' = 'industry')) %>% # Bring in QWI data with number of workers 4digit NAICS
+  mutate(EmpS = replace_na(EmpS,0)) %>% # assume if not listed it is not essential, and if no employees listed that the number is zero
+  mutate(fracEssential_4dig =replace(fracEssential_4dig, NAICS_4_dig== "8141", 0), EmpS = replace(EmpS, NAICS_4_dig == "8141",0)) %>%   #Manually assign NAICS code 8141 as nonessential 
+  mutate(essEmps = EmpS*fracEssential_4dig) %>%  #Number of Essenital employees in each 4 digit category 
+  mutate(NAICS_2_dig = str_sub(NAICS_4_dig, 1,2)) %>%
+  full_join(LODES_keys, by = c('NAICS_2_dig' = 'LODES_NAICS')) %>% #Bring in LODES data with 
+  group_by(LODES_variable) %>% 
+  summarise(EmpS = sum(EmpS), essEmps = sum(essEmps)) %>% 
+  mutate(fracEssential_2dig = essEmps/EmpS) %>% 
+  mutate(df = "CA1")
+```
+
+Simone's Method 1 with DE Essential Business Data: Use the QWI data to find the distribution of workers in NAICS 4-digit codes in Santa Clara County, and use this to weight the contributions to each 2-digit code. Note that this method disregards information about 6 digit codes within the 4 digit code that differ from the broader 4 digit code; this could be adjusted, but without data on the distribution of 6 digit within 4 digit I thought it was best to leave out.
+```{r}
 #CA Fraction Employed; DE designations
 CA_essential_weighted_grouped_de1 <- DE_essential %>% 
   mutate(NAICS = str_sub(NAICS, 1,4)) %>% 
@@ -175,40 +184,44 @@ CA_essential_weighted_grouped_de1 <- DE_essential %>%
   ungroup() %>% 
   spread(Essential, totalWorkers, fill = 0) %>%
   rename(c("Essential" = "TRUE", "Nonessential" = "FALSE")) %>% 
-  mutate(totalCount = Essential + Nonessential, fracEssential = Essential / totalCount) %>% 
-  mutate(df = "DE")
+  mutate(totalCount = Essential + Nonessential, fracEssential_2dig = Essential / totalCount) %>% 
+  mutate(df = "DE") %>% 
+  select("LODES_variable","fracEssential_2dig","df")
 
-#Let's compare the fraction essential for California versus Delaware 
+```
+
+```{r, fig.width=20,fig.height=11}
+#Let's compare the fraction essential for Spencer Method 1 (CA Designations) v. Simone Method 1 (DE Designations)
 compare_df <- bind_rows(CA_essential_weighted_grouped_ca1, CA_essential_weighted_grouped_de1)
-compare_graph <- ggplot(data = compare_df, aes(x = LODES_variable, y = fracEssential, fill = df))+
+compare_graph <- ggplot(data = compare_df, aes(x = LODES_variable, y = fracEssential_2dig, fill = df))+
   geom_bar(stat = "identity", position = position_dodge())+
   ggtitle(" Fraction Employed in Santa Clara; Comparing Delaware and California Designations")+
   theme_minimal()+
   theme(
-plot.title = element_text(size=14, face="bold.italic"),
-axis.text.x =  element_text(angle = 90, size=14),
-axis.title.y = element_text(size=14)
-)
+    plot.title = element_text(size=14, face="bold.italic"),
+    axis.text.x =  element_text(angle = 90, size=14),
+    axis.title.y = element_text(size=14)
+  )
 compare_graph
 ```
 
 ```{r}
 # get essential breakdown in San Jose - CA designations
 sj_rac_essential_ca1 <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
-  left_join(CA_essential_weighted_grouped_ca1 %>% dplyr::select(fracEssential, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
-  mutate(numEssential = fracEssential * Number) %>%
+  left_join(CA_essential_weighted_grouped_ca1 %>% dplyr::select(fracEssential_2dig, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
+  mutate(numEssential = fracEssential_2dig * Number) %>%
   group_by(h_bg, C000) %>%
   summarize(totalEssential = sum(numEssential)) %>%
   ungroup() %>%
-  mutate(fracEssential = round((totalEssential / C000)*100, 1))
+  mutate(fracEssential_2dig = round((totalEssential / C000)*100, 1))
 
 sj_rac_essential_de1 <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
-  left_join(CA_essential_weighted_grouped_de1 %>% dplyr::select(fracEssential, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
-  mutate(numEssential = fracEssential * Number) %>%
+  left_join(CA_essential_weighted_grouped_de1 %>% dplyr::select(fracEssential_2dig, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
+  mutate(numEssential = fracEssential_2dig * Number) %>%
   group_by(h_bg, C000) %>%
   summarize(totalEssential = sum(numEssential)) %>%
   ungroup() %>%
-  mutate(fracEssential = round((totalEssential / C000)*100, 1))
+  mutate(fracEssential_2dig = round((totalEssential / C000)*100, 1))
 ```
 
 Map of method 1 using California Essential Business Designations
@@ -218,7 +231,7 @@ blue_pal <- colorNumeric(
   palette = "Blues",
   domain = 
     c(sj_rac_essential_ca1 %>% 
-        pull(fracEssential) %>% 
+        pull(fracEssential_2dig) %>% 
         unique())
 )
 
@@ -229,17 +242,17 @@ ca_map1 <- leaflet(data = sj_rac_essential_ca1) %>%
       sj_rac_essential_ca1 %>% 
       left_join(sj_blockgroups, by = c("h_bg" = "GEOID")) %>%
       st_as_sf() %>% st_set_crs(4326),
-    fillColor = ~blue_pal(fracEssential),
+    fillColor = ~blue_pal(fracEssential_2dig),
     color = "white",
     weight = 0.25,
     fillOpacity = 0.5,
-    label = ~paste0(fracEssential,"% of workers that are essential by block group "),
+    label = ~paste0(fracEssential_2dig,"% of workers that are essential by block group"),
     highlightOptions = highlightOptions(
       weight = 2,
       opacity = 1
     )
   )%>% 
-  addLegend(pal = blue_pal, values = ~fracEssential, opacity = 1, title = "% Workers in Essential Bus.")
+  addLegend(pal = blue_pal, values = ~fracEssential_2dig, opacity = 1, title = "% Workers in Essential Bus.") %>% 
 ca_map1
 ```
 
@@ -249,7 +262,7 @@ red_pal <- colorNumeric(
   palette = "Reds",
   domain = 
     c(sj_rac_essential_de1 %>% 
-        pull(fracEssential) %>% 
+        pull(fracEssential_2dig) %>% 
         unique())
 )
 
@@ -260,71 +273,48 @@ de_map1 <- leaflet(data = sj_rac_essential_de1) %>%
       sj_rac_essential_de1 %>% 
       left_join(sj_blockgroups, by = c("h_bg" = "GEOID")) %>%
       st_as_sf() %>% st_set_crs(4326),
-    fillColor = ~red_pal(fracEssential),
+    fillColor = ~red_pal(fracEssential_2dig),
     color = "white",
     weight = 0.25,
     fillOpacity = 0.5,
-    label = ~paste0(fracEssential,"% of workers that are essential by block group "),
+    label = ~paste0(fracEssential_2dig,"% of workers that are essential by block group "),
     highlightOptions = highlightOptions(
       weight = 2,
       opacity = 1
     )
   ) %>% 
-  addLegend(pal = red_pal, values = ~fracEssential, opacity = 1, title = "% Workers in Essential Bus.")
+  addLegend(pal = red_pal, values = ~fracEssential_2dig, opacity = 1, title = "% Workers in Essential Bus.")
 de_map1 
 ```
 
-Method 2: Use fraction of 6-digit codes considered essential to create fraction of essential codes for each of the 4-digit codes. Then use Method 1 to determine fraction of essential workers for each 2-digit code.
-```{r fig.width=20,fig.height=11}
-#CA Fraction Employed; CA designations
-CA_essential_fraction <- CA_essential %>% 
-  mutate(NAICS = str_sub(NAICS, 1,6)) %>% 
-  mutate(NAICS_4_dig = str_sub(NAICS, 1,4)) %>% 
-  group_by(NAICS_4_dig, `CA Essential`) %>% 
-  summarize(NAICS_factor = n()) %>% 
-  spread(`CA Essential`, NAICS_factor) %>% 
-  mutate(`FALSE` = replace_na(`FALSE`, 0), `TRUE` = replace_na(`TRUE`, 0)) %>% 
-  mutate(total = `TRUE` + `FALSE`, fraction = `TRUE` / total) 
-CA_essential_fraction <- CA_essential_fraction[,-(2:4)]
+Spencer Method 2: Only count as essential the 2 digit NAICS codes with >=80% of the 6 digit sub-codes marked as essential
 
-#CA Fraction Employed; CA designations
-CA_essential_weighted_grouped_ca2 <- CA_essential %>% 
-  mutate(NAICS = str_sub(NAICS, 1,4)) %>% 
-  full_join(CA_essential_fraction, by = c('NAICS' = 'NAICS_4_dig')) %>% 
-  full_join(qwi_scc, by = c('NAICS' = 'industry')) %>%
-  mutate(NAICS_2_dig = substr(NAICS, 1, 2)) %>%
-  full_join(LODES_keys, by = c('NAICS_2_dig' = 'LODES_NAICS')) %>%
-  mutate(EmpS = replace_na(EmpS, 0)) %>% # assume if not listed it is not essential, and if no employees listed that the number is zero
-  {if(TRUE) mutate(., EmpS = fraction*EmpS) else . } %>%  #Multiply number of essential employees by fraction of NAICS codes essential 
-    group_by(LODES_variable, `CA Essential`) %>% 
-  summarize(totalWorkers = sum(EmpS)) %>%
-  ungroup() %>% 
-   spread(`CA Essential`,totalWorkers, fill = 0) %>%
-  rename(c("Essential" = "TRUE", "Nonessential" = "FALSE")) %>% 
-  mutate(totalCount = Essential + Nonessential, fracEssential = Essential / totalCount) %>%
-  na.omit() %>% 
+```{r}
+CA_essential_grouped <- CA_essential %>% 
+  mutate(NAICS = str_sub(NAICS, 1,6)) %>% #Convert 6 digit NAICS to string
+  mutate(NAICS_2_dig = str_sub(NAICS, 1,2)) %>% #Get 2 digit NAICS which correspond to LODES
+  full_join(LODES_keys, by = c('NAICS_2_dig' = 'LODES_NAICS')) %>% 
+  group_by(LODES_variable, `CA Essential`) %>% 
+  summarize(Count = n()) %>%
+  spread(`CA Essential`, Count) %>% 
+  mutate(`FALSE` = replace_na(`FALSE`,FALSE), `TRUE` = replace_na(`TRUE`,TRUE)) %>% 
+  rename(c("essential" = "TRUE", "nonessential" = "FALSE")) %>% 
+  mutate(totalCount = essential+nonessential, fracEssential = essential/totalCount) %>% 
   mutate(df = "CA2")
-  
-compare_df <- bind_rows(CA_essential_weighted_grouped_ca1, CA_essential_weighted_grouped_ca2)
-compare_graph <- ggplot(data = compare_df, aes(x = LODES_variable, y = fracEssential, fill = df))+
-  geom_bar(stat = "identity", position = position_dodge())+
-  ggtitle("Fraction Employed in Santa Clara; Comparing Delaware and California Designations")+
-  theme_minimal()+
-  theme(
-plot.title = element_text(size=14, face="bold.italic"),
-axis.text.x =  element_text(angle = 90, size=14),
-axis.title.y = element_text(size=14)
-)
-compare_graph
+
+CA_essential <- ggplot(CA_essential_grouped, aes(fracEssential))+ 
+  geom_histogram(binwidth = 0.1)
+
+CA_essential_grouped <- CA_essential_grouped %>% mutate(binaryEssential = fracEssential >= 0.5) # 0.5 used because of low  
 ```
 
 ```{r}
 # get essential breakdown in San Jose - CA designations
-sj_rac_essential_ca2 <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
-  left_join(CA_essential_weighted_grouped_ca2 %>% dplyr::select(fracEssential, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
-  mutate(numEssential = fracEssential * Number) %>%
+sj_rac_essential_grouped <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
+  left_join(CA_essential_grouped %>% dplyr::select(binaryEssential, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
+  filter(binaryEssential == TRUE) %>% 
   group_by(h_bg, C000) %>%
-  summarize(totalEssential = sum(numEssential, na.rm = T)) %>%
+  summarize(totalEssential = sum(Number)) %>%
   ungroup() %>%
   mutate(fracEssential = round((totalEssential / C000)*100, 1))
 ```
@@ -335,16 +325,16 @@ Map of method 2 using California Essential Business Designations
 blue_pal <- colorNumeric(
   palette = "Blues",
   domain = 
-    c(sj_rac_essential_ca2 %>% 
+    c(sj_rac_essential_grouped %>% 
         pull(fracEssential) %>% 
         unique())
 )
 
-ca_map2 <- leaflet(data = sj_rac_essential_ca2) %>% 
+ca_map2 <- leaflet(data = sj_rac_essential_grouped) %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
   addPolygons(
     data = 
-      sj_rac_essential_ca2 %>% 
+      sj_rac_essential_grouped %>% 
       left_join(sj_blockgroups, by = c("h_bg" = "GEOID")) %>%
       st_as_sf() %>% st_set_crs(4326),
     fillColor = ~blue_pal(fracEssential),
@@ -356,7 +346,7 @@ ca_map2 <- leaflet(data = sj_rac_essential_ca2) %>%
       weight = 2,
       opacity = 1
     )
-) %>% 
+  ) %>% 
   addLegend(pal = blue_pal, values = ~fracEssential, opacity = 1, title = "% Workers in Essential Bus.")
 
 ca_map2
