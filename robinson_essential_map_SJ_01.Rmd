@@ -34,7 +34,7 @@ options(
 
 Sys.setenv(CENSUS_KEY="10dcd73d7c043e91bac9fb8d3989cbff54b08790")
 ```
-
+Updated 05/11/2020
 # Mapping distribution of essential workers by block group for San Jose
 Analysis: Using the CA Essential Business Guidelines,the LODES dataset and the QWI dataset, the % of essential workers (by NAICS code) was mapped to each block group in San Jose.
 
@@ -47,8 +47,6 @@ Method 1: 4-digit NAICS codes were weighted by fraction of 6-digit NAICS codes i
 Method 2: Only 2-digit NAICS codes with >= 50% of the 6-digit sub-codes were marked as essential.
 
 Following calculation of the fraction of essential workers in each block group. It was mapped using leaflet.
-
-
 
 First get the block groups in San Jose
 ``` {r}
@@ -362,5 +360,4 @@ ca_map2 <- leaflet(data = sj_rac_essential_grouped) %>%
   addLegend(pal = blue_pal, values = ~fracEssential, opacity = 1, title = "% Workers in Essential Bus.")
 
 ca_map2
-
 ```
