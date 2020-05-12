@@ -26,6 +26,7 @@ library(mapview)
 library(leaflet)
 library(lehdr)
 library(ggplot2)
+library(ggthemes)
 
 options(
   tigris_class = "sf",
@@ -177,6 +178,7 @@ CA_essential_weighted_grouped_ca1<- CA_essential %>%
   summarise(EmpS = sum(EmpS), essEmps = sum(essEmps)) %>% 
   mutate(fracEssential_2dig = essEmps/EmpS) %>% 
   mutate(df = "CA1")
+
 ```
 
 Simone's Method 1 with DE Essential Business Data: Use the QWI data to find the distribution of workers in NAICS 4-digit codes in Santa Clara County, and use this to weight the contributions to each 2-digit code. Note that this method disregards information about 6 digit codes within the 4 digit code that differ from the broader 4 digit code; this could be adjusted, but without data on the distribution of 6 digit within 4 digit I thought it was best to leave out.
@@ -206,7 +208,7 @@ compare_df <- bind_rows(CA_essential_weighted_grouped_ca1, CA_essential_weighted
 compare_graph <- ggplot(data = compare_df, aes(x = LODES_variable, y = fracEssential_2dig, fill = df))+
   geom_bar(stat = "identity", position = position_dodge())+
   ggtitle(" Fraction Employed in Santa Clara; Comparing Delaware and California Designations")+
-  theme_minimal()+
+  theme_fivethirtyeight()+
   theme(
     plot.title = element_text(size=14, face="bold.italic"),
     axis.text.x =  element_text(angle = 90, size=14),
@@ -225,6 +227,9 @@ sj_rac_essential_ca1 <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
   ungroup() %>%
   mutate(fracEssential_2dig = round((totalEssential / C000)*100, 1))
 
+#sj_rac_essential_ca1 <- sj_rac_essential_ca1 %>% rename("fracMethod1" = fracEssential_2dig)
+#saveRDS(select(sj_rac_essential_ca1, h_bg, fracMethod1), file = "/Users/spencerrobinson/Documents/covid19/Spencer_Robinson/essential_workers_method1.rds")
+
 sj_rac_essential_de1 <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
   left_join(CA_essential_weighted_grouped_de1 %>% dplyr::select(fracEssential_2dig, LODES_variable), by = c("Category" = "LODES_variable")) %>% 
   mutate(numEssential = fracEssential_2dig * Number) %>%
@@ -232,6 +237,15 @@ sj_rac_essential_de1 <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
   summarize(totalEssential = sum(numEssential)) %>%
   ungroup() %>%
   mutate(fracEssential_2dig = round((totalEssential / C000)*100, 1))
+```
+
+```{r}
+essential_workers_visualize <- ggplot(data = sj_rac_essential_ca1, aes(x = fracEssential_2dig))+
+  geom_histogram()+
+  labs(y = "Number of Block Groups", x = "% Essential Workers")+
+  ggtitle("Distribution of Block Group Essential Worker Data Method 1")
+ 
+essential_workers_visualize
 ```
 
 Map of method 1 using California Essential Business Designations
@@ -297,7 +311,7 @@ de_map1 <- leaflet(data = sj_rac_essential_de1) %>%
 de_map1 
 ```
 
-Spencer Method 2: Only count as essential the 2 digit NAICS codes with >=80% of the 6 digit sub-codes marked as essential
+Spencer Method 2: Only count as essential the 2 digit NAICS codes with >=50% of the 6 digit sub-codes marked as essential
 
 ```{r}
 CA_essential_grouped <- CA_essential %>% 
@@ -315,7 +329,7 @@ CA_essential_grouped <- CA_essential %>%
 CA_essential <- ggplot(CA_essential_grouped, aes(fracEssential))+ 
   geom_histogram(binwidth = 0.1)
 
-CA_essential_grouped <- CA_essential_grouped %>% mutate(binaryEssential = fracEssential >= 0.5) # 0.5 used because of low  
+CA_essential_grouped <- CA_essential_grouped %>% mutate(binaryEssential = fracEssential >= 0.5) # 0.5 used because of low fracEssential values for most NAICS codes
 ```
 
 ```{r}
@@ -327,6 +341,16 @@ sj_rac_essential_grouped <- sj_rac %>% gather("Category", "Number", CNS01:CNS20)
   summarize(totalEssential = sum(Number)) %>%
   ungroup() %>%
   mutate(fracEssential = round((totalEssential / C000)*100, 1))
+
+#sj_rac_essential_grouped <- sj_rac_essential_grouped %>% rename("fracMethod2" = fracEssential )
+#saveRDS(select(sj_rac_essential_grouped, h_bg, fracMethod2), file = "/Users/spencerrobinson/Documents/covid19/Spencer_Robinson/essential_workers_method2.rds")
+
+essential_workers_visualize <- ggplot(data = sj_rac_essential_grouped, aes(x = fracEssential))+
+  geom_histogram()+
+  labs(y = "Number of Block Groups", x = "% Essential Workers")+
+  ggtitle("Distribution of Block Group Essential Worker Data Method 2 ")
+ 
+essential_workers_visualize
 ```
 
 Map of method 2 using California Essential Business Designations
