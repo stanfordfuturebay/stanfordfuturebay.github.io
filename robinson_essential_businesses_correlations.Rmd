@@ -1,0 +1,154 @@
+---
+title: "robinson_essential_businesses_correlations"
+author: "Spencer Robinson"
+date: "5/11/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(sf)
+library(mapview)
+library(tigris)
+library(censusapi)
+library(leaflet)
+library(lehdr)
+library(fs)
+
+options(
+  tigris_class = "sf",
+  tigris_use_cache = TRUE
+)
+
+Sys.setenv(CENSUS_KEY="10dcd73d7c043e91bac9fb8d3989cbff54b08790")
+```
+
+#Methodology
+## Essential Workers Metric
+The data used to assess the % of workers deemed essential was determined using the following approach. The CA Essential proportion of 6-digit NAICS codes in each 4-digit NAICS was assessed here using a data set prepared by the CEE 218Z Vulnerability Team (linked here:https://docs.google.com/spreadsheets/d/1piMnUpohkY-HquAhuKEzeJVhCdmxTX75b8S6mnNjxQY/edit#gid=0). 
+The CEE 218Z team read through the "Essential Critical Infrastructure Order" March 22nd 2020 and manually assigned the "essential"/"nonessential" designation by reading the order and control "F" searching through the list of 6-digit NAICS codes.
+Method 1: 4-digit NAICS codes were weighted by fraction of 6-digit NAICS codes in the 4-digit NAICS code. Then this fraction was multiplied by the number of employees in each 4-digit NAICS code (using LODES data). Then proportion of essential workers in each 2-digit NAICS code was calculated by dividing number of essential employees in each 4-digit NAICS code by the number of total employees.  
+
+Method 2: Only 2-digit NAICS codes with >= 50% of the 6-digit sub-codes were marked as essential.
+
+## Social Distancing Data 
+The data used for social distancing compliance comes from Safegraph’s social distancing dataset. In particular, we used the data on devices “completely at home,” which Safegraph defines as not having left their usual nighttime location (see documentation here https://docs.safegraph.com/docs/social-distancing-metrics). For each census block group in San Jose, we calculated the average percent of devices completely at home on weekdays since the start of the Bay Area shelter-in-place order ( SDFINSDFJDSNF 2020), as well as the percent of devices completely at home on weekdays during the months of January and February 2020, prior to the shelter-in-place order and widespread COVID-19 concerns. From these results, we obtain the percent of devices leaving home during these time periods.
+
+In this correlations analysis, we assess social distancing compliance in two ways: directly using the percent of devices leaving home (raw movement metric) and using the increase in percent of devices staying completely at home after the shelter-in-place order relative to prior to the order (stay-at-home increase metric). 
+
+We examine correlations between essential businessses boof social distancing and various demographic variables, including income, age distribution, language ability, race, ethnicity, education level, vehicle ownership, occupants per room in a household, percent of workers who are male, and high speed internet access.
+
+##Key results
+Here we display the most significant results that we obtained, focusing on variables with the relatively strongest correlations with social distancing behavior. We present plots showing the correlations between social distancing compliance and individual demographic variables for a few key variables, and provide the multiple regression analyses that we found to offer the most insight into the data.
+
+#Load Data
+Load San Jose blockgroup data
+```{r}
+# get San Jose block groups
+scc_blockgroups <- block_groups("CA","Santa Clara", cb=F, progress_bar=F)
+# Use tracts sent to us by San Jose
+sj_tracts <- st_read("/Users/spencerrobinson/pCloud Drive/SFBI/Data Library/San_Jose/CSJ_Census_Tracts/CSJ_Census_Tracts.shp") %>%
+  st_as_sf() %>%
+  st_transform(st_crs(scc_blockgroups))
+
+sj_citycouncil_disticts <- st_read("/Users/spencerrobinson/pCloud Drive/SFBI/Data Library/San_Jose/City Council Districts/CITY_COUNCIL_DISTRICTS.shp") %>%
+  st_as_sf() %>%
+  st_transform(st_crs(scc_blockgroups))
+
+# from code written by others to get SJ blockgroups
+sj_blockgroups <-
+  scc_blockgroups %>%
+  st_centroid() %>%
+  st_join(sj_tracts, left = F) %>%
+  st_join(sj_citycouncil_disticts%>% dplyr::select(DISTRICTS)) %>%
+  mutate(
+    DISTRICTS = DISTRICTS %>% factor(levels = c("1","2","3","4","5","6","7","8","9","10"))
+  ) %>%
+  st_set_geometry(NULL) %>%
+  left_join(scc_blockgroups%>% dplyr::select(GEOID), by = "GEOID") %>%
+  st_as_sf() %>%
+  dplyr::select(GEOID, DISTRICTS)
+
+# the spatial join leaves off two blockgroups which are touching district 9. The following code assigns those to district 9
+sj_blockgroups$DISTRICTS[is.na(sj_blockgroups$DISTRICTS)] <- 9
+```
+Load Social Distancing Data
+```{r}
+# code from others in the class to get social distancing data 
+data_dir <- "/Users/spencerrobinson/"
+sj_socialdistancing <- readRDS(file = str_c(data_dir,"pCloud Drive/SFBI/Restricted Data Library/Safegraph/covid19analysis/sj_socialdistancing.rds")) %>% 
+  mutate(date = date_range_start %>%  substr(1,10) %>% as.Date()) %>% 
+  left_join(sj_blockgroups, by = c("origin_census_block_group" = "GEOID")) %>% 
+  filter(!is.na(DISTRICTS))
+```
+
+Load Essential Business Data Method 1 and Method 2
+```{r}
+data_dir <- "/Users/spencerrobinson/Documents/covid19/Spencer_Robinson/"
+essential_workers_method1 <- readRDS(str_c(data_dir,"essential_workers_method1.rds"))
+essential_workers_method2 <- readRDS(str_c(data_dir,"essential_workers_method2.rds"))
+```
+
+Join Shelter and Place Data with Essential Business Data
+```{r}
+shelter_start <- "2020-03-16" %>% as.Date()
+
+block_group_data <- sj_socialdistancing %>% 
+  filter(date > shelter_start) %>%
+  group_by(origin_census_block_group, ) %>% 
+  summarize(
+    completely_home_device_count = sum(completely_home_device_count),
+    device_count = sum(device_count)) %>% 
+  mutate(`% Completely at Home` = (completely_home_device_count/device_count*100) %>% round(1), 
+         `% not completely at home` = (100 - `% Completely at Home`)) %>%  right_join(essential_workers_method1, by = c("origin_census_block_group" = "h_bg")) %>% 
+  right_join(essential_workers_method2, by = c("origin_census_block_group" = "h_bg"))
+
+block_group_data
+```
+Visualize Predictive Power of Each Method Data
+Method 1
+```{r}
+block_group_data %>%
+  ggplot(aes(
+    x = `fracMethod1`,
+    y = `% Completely at Home`
+  )) + 
+  geom_point() + 
+  geom_smooth(method=lm) + 
+  labs(
+    x = "% of Essential Workers (Method 1)",
+    y = "Percent devices completely at home in past 2 days",
+    title = "San Jose: Social Distancing and Essential Worker % - Method 1"
+  )
+method1_model <-block_group_data %>% 
+  lm(`% not completely at home` ~ `fracMethod1`, data = .) %>% 
+  summary()
+method1_model
+```
+
+Method 2
+```{r}
+block_group_data %>%
+  ggplot(aes(
+    x = `fracMethod2`,
+    y = `% Completely at Home`
+  )) + 
+  geom_point() + 
+  geom_smooth(method=lm) + 
+  labs(
+    x = "% of Essential Workers (Method 2)",
+    y = "Percent devices completely at home in past 2 days",
+    title = "San Jose: Social Distancing and Essential Worker % - Method 2"
+  )
+method2_model <-block_group_data %>% 
+  lm(`% not completely at home` ~ `fracMethod2`, data = .) %>% 
+  summary()
+method2_model
+```
