@@ -168,7 +168,7 @@ pop <- function(dataset){
       dataset$city,", ",
       dataset$state," ",
       dataset$zip,
-      "<br><br><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/pin.png' height='12'>
+      "<br><br><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/pin.png' height='12' width='12'>
       <a href='https://www.google.com/maps/dir/?api=1&destination=",
       dataset$lat,",",
       dataset$long,"' target='_blank'>Directions To Here</a>",
