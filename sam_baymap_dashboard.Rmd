@@ -40,6 +40,7 @@ library(colorspace)
 library(ggplot2)
 library(reshape2)
 library(formattable)
+library(plotly)
 
 Sys.setenv(CENSUS_KEY="c8aa67e4086b4b5ce3a8717f59faa9a28f611dab")
 github_directory <- "https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/"
@@ -489,6 +490,13 @@ mpi
 # 
 # saveRDS(spending_MCC_1920,"baymap/spending_MCC_1920.rds")
 
+mcc_codes <- 
+  read_csv("https://raw.githubusercontent.com/greggles/mcc-codes/master/mcc_codes.csv") %>% 
+  dplyr::select(
+    MCC = mcc,
+    label = edited_description
+  )
+
 spending_MCC_1920 <- readRDS("baymap/spending_MCC_1920.rds")
 
 plot_month <- function(m,abbr) {
@@ -499,54 +507,55 @@ plot_month <- function(m,abbr) {
   spend1920 <-
     spending_MCC_1920 %>%
     filter(month==m,year=="2019") %>%
-    right_join(spend20,by=c("MCC","month")) %>%
-    filter(!is.na(transactions.x) & !is.na(transactions.y) & !is.na(year.x) & !is.na(year.y))
+    right_join(spend20,by=c("MCC","month"),suffix=c("_2019","_2020")) %>%
+    filter(!is.na(transactions_2019) & !is.na(transactions_2020) & !is.na(year_2019) & !is.na(year_2020))
 
   spend1920 <-
-    spend1920[order(spend1920$transactions.y),]
+    spend1920[order(spend1920$transactions_2020),]
 
   spend1920 <-
     spend1920 %>%
-    tail(10)
+    tail(10) %>% 
+    left_join(mcc_codes,by=("MCC")) %>% 
+    dplyr::select(-MCC) %>% 
+    dplyr::select(year_2019,year_2020,transactions_2019,transactions_2020,label)
+  
+  spend1920 <- spend1920[c("label", "year_2019", "year_2020", "transactions_2019", "transactions_2020")]
 
   spend20 <-
-    spend1920[c(2,3,8:12)]
-
-  spend20 <-
-    spend20 %>%
-    dplyr::select(MCC,month,year.y,transactions.y) %>%
-    dplyr::rename("year" = "year.y","transactions"="transactions.y")
+    spend1920 %>% 
+    dplyr::select(year_2020,transactions_2020,label) %>% 
+    dplyr::rename("year" = "year_2020","transactions"="transactions_2020")
 
   spend19 <-
-    spend1920[c(1:7)]
-
-  spend19 <-
-    spend19 %>%
-    dplyr::select(MCC,month,year.x,transactions.x) %>%
-    dplyr::rename("year" = "year.x","transactions"="transactions.x")
+    spend1920 %>% 
+    dplyr::select(year_2019,transactions_2019,label) %>% 
+    dplyr::rename("year" = "year_2019","transactions"="transactions_2019")
 
   spend1920_plt <-
     spend19 %>%
-    full_join(spend20)
-
-  view(spend1920_plt)
+    full_join(spend20) %>% 
+    ungroup()
   
-  plt <- print(
-    ggplot(spend1920_plt,aes(x=transactions,y=MCC,fill=year,group=year)) +
+  plt <- 
+    ggplot(spend1920_plt,aes(x=label,y=transactions,fill=year,group=year)) +
     scale_fill_brewer(palette="Paired") +
     geom_bar(stat="identity",position=position_dodge()) +
+    coord_flip() +
     ggtitle(paste0("Distribution of Spendings by MCC - ",abbr)) +
     theme_minimal() +
     theme(axis.text.x =element_blank())
-  )
+
+  # plt <-
+  #   plt %>%
+  #   ggplotly() %>%
+  #   config(displayModeBar = F)
 
   spend1920_tbl <-
     spend1920 %>%
-    dplyr::select(MCC,month,transactions.x,transactions.y) %>%
-    dplyr::rename("2019 Transactions" = "transactions.x","2020 Transactions"="transactions.y")
-
-  spend1920_tbl <-
-    spend1920_tbl[-c(1,3)]
+    dplyr::select(label, transactions_2019,transactions_2020) %>%
+    dplyr::rename("2019 Transactions" = "transactions_2019","2020 Transactions"="transactions_2020","MCC Description"="label") %>% 
+    formattable(align = c("l", rep("c", NCOL(spend1920) - 1)))
 
   values <- list("plt" = plt,"tbl" = spend1920_tbl)
 
@@ -554,15 +563,19 @@ plot_month <- function(m,abbr) {
 }
 
 jan <- plot_month("01","Jan")
+jan$plt
 jan$tbl
 
 feb <- plot_month("02","Feb")
+feb$plt
 feb$tbl
 
 mar <- plot_month("03","Mar")
+mar$plt
 mar$tbl
 
 apr <- plot_month("04","Apr")
+apr$plt
 apr$tbl
 
 ```
@@ -625,25 +638,53 @@ wplt <- print(
 # spending impacts due to covid (line graphs by MCC)
 # spending_grocers <-
 #   spending_MCC %>%
-#   filter(MCC=="5411") %>%
-#   mutate(month = paste0(substr(date,1,4),"-",substr(date,6,7))) %>%
-#   group_by(month) %>%
+#   filter(MCC=="5411")
+#   mutate(month = substr(date,6,7)) %>%
+#   mutate(year = substr(date,1,4)) %>% 
+#   mutate(day = substr(date,9,10)) %>% 
+#   filter(month %in% c("01","02","03","04") & year %in% c("2019", "2020")) %>% 
+#   group_by(year,month, day) %>%
 #   summarize(
 #     mean=mean(as.numeric(total_spent)),
 #     sum=sum(as.numeric(total_spent)),
 #     avg_transactions=mean(as.numeric(transaction_counts)),
-#     transactions=sum(as.numeric(transaction_counts))) %>%
-#   tail(13)
-#
-# saveRDS(spending_grocers,"baymap/spending_grocers.rds")
+#     transactions=sum(as.numeric(transaction_counts)))
+# 
+# saveRDS(spending_grocers,"baymap/spending_grocers_daily.rds")
 
-spending_grocers <- readRDS("baymap/spending_grocers.rds")
+spending_grocers <- readRDS("baymap/spending_grocers_daily.rds")
 
-gplt <- print(
-  ggplot(spending_grocers,aes(x=month,y=avg_transactions,group=1)) +
-  geom_line(size=1.5,color = "steelblue") +
-  labs(y= "Transactions", x = "Year-Month")
-)
+plot_grocers <- function(m) {
+  grocers <- 
+    spending_grocers %>% 
+    filter(month==m) %>% 
+    ungroup()
+  gplt <- 
+    ggplot(grocers,aes(x=day,y=avg_transactions,color=year,group=year)) +
+    geom_line(size=1.5) +
+    scale_color_brewer(palette = "Paired") +
+    labs(y= "Transactions", x = "Day") +
+    theme_minimal()
+  
+  gplt <-   
+    gplt %>%
+    ggplotly() %>%
+    config(displayModeBar = F)
+  
+  return(gplt)
+}
+
+jan_grocers <- plot_grocers("01")
+jan_grocers
+
+feb_grocers <- plot_grocers("02")
+feb_grocers
+
+mar_grocers <- plot_grocers("03")
+mar_grocers
+
+apr_grocers <- plot_grocers("04")
+apr_grocers
 
 ```
 
