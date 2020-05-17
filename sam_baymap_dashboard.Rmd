@@ -588,17 +588,17 @@ apr$tbl
 #   transactions_ratio >> on a given day, ___ times more people shop instores rather than online (2 line graph showing the trend before and after covid and online vs instore trends)
 # walmart_instore_sum <-
 #   walmart_instore %>%
-#   mutate(month = paste0(substr(date,1,4),"-",substr(date,6,7))) %>%
+#   mutate(month = substr(date,1,7)) %>%
 #   group_by(month) %>%
 #   summarize(
 #     mean=mean(as.numeric(total_spent)),
 #     sum=sum(as.numeric(total_spent)),
 #     avg_transactions=mean(as.numeric(transaction_counts)),
 #     transactions=sum(as.numeric(transaction_counts)))
-#
+# 
 # walmart_sum <-
 #   walmart_online %>%
-#   mutate(month = paste0(substr(date,1,4),"-",substr(date,6,7)))%>%
+#   mutate(month = substr(date,1,7)) %>%
 #   group_by(month) %>%
 #   summarize(
 #     mean=mean(as.numeric(total_spent)),
@@ -606,7 +606,7 @@ apr$tbl
 #     avg_transactions=mean(as.numeric(transaction_counts)),
 #     transactions=sum(as.numeric(transaction_counts))) %>%
 #   left_join(walmart_instore_sum,by="month",suffix=c("_online","_instore"))
-#
+# 
 # walmart_melt <-
 #   walmart_sum %>%
 #   tail(13) %>%
@@ -614,18 +614,62 @@ apr$tbl
 #   mutate(transactions_ratio_online=(avg_transactions_online)/(sum(walmart_sum[, 'avg_transactions_online']))) %>%
 #   dplyr::select(month,transactions_ratio_instore,transactions_ratio_online) %>%
 #   melt(id=c("month"))
-#
-# saveRDS(walmart_melt,"walmart_transactions.rds")
+# 
+# saveRDS(walmart_melt,"baymap/walmart_transactions.rds")
 
 walmart_melt <- readRDS("baymap/walmart_transactions.rds")
 
-wplt <- print(
+wplt <- 
   ggplot(walmart_melt,aes(x=month,y=value,color=variable,group=variable)) +
   geom_line(size=1.5) +
-  labs(y= "Transactions Ratio", x = "Year-Month", color="Legend") +
+  labs(y= "Transactions Ratio", x = "Date", color="Legend") +
   theme(axis.text.y =element_blank(),
         axis.ticks.y=element_blank())
-)
+
+wplt
+  
+
+# instore1920 <-
+#   walmart_instore %>%
+#   mutate(year = substr(date,1,4)) %>%
+#   mutate(month = substr(date,6,7)) %>% 
+#   mutate(day = substr(date,9,10)) %>%
+#   mutate(month_day = substr(date,6,10) %>% as.Date("%m-%d")) %>%
+#   filter(month %in% c("01","02","03","04") & year %in% c("2019","2020")) %>%
+#   group_by(year,month_day) %>% 
+#   summarize(
+#     avg_transactions=mean(as.numeric(transaction_counts))) %>%
+#   spread(year,avg_transactions) %>% 
+#   mutate(transactions_ratio=`2020`/`2019`)
+# 
+# instore_online_1920 <- 
+#   walmart_online %>%
+#   mutate(year = substr(date,1,4)) %>%
+#   mutate(month = substr(date,6,7)) %>% 
+#   mutate(day = substr(date,9,10)) %>%
+#   mutate(month_day = substr(date,6,10) %>% as.Date("%m-%d")) %>%
+#   filter(month %in% c("01","02","03","04") & year %in% c("2019","2020")) %>%
+#   group_by(year,month_day) %>% 
+#   summarize(
+#     avg_transactions=mean(as.numeric(transaction_counts))) %>%
+#   spread(year,avg_transactions) %>% 
+#   mutate(transactions_ratio=`2020`/`2019`) %>% 
+#   left_join(instore1920,suffix=c("_online","_instore"),by=c("month_day")) %>% 
+#   dplyr::select(month_day,transactions_ratio_online,transactions_ratio_instore) %>% 
+#   melt(id=c("month_day")) %>% 
+#   arrange(month_day) %>% 
+#   na.omit()
+# 
+# saveRDS(instore_online_1920,"baymap/instore_online_1920.rds")
+
+instore_online_1920 <- readRDS("baymap/instore_online_1920.rds")
+  
+ioplt <- 
+  ggplot(instore_online_1920,aes(x=month_day,y=value,color=variable,group=1)) +
+  geom_line(size=1) +
+  labs(y= "Transactions Ratio", x = "Month-Day", color="Legend")
+
+ioplt %>% ggplotly()
 
 ```
 
