@@ -13,7 +13,7 @@ editor_options:
 
 # Initial Set Up Steps
 ```{r include=FALSE} 
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,fig.align = "center")
 library(knitr)
 ```
 
@@ -257,7 +257,6 @@ mpc <- leaflet() %>%
     addCircleMarkers(
       lng = retailers$long,
       lat = retailers$lat,
-      clusterOptions = cluster,
       color = retail.col(retailers$type),
       radius = 5,
       popup = pop(retailers)
@@ -464,7 +463,7 @@ mpi
 
 ## Question: ask derek how to normalize based on sample size/population
 ## Side Project: how to cumulate zipcodes by county
-## Next Steps: overlay with snap users zipcode data, normalize walmart analysis data correctly, put bar charts on shiny (UIoutput) - be able to have two side-by-side comparison
+## Next Steps: overlay with snap users zipcode data, put bar charts on shiny (UIoutput) - be able to have two side-by-side comparison
 
 # spending distribution of products (bar charts)
 # spending_MCC_sum <-
@@ -667,7 +666,7 @@ instore_online_1920 <- readRDS("baymap/instore_online_1920.rds")
 ioplt <- 
   ggplot(instore_online_1920,aes(x=month_day,y=value,color=variable,group=1)) +
   geom_line(size=1) +
-  labs(y= "Transactions Ratio", x = "Month-Day", color="Legend")
+  labs(y= "Transactions Ratio", x = "Date", color="Legend")
 
 ioplt %>% ggplotly()
 
