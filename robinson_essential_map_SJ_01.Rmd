@@ -13,7 +13,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 library(knitr)
-opts_chunk$set(echo = TRUE, warning = F, message = F)
+opts_chunk$set(echo = FALSE, warning = F, message = F)
 ```
 
 ``` {r}
@@ -146,6 +146,7 @@ arrange(qwi, desc(EmpS))
 Get Essential Deisgnations 
 ```{r}
 #Here I will use the Vulnerability Team's California Essential Business NAICS code list according to California State Public Health Officer's Report 
+
 dir <- "/Users/spencerrobinson/pCloud Drive/SFBI/Data Library"
 CA_essential <- read_csv(file.path(dir,'Essential Designations/ca_essential_designations.csv'))
 CA_essential<- CA_essential %>%
@@ -178,8 +179,50 @@ CA_essential_weighted_grouped_ca1<- CA_essential %>%
   summarise(EmpS = sum(EmpS), essEmps = sum(essEmps)) %>% 
   mutate(fracEssential_2dig = essEmps/EmpS) %>% 
   mutate(df = "CA1")
-
 ```
+
+Visualize the number of workers in each 2-digit NAICS code
+```{r}
+
+visuzlize_4_dig_naics <- CA_essential %>% 
+  mutate(NAICS_4_dig = str_sub(NAICS, 1,4)) %>%
+  group_by(NAICS_4_dig, `CA Essential`) %>% 
+  summarize(count = n()) %>% 
+  ungroup() %>% 
+  spread(`CA Essential`,count) %>% 
+  mutate(`FALSE` = replace_na(`FALSE`, 0), `TRUE` = replace_na(`TRUE`, 0)) %>% 
+  rename(c("essential" = "TRUE", "nonessential" = "FALSE")) %>% 
+  mutate(totalCount = essential + nonessential, fracEssential_4dig = essential / totalCount) %>% #FractionA 
+  full_join(qwi_scc, by = c('NAICS_4_dig' = 'industry')) %>% # Bring in QWI data with number of workers 4digit NAICS
+  mutate(EmpS = replace_na(EmpS,0)) %>% # assume if not listed it is not essential, and if no employees listed that the number is zero
+  mutate(fracEssential_4dig =replace(fracEssential_4dig, NAICS_4_dig== "8141", 0), EmpS = replace(EmpS, NAICS_4_dig == "8141",0)) %>%   #Manually assign NAICS code 8141 as nonessential 
+  mutate(essEmpS = EmpS*fracEssential_4dig) %>% 
+  arrange(desc(essEmpS)) %>%
+    slice(1:30) %>% 
+    ggplot(aes(x = reorder(NAICS_4_dig, -essEmpS), y = essEmpS))+
+  geom_bar(stat = "identity")+
+  ggtitle(" Number of Essential Workers by 4digit NAICS code")+
+  theme_fivethirtyeight()+
+  theme(
+    plot.title = element_text(size=14, face="bold.italic"),
+    axis.text.x =  element_text(angle = 90, size=14),
+    axis.title.y = element_text(size=14)
+  )
+visuzlize_4_dig_naics
+
+visualize_2_dig_naics <- ggplot(data = CA_essential_weighted_grouped_ca1, aes(x = reorder(LODES_variable, -EmpS), y = EmpS))+
+  geom_bar(stat = "identity")+
+  ggtitle(" Number of Workers by 2-digit NAICS code")+
+  theme_fivethirtyeight()+
+  theme(
+    plot.title = element_text(size=14, face="bold.italic"),
+    axis.text.x =  element_text(angle = 90, size=14),
+    axis.title.y = element_text(size=14)
+  )
+visualize_2_dig_naics
+```
+
+
 
 Simone's Method 1 with DE Essential Business Data: Use the QWI data to find the distribution of workers in NAICS 4-digit codes in Santa Clara County, and use this to weight the contributions to each 2-digit code. Note that this method disregards information about 6 digit codes within the 4 digit code that differ from the broader 4 digit code; this could be adjusted, but without data on the distribution of 6 digit within 4 digit I thought it was best to leave out.
 ```{r}
@@ -244,9 +287,15 @@ essential_workers_visualize <- ggplot(data = sj_rac_essential_ca1, aes(x = fracE
   geom_histogram()+
   labs(y = "Number of Block Groups", x = "% Essential Workers")+
   ggtitle("Distribution of Block Group Essential Worker Data Method 1")
- 
+
 essential_workers_visualize
 ```
+
+Visualization of Essential Workers by Industry
+```{r}
+
+```
+
 
 Map of method 1 using California Essential Business Designations
 ```{r}
@@ -332,6 +381,20 @@ CA_essential <- ggplot(CA_essential_grouped, aes(fracEssential))+
 CA_essential_grouped <- CA_essential_grouped %>% mutate(binaryEssential = fracEssential >= 0.5) # 0.5 used because of low fracEssential values for most NAICS codes
 ```
 
+Visualize Essential v Non-Essential 2-digit NAICS codes
+```{r}
+visualize_essential_workers <- ggplot(data = CA_essential_grouped, aes(x = LODES_variable, y = fracEssential, fill = binaryEssential))+
+  geom_bar(stat = "identity")+
+  ggtitle(" Essential Workers by 2-digit NAICS code")+
+  theme_fivethirtyeight()+
+  theme(
+    plot.title = element_text(size=14, face="bold.italic"),
+    axis.text.x =  element_text(angle = 90, size=14),
+    axis.title.y = element_text(size=14)
+  )
+visualize_essential_workers
+```
+
 ```{r}
 # get essential breakdown in San Jose - CA designations
 sj_rac_essential_grouped <- sj_rac %>% gather("Category", "Number", CNS01:CNS20) %>%
@@ -349,7 +412,7 @@ essential_workers_visualize <- ggplot(data = sj_rac_essential_grouped, aes(x = f
   geom_histogram()+
   labs(y = "Number of Block Groups", x = "% Essential Workers")+
   ggtitle("Distribution of Block Group Essential Worker Data Method 2 ")
- 
+
 essential_workers_visualize
 ```
 

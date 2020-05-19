@@ -8,7 +8,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r}
@@ -88,15 +88,74 @@ sj_socialdistancing <- readRDS(file = str_c(data_dir,"pCloud Drive/SFBI/Restrict
   left_join(sj_blockgroups, by = c("origin_census_block_group" = "GEOID")) %>% 
   filter(!is.na(DISTRICTS))
 ```
-
 Load Essential Business Data Method 1 and Method 2
 ```{r}
 data_dir <- "/Users/spencerrobinson/Documents/covid19/Spencer_Robinson/"
 essential_workers_method1 <- readRDS(str_c(data_dir,"essential_workers_method1.rds"))
 essential_workers_method2 <- readRDS(str_c(data_dir,"essential_workers_method2.rds"))
 ```
+Load Income Data
+```{r}
+sj_median_income_by_block <-
+  getCensus(
+    name = "acs/acs5",
+    vintage = 2018,
+    region = "block group:*", 
+    regionin = "state:06+county:085",
+    vars = "B19013_001E"
+  ) %>%
+  mutate(
+    blockgroup =
+      paste0(state,county,tract,block_group)
+  ) %>% 
+  select_if(!names(.) %in% c("GEO_ID","state","county","tract","block_group","NAME")) %>% 
+  rename(
+    Median_Income = B19013_001E 
+  ) %>% 
+  filter(!is.na(Median_Income)) %>% 
+  left_join(sj_blockgroups, by = c("blockgroup" = "GEOID")) %>% #this code gives each blockgroup a district designation
+  filter(
+    !is.na(DISTRICTS)
+  ) %>% 
+  select("Median_Income","blockgroup")
+```
 
-Join Shelter and Place Data with Essential Business Data
+Load Age Data
+```{r}
+sj_age_by_block <- getCensus(
+    name = "acs/acs5",
+    vintage = 2018,
+    region = "block group:*", 
+    regionin = "state:06+county:085",
+    vars = "group(B01001)"
+  ) %>% 
+  mutate(
+    blockgroup =
+      paste0(state,county,tract,block_group)
+  ) %>% 
+  select_if(!names(.) %in% c("GEO_ID","state","county","tract","block_group","NAME")) %>% 
+  select(-c(contains("EA"),contains("MA"),contains("M"))) %>% 
+  gather(
+    key = "variable",
+    value = "estimate", 
+    - blockgroup
+  ) %>% 
+  mutate(
+    label = acs_vars$label[match(variable,acs_vars$name)]
+  ) %>% 
+  select(-variable) %>% 
+  separate(
+    label,
+    into = c(NA,NA,"sex","age"),
+    sep = "!!"
+  ) %>% filter(!is.na(age)) %>% 
+  mutate(elderly = ifelse(age %in% c("65 and 66 years", "67 to 69 years", "70 to 74 years", "75 to 79 years", "80 to 84 years", "85 years and over"), estimate, NA), `less than 30` = ifelse(age %in% c("Under 5 years", "5 to 9 years", "10 to 14 years", "15 to 17 years", "18 and 19 years", "20 years", "21 years", "22 to 24 years", "25 to 29 years"), estimate, NA)) %>% 
+  group_by(blockgroup) %>% 
+  summarize(elderly = sum(elderly, na.rm = T), `less than 30` = sum(`less than 30`, na.rm = T), total = sum(estimate, na.rm = T)) %>% 
+  mutate(`percent elderly` = elderly*100 / total, `percent less than 30` = `less than 30`*100 / total)
+```
+
+Join Shelter in Place Data with Essential Business Data and Income Data
 ```{r}
 shelter_start <- "2020-03-16" %>% as.Date()
 
@@ -107,13 +166,14 @@ block_group_data <- sj_socialdistancing %>%
     completely_home_device_count = sum(completely_home_device_count),
     device_count = sum(device_count)) %>% 
   mutate(`% Completely at Home` = (completely_home_device_count/device_count*100) %>% round(1), 
-         `% not completely at home` = (100 - `% Completely at Home`)) %>%  right_join(essential_workers_method1, by = c("origin_census_block_group" = "h_bg")) %>% 
-  right_join(essential_workers_method2, by = c("origin_census_block_group" = "h_bg"))
+         `% not completely at home` = (100 - `% Completely at Home`)) %>%  right_join(essential_workers_method1, by = c("origin_census_block_group" = "h_bg")) %>% #See robinson_essential_map_SJ_01
+  right_join(essential_workers_method2, by = c("origin_census_block_group" = "h_bg")) %>% #See robinson_essential_map_SJ_01
+  right_join(sj_median_income_by_block, by = c("origin_census_block_group" = "blockgroup"))
 
-block_group_data
 ```
-Visualize Predictive Power of Each Method Data
-Method 1
+
+#Correlation of Shelter in Place % with Esential Worker Data
+Using Method 1
 ```{r}
 block_group_data %>%
   ggplot(aes(
@@ -124,7 +184,7 @@ block_group_data %>%
   geom_smooth(method=lm) + 
   labs(
     x = "% of Essential Workers (Method 1)",
-    y = "Percent devices completely at home in past 2 days",
+    y = "Percent devices completely at home since Shelter in place",
     title = "San Jose: Social Distancing and Essential Worker % - Method 1"
   )
 method1_model <-block_group_data %>% 
@@ -133,7 +193,7 @@ method1_model <-block_group_data %>%
 method1_model
 ```
 
-Method 2
+Method 2 is Most Predictive
 ```{r}
 block_group_data %>%
   ggplot(aes(
@@ -152,3 +212,33 @@ method2_model <-block_group_data %>%
   summary()
 method2_model
 ```
+
+#Correlation of Income with Esential Worker Data
+Using Method 2 
+```{r}
+block_group_data %>%
+  ggplot(aes(
+    x = `Median_Income`
+  ))+geom_histogram(binwidth = 1000)
+  
+block_group_data %>% 
+  filter(Median_Income >= 0) %>%  #Filter out erroneous negative income values
+  arrange(Median_Income) %>%
+  ggplot(aes(
+    x = `fracMethod2`,
+    y = `Median_Income`
+  )) + 
+  geom_point() + 
+  geom_smooth(method=lm) + 
+  labs(
+    x = "% of Essential Workers (Method 2)",
+    y = "Median Income",
+    title = "San Jose: Median Income and Essential Worker % - Method 2"
+  )
+
+method2_model <-block_group_data %>% 
+  lm(`% not completely at home` ~ `Median_Income`, data = .) %>% 
+  summary()
+method2_model
+```
+
