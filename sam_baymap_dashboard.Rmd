@@ -1,0 +1,1055 @@
+---
+title: "SNAP Dashboard"
+author: "Samantha Liu"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: false
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+# Initial Set Up Steps
+```{r include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,fig.align = "center")
+library(knitr)
+```
+
+```{r setup}
+
+library(shinydashboard)
+library(tidyverse)
+library(leaflet)
+library(shiny)
+library(sf)
+library(htmlwidgets)
+library(googlesheets4)
+library(RColorBrewer)
+library(lubridate)
+library(purrr)
+
+library(censusapi)
+library(rgeos)
+library(tidycensus)
+library(tigris)
+library(usmap)
+
+library(colorspace)
+library(ggplot2)
+library(reshape2)
+library(formattable)
+library(plotly)
+
+Sys.setenv(CENSUS_KEY="c8aa67e4086b4b5ce3a8717f59faa9a28f611dab")
+github_directory <- "https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/"
+github_rds <- "https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/data/"
+
+options(
+  tigris_class = "sf",
+  tigris_use_cache = TRUE
+)
+
+mapbox_sat <- "https://api.mapbox.com/styles/v1/samanyl/ck9hpl0sm0fuq1ip8yfb2yrn8/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2FtYW55bCIsImEiOiJjazlocGNvYWgxMHhxM2Rud2pxdzVnMnp2In0.D_j3K9tXiEddHH-8UUkeZQ"
+mapbox_satAtt <- "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> Satellite Map"
+
+bay_county_names <-
+  c(
+    "Alameda",
+    "Contra Costa",
+    "Marin",
+    "Napa",
+    "San Francisco",
+    "San Mateo",
+    "Santa Clara",
+    "Solano",
+    "Sonoma"
+  )
+
+bay_counties <- readRDS(gzcon(url(paste0(github_rds,"bay_counties.rds?raw=true"))))
+
+setwd("C:/Users/liusa/github/covid19/snap project/sam")
+
+
+# bay_counties <-
+#   counties("CA", cb = F, progress_bar=F) %>%
+#   filter(NAME %in% bay_county_names)
+#
+# zctas <-
+#   zctas(cb=F)
+#
+# bay_zctas <-
+#   zctas %>%
+#   dplyr::select(ZCTA5CE10) %>%
+#   st_join(bay_counties %>% dplyr::select(geometry),left=F)
+#
+# saveRDS(bay_zctas, file = "bay_zctas.rds")
+
+```
+
+```{r setup-leaflet-snap}
+
+sheets_deauth()
+
+retailers <-
+  read_sheet("1tvMBCWNeh7kyyKklntmWfV1zNJx8bN-KxHIYmaULZxg")
+
+retailers$long <- as.numeric(retailers$long)
+retailers$lat <- as.numeric(retailers$lat)
+
+snap <- retailers %>% filter(type == "SNAP_accepting_retailer")
+wic <- retailers %>% filter(type == "WIC_only_store")
+snap_wic <- retailers %>% filter(type == "WIC_SNAP_retailer")
+snap_restaurant <- retailers %>% filter(type=="SNAP_restaurant")
+snap_farmers <- retailers %>% filter(type=="SNAP_farmers_market")
+
+snap_curbside <- snap %>% filter(!is.na(curbside_pickup))
+wic_curbside <- wic %>% filter(!is.na(curbside_pickup))
+snapwic_curbside <- snap_wic %>% filter(!is.na(curbside_pickup))
+snaprest_curbside <- snap_restaurant %>% filter(!is.na(curbside_pickup))
+snapfarm_curbside <- snap_farmers %>% filter(!is.na(curbside_pickup))
+
+snap_delivery <- snap %>% filter(!is.na(delivery))
+wic_delivery <- wic %>% filter(!is.na(delivery))
+snapwic_delivery <- snap_wic %>% filter(!is.na(delivery))
+snaprest_delivery <- snap_restaurant %>% filter(!is.na(delivery))
+snapfarm_delivery <- snap_farmers %>% filter(!is.na(delivery))
+
+snap_senior <- snap %>% filter(!is.na(senior_hours))
+wic_senior <- wic %>% filter(!is.na(senior_hours))
+snapwic_senior <- snap_wic %>% filter(!is.na(senior_hours))
+snaprest_senior <- snap_restaurant %>% filter(!is.na(senior_hours))
+snapfarm_senior <- snap_farmers %>% filter(!is.na(senior_hours))
+
+snapIcon <- makeIcon(
+  iconUrl = "baymap/bag.png",
+  iconWidth=25,iconHeight=25)
+
+wicIcon <- makeIcon(
+  iconUrl = "baymap/love.png",
+  iconWidth=30,iconHeight=30)
+
+snapwicIcon <- makeIcon(
+  iconUrl = "baymap/snapwic.png",
+  iconWidth=30,iconHeight=30)
+
+snaprestIcon <- makeIcon(
+  iconUrl = "baymap/cutlery.png",
+  iconWidth=25,iconHeight=25)
+
+snapfarmIcon <- makeIcon(
+  iconUrl = "baymap/chicken.png",
+  iconWidth=25,iconHeight=25)
+
+homeIcon <- makeIcon(
+  iconUrl = "baymap/internet.png",
+  iconWidth=25,iconHeight=25)
+
+html_legend <- "<img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/bag.png' height='30' width='30'> SNAP Only Retailers<br/><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/love.png' height='30' width='30'> WIC Only Retailers<br/><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/snapwic.png' height='30' width='30'> SNAP and WIC Accepting Retailers<br/><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/money.png' height='30' width='30'> Cash EBT Withdrawal Locations<br/><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/cutlery.png' height='30' width='30'> SNAP Accepting Restaurants<br/><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/chicken.png' height='30' width='30'> SNAP Accepting Farmers Markets"
+
+cluster <-
+  markerClusterOptions(
+    showCoverageOnHover=F,
+    spiderfyOnMaxZoom=F,
+    disableClusteringAtZoom=14
+    )
+
+# time format --> format(dataset$____, %I:%M%p)
+
+pop <- function(dataset){
+  result <-
+    paste0(
+      ifelse(
+        is.na(dataset$web_link),
+        paste0("<strong>",dataset$site_name,"</strong><br>"),
+        paste0("<a href='",dataset$web_link,"' target='_blank'><strong>",dataset$site_name,"</strong></a><br>")
+      ),
+      dataset$address, "<br>",
+      dataset$city,", ",
+      dataset$state," ",
+      dataset$zip,
+      "<br><br><img src='https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/data/pin.png' height='12' width='12'>
+      <a href='https://www.google.com/maps/dir/?api=1&destination=",
+      dataset$lat,",",
+      dataset$long,"' target='_blank'>Directions To Here</a>",
+      '<br><br><strong>Hours of Operation: </strong><br>',
+      dataset$days_hours_line1,
+      ifelse(
+        is.na(dataset$days_hours_line2),
+        "",
+        paste0("<br>",dataset$days_hours_line2)
+      ),
+      ifelse(
+        is.na(dataset$days_hours_line3),
+        "",
+        paste0("<br>",dataset$days_hours_line3)
+      ),
+      ifelse(
+        is.na(dataset$days_hours_line4),
+        "",
+        paste0("<br>",dataset$days_hours_line4)
+      ),
+      "<br><br><strong>Contact Information:</strong><br>",
+      ifelse(
+        is.na(dataset$facebook),
+        "",
+        paste0("<a href='",dataset$facebook,"' target='_blank'>Facebook</a><br>")
+      ),
+      dataset$phone,"<br>",
+      ifelse(
+        is.na(dataset$notes),
+        "",
+        paste0("<br><strong>Notes: </strong>",dataset$notes,"<br>")
+      ),
+      ifelse(
+        is.na(dataset$senior_hours),
+        "",
+        paste0(
+          '<br><strong style="color:red">** SPECIAL SENIOR HOURS ** </strong><br>',
+          dataset$senior_hours)
+      )
+    )
+  return(result)
+}
+
+```
+
+```{r setup-facteus}
+
+bay_zctas <- readRDS("P:/Stanford/Classes/CEE218Z - Shaping the Future of the Bay/bay_zctas.rds")
+
+wd <- "P:/Shared/SFBI/Restricted Data Library/Safegraph/covid19analysis/transactions-facteus/"
+
+combining <- function(pattern) {
+  files <- list.files(pattern = pattern)
+  return(do.call(rbind, lapply(files,readRDS)))
+}
+
+spending_total <- readRDS(paste0(wd,"cut-1-daily-spend-by-zip/2020-04-22/cut-1-daily-spend-by-zip-20170101-20200417-bay.rds"))
+
+setwd(paste0(wd,"cut-2-daily-spend-by-zip-by-mcc/2020-04-22"))
+spending_MCC <-
+  combining("cut-2-daily-spend-by-zip-by-mcc-20170101-20200417-[0-1][0-9]-bay.rds")
+
+setwd(paste0(wd,"cut-3-daily-spend-by-brand/2020-04-22"))
+spending_brand <- combining("daily-spend-by-brand-20170101-20200417-[0-1][0-9]-bay.rds")
+
+walmart_instore <- readRDS(paste0(wd,"cut-4-daily-spend-at-walmart/2020-04-22/daily-spend-by-zip-walmart-instore-20170101-20200417-bay.rds"))
+
+walmart_online <- readRDS(paste0(wd,"cut-4-daily-spend-at-walmart/2020-04-22/daily-spend-by-zip-walmart-online-20170101-20200417-bay.rds"))
+
+setwd("C:/Users/liusa/github/covid19/snap project/sam")
+
+```
+
+# Leaflet Snap Circle Icons
+
+```{r leaflet-snap-circles}
+
+cols <- brewer.pal(5, name='Set1')
+retail.col <- colorFactor(cols, domain = c("SNAP_accepting_retailer","WIC_only_store","WIC_SNAP_retailer","SNAP_restaurant",
+                                           "SNAP_farmers_market"))
+
+mpc <- leaflet() %>%
+    addProviderTiles(providers$CartoDB.VoyagerLabelsUnder, group = "Default") %>%
+    addTiles(urlTemplate = mapbox_sat, attribution = mapbox_satAtt, group = "Satellite") %>%
+    addCircleMarkers(
+      lng = retailers$long,
+      lat = retailers$lat,
+      color = retail.col(retailers$type),
+      radius = 5,
+      popup = pop(retailers)
+      ) %>%
+    addLegend(
+      position = 'bottomleft',
+      values = subset(retailers$type,!is.na(retailers$type)),
+      na.label = "",
+      pal = retail.col,
+      title='Stores'
+      ) %>%
+    addLayersControl(
+      baseGroups = c("Default","Satellite")
+      )
+
+mpc
+
+```
+
+# Leaflet Snap with Flat Icons
+
+```{r leaflet-snap-icons}
+
+mpi <- leaflet() %>%
+    addProviderTiles(providers$CartoDB.VoyagerLabelsUnder, group = "Default") %>%
+    # addProviderTiles(providers$CartoDB.Positron, group = "Positron") %>% # add mapbox
+    addTiles(urlTemplate = mapbox_sat, attribution = mapbox_satAtt, group = "Satellite") %>%
+    addMarkers(
+      lng = snap$long,
+      lat = snap$lat,
+      clusterOptions = cluster,
+      popup = pop(snap),
+      icon = snapIcon,
+      group = "SNAP Only Retailers"
+      ) %>%
+    addMarkers(
+      lng = wic$long,
+      lat = wic$lat,
+      clusterOptions = cluster,
+      popup = pop(wic),
+      icon = wicIcon,
+      group = "WIC Only Retailers"
+      ) %>%
+    addMarkers(
+      lng = snap_wic$long,
+      lat = snap_wic$lat,
+      clusterOptions = cluster,
+      popup = pop(snap_wic),
+      icon = snapwicIcon,
+      group = "SNAP and WIC Accepting Retailers"
+      ) %>%
+    addMarkers(
+      lng = snap_restaurant$long,
+      lat = snap_restaurant$lat,
+      clusterOptions = cluster,
+      popup = pop(snap_restaurant),
+      icon = snaprestIcon,
+      group = "SNAP Accepting Restaurants"
+      ) %>%
+    addMarkers(
+      lng = snap_farmers$long,
+      lat = snap_farmers$lat,
+      clusterOptions = cluster,
+      popup = pop(snap_farmers),
+      icon = snapfarmIcon,
+      group = "SNAP Accepting Farmers Markets"
+      ) %>%
+    addMarkers(
+      lng = snap_curbside$long,
+      lat = snap_curbside$lat,
+      clusterOptions = cluster,
+      popup = pop(snap_curbside),
+      icon = snapIcon,
+      group = "Offers Curbside Pick-up"
+      ) %>%
+    addMarkers(
+      lng = wic_curbside$long,
+      lat = wic_curbside$lat,
+      clusterOptions = cluster,
+      popup = pop(wic_curbside),
+      icon = wicIcon,
+      group = "Offers Curbside Pick-up"
+      ) %>%
+    addMarkers(
+      lng = snapwic_curbside$long,
+      lat = snapwic_curbside$lat,
+      clusterOptions = cluster,
+      popup = pop(snapwic_curbside),
+      icon = snapwicIcon,
+      group = "Offers Curbside Pick-up"
+      ) %>%
+    addMarkers(
+      lng = snaprest_curbside$long,
+      lat = snaprest_curbside$lat,
+      clusterOptions = cluster,
+      popup = pop(snaprest_curbside),
+      icon = snaprestIcon,
+      group = "Offers Curbside Pick-up"
+      ) %>%
+    addMarkers(
+      lng = snapfarm_curbside$long,
+      lat = snapfarm_curbside$lat,
+      clusterOptions = cluster,
+      popup = pop(snapfarm_curbside),
+      icon = snapfarmIcon,
+      group = "Offers Curbside Pick-up"
+      ) %>%
+    addMarkers(
+      lng = snap_delivery$long,
+      lat = snap_delivery$lat,
+      clusterOptions = cluster,
+      popup = pop(snap_delivery),
+      icon = snapIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = wic_delivery$long,
+      lat = wic_delivery$lat,
+      clusterOptions = cluster,
+      popup = pop(wic_delivery),
+      icon = wicIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snapwic_delivery$long,
+      lat = snapwic_delivery$lat,
+      clusterOptions = cluster,
+      popup = pop(snapwic_delivery),
+      icon = snapwicIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snaprest_delivery$long,
+      lat = snaprest_delivery$lat,
+      clusterOptions = cluster,
+      popup = pop(snaprest_delivery),
+      icon = snaprestIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snapfarm_delivery$long,
+      lat = snapfarm_delivery$lat,
+      clusterOptions = cluster,
+      popup = pop(snapfarm_delivery),
+      icon = snapfarmIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snap_senior$long,
+      lat = snap_senior$lat,
+      clusterOptions = cluster,
+      popup = pop(snap_senior),
+      icon = snapIcon,
+      group = "Offers Senior Hours"
+      ) %>%
+    addMarkers(
+      lng = wic_senior$long,
+      lat = wic_senior$lat,
+      clusterOptions = cluster,
+      popup = pop(wic_senior),
+      icon = wicIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snapwic_senior$long,
+      lat = snapwic_senior$lat,
+      clusterOptions = cluster,
+      popup = pop(snapwic_senior),
+      icon = snapwicIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snaprest_senior$long,
+      lat = snaprest_senior$lat,
+      clusterOptions = cluster,
+      popup = pop(snaprest_senior),
+      icon = snaprestIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addMarkers(
+      lng = snapfarm_senior$long,
+      lat = snapfarm_senior$lat,
+      clusterOptions = cluster,
+      popup = pop(snapfarm_senior),
+      icon = snapfarmIcon,
+      group = "Offers CSA Box Delivery"
+      ) %>%
+    addLayersControl(
+      baseGroups = c("Default","Mapbox Basemap","Satellite"),
+      overlayGroups = c("SNAP Only Retailers","WIC Only Retailers","SNAP and WIC Accepting Retailers","Cash EBT Withdrawal Locations",
+                        "SNAP Accepting Restaurants","SNAP Accepting Farmers Markets")
+      ) %>%
+    addControl(
+      html=html_legend,
+      position="bottomleft") %>%
+  hideGroup(c("Offers Curbside Pick-up", "Offers CSA Box Delivery","Offers Senior Hours"))
+
+mpi
+```
+
+# 2019 vs 2020 Spending Trends Between January and April
+
+```{r plot-spending-facteus}
+
+## Question: ask derek how to normalize based on sample size/population
+## Side Project: how to cumulate zipcodes by county
+## Next Steps: overlay with snap users zipcode data, put bar charts on shiny (UIoutput) - be able to have two side-by-side comparison
+
+# spending distribution of products (bar charts)
+# spending_MCC_sum <-
+#   spending_MCC %>%
+#   mutate(year=substr(date,1,4)) %>%
+#   mutate(month = substr(date,6,7)) %>%
+#   group_by(year,month,MCC) %>%
+#   summarize(
+#     mean=mean(as.numeric(total_spent)),
+#     sum=sum(as.numeric(total_spent)),
+#     transactions=sum(as.numeric(transaction_counts)),
+#     avg_transactions=mean(as.numeric(transaction_counts)))
+# 
+# spending_MCC_1920 <-
+#   spending_MCC_sum %>%
+#   filter(year %in% c("2019","2020"), month %in% c("01","02","03","04"), MCC > 0)
+# 
+# spending_MCC_1920 <-
+#   spending_MCC_1920[order(spending_MCC_1920$MCC),]
+# 
+# spending_MCC_1920 <-
+#   spending_MCC_1920[-c(1,2,3,4),]
+# 
+# saveRDS(spending_MCC_1920,"baymap/spending_MCC_1920.rds")
+
+mcc_codes <- 
+  read_csv("https://raw.githubusercontent.com/greggles/mcc-codes/master/mcc_codes.csv") %>% 
+  dplyr::select(
+    MCC = mcc,
+    label = edited_description
+  )
+
+spending_MCC_1920 <- readRDS("baymap/spending_MCC_1920.rds")
+
+plot_month <- function(m,abbr) {
+  spend20 <-
+    spending_MCC_1920 %>%
+    filter(month==m,year=="2020")
+
+  spend1920 <-
+    spending_MCC_1920 %>%
+    filter(month==m,year=="2019") %>%
+    right_join(spend20,by=c("MCC","month"),suffix=c("_2019","_2020")) %>%
+    filter(!is.na(transactions_2019) & !is.na(transactions_2020) & !is.na(year_2019) & !is.na(year_2020))
+
+  spend1920 <-
+    spend1920[order(spend1920$transactions_2020),]
+
+  spend1920 <-
+    spend1920 %>%
+    tail(10) %>% 
+    left_join(mcc_codes,by=("MCC")) %>% 
+    dplyr::select(-MCC) %>% 
+    dplyr::select(year_2019,year_2020,transactions_2019,transactions_2020,label)
+  
+  spend1920 <- spend1920[c("label", "year_2019", "year_2020", "transactions_2019", "transactions_2020")]
+
+  spend20 <-
+    spend1920 %>% 
+    dplyr::select(year_2020,transactions_2020,label) %>% 
+    dplyr::rename("year" = "year_2020","transactions"="transactions_2020")
+
+  spend19 <-
+    spend1920 %>% 
+    dplyr::select(year_2019,transactions_2019,label) %>% 
+    dplyr::rename("year" = "year_2019","transactions"="transactions_2019")
+
+  spend1920_plt <-
+    spend19 %>%
+    full_join(spend20) %>% 
+    ungroup()
+  
+  plt <- 
+    ggplot(spend1920_plt,aes(x=label,y=transactions,fill=year,group=year)) +
+    scale_fill_brewer(palette="Paired") +
+    geom_bar(stat="identity",position=position_dodge()) +
+    coord_flip() +
+    ggtitle(paste0("Distribution of Spendings by MCC - ",abbr)) +
+    theme_minimal() +
+    theme(axis.text.x =element_blank())
+
+  # plt <-
+  #   plt %>%
+  #   ggplotly() %>%
+  #   config(displayModeBar = F)
+
+  spend1920_tbl <-
+    spend1920 %>%
+    dplyr::select(label, transactions_2019,transactions_2020) %>%
+    dplyr::rename("2019 Transactions" = "transactions_2019","2020 Transactions"="transactions_2020","MCC Description"="label") %>% 
+    formattable(align = c("l", rep("c", NCOL(spend1920) - 1)))
+
+  values <- list("plt" = plt,"tbl" = spend1920_tbl)
+
+  return(values)
+}
+
+jan <- plot_month("01","Jan")
+jan$plt
+jan$tbl
+
+feb <- plot_month("02","Feb")
+feb$plt
+feb$tbl
+
+mar <- plot_month("03","Mar")
+mar$plt
+mar$tbl
+
+apr <- plot_month("04","Apr")
+apr$plt
+apr$tbl
+
+```
+
+# Online vs. Instore Spending Trends Due to SIP Orders
+
+```{r plot-transactions-facteus}
+
+# compare instore to online ratio and potential for the online shift before and after covid
+#   transactions_ratio >> on a given day, ___ times more people shop instores rather than online (2 line graph showing the trend before and after covid and online vs instore trends)
+# walmart_instore_sum <-
+#   walmart_instore %>%
+#   mutate(month = substr(date,1,7)) %>%
+#   group_by(month) %>%
+#   summarize(
+#     mean=mean(as.numeric(total_spent)),
+#     sum=sum(as.numeric(total_spent)),
+#     avg_transactions=mean(as.numeric(transaction_counts)),
+#     transactions=sum(as.numeric(transaction_counts)))
+# 
+# walmart_sum <-
+#   walmart_online %>%
+#   mutate(month = substr(date,1,7)) %>%
+#   group_by(month) %>%
+#   summarize(
+#     mean=mean(as.numeric(total_spent)),
+#     sum=sum(as.numeric(total_spent)),
+#     avg_transactions=mean(as.numeric(transaction_counts)),
+#     transactions=sum(as.numeric(transaction_counts))) %>%
+#   left_join(walmart_instore_sum,by="month",suffix=c("_online","_instore"))
+# 
+# walmart_melt <-
+#   walmart_sum %>%
+#   tail(13) %>%
+#   mutate(transactions_ratio_instore=(avg_transactions_instore)/(sum(walmart_sum[, 'avg_transactions_instore']))) %>%
+#   mutate(transactions_ratio_online=(avg_transactions_online)/(sum(walmart_sum[, 'avg_transactions_online']))) %>%
+#   dplyr::select(month,transactions_ratio_instore,transactions_ratio_online) %>%
+#   melt(id=c("month"))
+# 
+# saveRDS(walmart_melt,"baymap/walmart_transactions.rds")
+
+walmart_melt <- readRDS("baymap/walmart_transactions.rds")
+
+wplt <- 
+  ggplot(walmart_melt,aes(x=month,y=value,color=variable,group=variable)) +
+  geom_line(size=1.5) +
+  labs(y= "Transactions Ratio", x = "Date", color="Legend") +
+  theme(axis.text.y =element_blank(),
+        axis.ticks.y=element_blank())
+
+wplt
+  
+
+# instore1920 <-
+#   walmart_instore %>%
+#   mutate(year = substr(date,1,4)) %>%
+#   mutate(month = substr(date,6,7)) %>% 
+#   mutate(day = substr(date,9,10)) %>%
+#   mutate(month_day = substr(date,6,10) %>% as.Date("%m-%d")) %>%
+#   filter(month %in% c("01","02","03","04") & year %in% c("2019","2020")) %>%
+#   group_by(year,month_day) %>% 
+#   summarize(
+#     avg_transactions=mean(as.numeric(transaction_counts))) %>%
+#   spread(year,avg_transactions) %>% 
+#   mutate(transactions_ratio=`2020`/`2019`)
+# 
+# instore_online_1920 <- 
+#   walmart_online %>%
+#   mutate(year = substr(date,1,4)) %>%
+#   mutate(month = substr(date,6,7)) %>% 
+#   mutate(day = substr(date,9,10)) %>%
+#   mutate(month_day = substr(date,6,10) %>% as.Date("%m-%d")) %>%
+#   filter(month %in% c("01","02","03","04") & year %in% c("2019","2020")) %>%
+#   group_by(year,month_day) %>% 
+#   summarize(
+#     avg_transactions=mean(as.numeric(transaction_counts))) %>%
+#   spread(year,avg_transactions) %>% 
+#   mutate(transactions_ratio=`2020`/`2019`) %>% 
+#   left_join(instore1920,suffix=c("_online","_instore"),by=c("month_day")) %>% 
+#   dplyr::select(month_day,transactions_ratio_online,transactions_ratio_instore) %>% 
+#   melt(id=c("month_day")) %>% 
+#   arrange(month_day) %>% 
+#   na.omit()
+# 
+# saveRDS(instore_online_1920,"baymap/instore_online_1920.rds")
+
+instore_online_1920 <- readRDS("baymap/instore_online_1920.rds")
+  
+ioplt <- 
+  ggplot(instore_online_1920,aes(x=month_day,y=value,color=variable,group=1)) +
+  geom_line(size=1) +
+  labs(y= "Transactions Ratio", x = "Date", color="Legend")
+
+ioplt %>% ggplotly()
+
+```
+
+# Grocers Spending Trends
+
+```{r plot-grocers-spending-facteus}
+
+# show trends over the years
+
+# spending impacts due to covid (line graphs by MCC)
+# spending_grocers <-
+#   spending_MCC %>%
+#   filter(MCC=="5411")
+#   mutate(month = substr(date,6,7)) %>%
+#   mutate(year = substr(date,1,4)) %>% 
+#   mutate(day = substr(date,9,10)) %>% 
+#   filter(month %in% c("01","02","03","04") & year %in% c("2019", "2020")) %>% 
+#   group_by(year,month, day) %>%
+#   summarize(
+#     mean=mean(as.numeric(total_spent)),
+#     sum=sum(as.numeric(total_spent)),
+#     avg_transactions=mean(as.numeric(transaction_counts)),
+#     transactions=sum(as.numeric(transaction_counts)))
+# 
+# saveRDS(spending_grocers,"baymap/spending_grocers_daily.rds")
+
+spending_grocers <- readRDS("baymap/spending_grocers_daily.rds")
+
+plot_grocers <- function(m) {
+  grocers <- 
+    spending_grocers %>% 
+    filter(month==m) %>% 
+    ungroup()
+  gplt <- 
+    ggplot(grocers,aes(x=day,y=avg_transactions,color=year,group=year)) +
+    geom_line(size=1.5) +
+    scale_color_brewer(palette = "Paired") +
+    labs(y= "Transactions", x = "Day") +
+    theme_minimal()
+  
+  gplt <-   
+    gplt %>%
+    ggplotly() %>%
+    config(displayModeBar = F)
+  
+  return(gplt)
+}
+
+jan_grocers <- plot_grocers("01")
+jan_grocers
+
+feb_grocers <- plot_grocers("02")
+feb_grocers
+
+mar_grocers <- plot_grocers("03")
+mar_grocers
+
+apr_grocers <- plot_grocers("04")
+apr_grocers
+
+```
+
+# Walmart vs. SNAP Demographics
+
+```{r leaflet-facteus}
+
+# # most popular/accessible walmart among zipcodes (plot number of transactions on map)
+# spending_brand_sum <-
+#   spending_brand %>%
+#   group_by(merchant,zip) %>%
+#   filter(merchant=="WALMART") %>%
+#   summarize(
+#     mean=mean(as.numeric(total_spent)),
+#     sum=sum(as.numeric(total_spent)),
+#     transactions_sum=sum(as.numeric(transaction_counts)),
+#     transactions_avg=mean(as.numeric(transaction_counts))) %>%
+#   left_join(bay_zctas,by=c("zip"="ZCTA5CE10")) %>%
+#   distinct(zip,.keep_all = T) %>%
+#   st_as_sf(dim = "XY", sf_column_name = "geometry") %>%
+#   st_transform(crs=4326)
+#
+# spending_brand_sum <- spending_brand_sum[order(spending_brand_sum$transactions_avg),]
+
+## normalize based on population
+
+spending_brand_sum <- readRDS("baymap/spending_brand_sum.rds")
+
+spending_brand_sum_top5 <- tail(spending_brand_sum,5)
+spending_brand_sum_top10 <- tail(spending_brand_sum,10)
+
+# saveRDS(spending_brand_sum,"spending_brand_sum.rds")
+
+pal <- sequential_hcl("red-blue",n=3,rev=T)
+col <- colorNumeric(pal,domain=spending_brand_sum$transactions_avg)
+
+
+fp <- leaflet() %>%
+    addProviderTiles(providers$CartoDB.VoyagerLabelsUnder, group = "Default") %>%
+    addTiles(urlTemplate = mapbox_sat, attribution = mapbox_satAtt, group = "Satellite") %>%
+    addPolygons(
+      data = spending_brand_sum,
+      color = col(spending_brand_sum$transactions_avg),
+      weight=1,
+      popup = paste0(
+        "<strong>",spending_brand_sum$zip,"</strong><br>",
+        spending_brand_sum$transactions_avg),
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"),
+      group = "All"
+      ) %>%
+    addPolygons(
+      data = spending_brand_sum_top5,
+      weight=2,
+      color = "red",
+      popup = paste0(
+        "<strong>",spending_brand_sum_top5$zip,"</strong><br>",
+        spending_brand_sum_top5$transactions_avg),
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"),
+      group = "Top 5"
+      ) %>%
+    addPolygons(
+      data = spending_brand_sum_top10,
+      color = "red",
+      weight=2,
+      popup = paste0(
+        "<strong>",spending_brand_sum_top10$zip,"</strong><br>",
+        spending_brand_sum_top10$transactions_avg),
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"),
+      group = "Top 10"
+      ) %>%
+    addLegend(
+      position = 'bottomleft',
+      values = spending_brand_sum$transactions_avg,
+      pal = col,
+      title='Avg Daily Walmart Transactions'
+      ) %>%
+    addLayersControl(
+      baseGroups = c("Default","Satellite"),
+      overlayGroups = c("All","Top 5","Top 10")
+    ) %>%
+  hideGroup(c("Top 5","Top 10"))
+
+fp
+
+```
+
+# Shiny App Implementation
+
+<!-- ```{r shiny-app-sidebar} -->
+
+<!-- sidebar <- dashboardSidebar( -->
+<!--   width = "20vw", -->
+<!--   collapsed = T, -->
+<!--   sidebarMenu( -->
+<!--     menuItem( -->
+<!--       "Bay Area Study", -->
+<!--       tabName = "bay", -->
+<!--       icon = icon("search") -->
+<!--       ), -->
+<!--     menuItem( -->
+<!--       "SNAP Access", -->
+<!--       tabName = "access", -->
+<!--       icon = icon("universal-access") -->
+<!--       ), -->
+<!--     menuItem( -->
+<!--       "Grocery Shopping Patterns", -->
+<!--       icon = icon("shopping-cart"), -->
+<!--       tabName = "facteus", -->
+<!--       badgeLabel = "new", -->
+<!--       badgeColor = "maroon" -->
+<!--       ), -->
+<!--     menuItem( -->
+<!--       "Sources", -->
+<!--       icon = icon("book"), -->
+<!--       tabName = "sources" -->
+<!--       ) -->
+<!--     ) -->
+<!-- ) -->
+
+<!-- ``` -->
+
+<!-- ```{r shiny-app-body} -->
+
+<!-- body <- dashboardBody( -->
+<!--   tabItems( -->
+<!--     tabItem( -->
+<!--       tabName = "bay", -->
+<!--       splitLayout( -->
+<!--         cellWidths = c("78%","22%"), -->
+<!--         leafletOutput("snapmap",height="90vh"), -->
+<!--         cellArgs = list(style='white-space: normal;'), -->
+<!--         verticalLayout( -->
+<!--           box( -->
+<!--             status="primary", -->
+<!--             width = 12, -->
+<!--             textInput("address","Input Address:"), -->
+<!--             sliderInput("slider", "Miles Radius:", 1, 3, 2), -->
+<!--             actionButton("go",label="Go") -->
+<!--             ), -->
+<!--           box( -->
+<!--             status = "success", -->
+<!--             width=12, -->
+<!--             checkboxGroupInput( -->
+<!--               "check", -->
+<!--               label = strong("Filter by:"), -->
+<!--               choices = c("Senior Hours" = "senior_hours", "Curbside Pick-up" = "curbside_pickup", "CSA Box Delivery" = "delivery")) -->
+<!--             ), -->
+<!--           box( -->
+<!--             title = strong("About the Map"), -->
+<!--             width = 12, -->
+<!--             status = "warning", -->
+<!--             paste("Anything can go here that is related to the map or help the user navigate through the map interface") -->
+<!--             ) -->
+<!--           ) -->
+<!--         ) -->
+<!--       ), -->
+<!--     tabItem( -->
+<!--       tabName = "access", -->
+<!--       tabBox( -->
+<!--         id = "tabset1", -->
+<!--         width=12, -->
+<!--         tabPanel( -->
+<!--           "About the Data", -->
+<!--           paste("This section contains a brief overview of every single data map that we have in this section, and just -->
+<!--                 to test the lengths of this box just to make sure there are no bounds i am going to keep writing and writing -->
+<!--                 until i stop thinking of words which is about now. it works! perfect.") -->
+<!--         ), -->
+<!--         tabPanel( -->
+<!--           "Key Facts", -->
+<!--           "Tab content 2"), -->
+<!--         tabPanel( -->
+<!--           "Map Visual", -->
+<!--           leafletOutput("snap_access",height="82vh") -->
+<!--           ) -->
+<!--       ) -->
+<!--     ), -->
+<!--     tabItem( -->
+<!--       tabName = "facteus", -->
+<!--       tabBox( -->
+<!--         id = "tabset2", -->
+<!--         width=12, -->
+<!--         tabPanel( -->
+<!--           "About the Data", -->
+<!--           HTML(" -->
+<!--             <p> -->
+<!--               This transaction dataset is from three sources primarily: -->
+<!--               <br> -->
+<!--               <ul> -->
+<!--                 <li>Challenger Banks - Simple, N26, etc.</li> -->
+<!--                 <li>Payroll Cards</li> -->
+<!--                 <li>Government Cards</li> -->
+<!--               </ul> -->
+<!--               <br> -->
+<!--               Because of this, it's mostly lower-income and younger consumers. -->
+<!--               <br> -->
+<!--               <br> -->
+<!--               <strong>Challenger banks</strong> are newer smaller banks that mostly serve people who are under-banked. They are usually online-only. -->
+<!--               <br> -->
+<!--               <strong>Payroll cards</strong> are debit cards given to employees by employers who can then direct debit their payroll onto those cards. -->
+<!--               <br> -->
+<!--               <strong>Government cards</strong> are mostly cards given to an alimony recipient to allow them access to funds obtained by garnishing a wage." -->
+<!--             ) -->
+<!--         ), -->
+<!--         tabPanel( -->
+<!--           "In-store vs. Online", -->
+<!--           plotOutput("transactions")), -->
+<!--         tabPanel( -->
+<!--           "Monthly Spendings", -->
+<!--           splitLayout( -->
+<!--             plotOutput("jan"), -->
+<!--             plotOutput("apr") -->
+<!--             )), -->
+<!--         tabPanel( -->
+<!--           "Map Visual", -->
+<!--           leafletOutput("facteus") -->
+<!--         ) -->
+<!--         ) -->
+<!--     ), -->
+<!--     tabItem( -->
+<!--       tabName = "sources", -->
+<!--       HTML( -->
+<!--         "<h2>Where does Facteus Data come from?</h2> -->
+<!--         <p> -->
+<!--           All the data available here from Facteus comes from our Synthetic Data panel of debit cards. We have partnered directly with banks to use our patent-pending synthetic data process to create a synthetic version of their transaction data. The entire process is done behind the financial institution’s firewall and Facteus never has access to the original data. Our patent-pending process obfuscates each transaction to protect individual privacy and ensure a zero exact match possibility. Mathematical noise is injected into key data record attributes, however, when the data is analyzed in aggregate it retains 99.97% of the statistical attributes as the original data set. -->
+<!--         </p>") -->
+<!--     ) -->
+
+<!--   ) -->
+<!-- ) -->
+
+<!-- ``` -->
+
+<!-- ```{r shiny-app-ui-server} -->
+
+<!-- ui <- dashboardPage( -->
+<!--   dashboardHeader( -->
+<!--     title = "Project SNAP", -->
+<!--     titleWidth = "20vw"), -->
+<!--   sidebar, -->
+<!--   body -->
+<!--   ) -->
+
+<!-- server <- function(input,output,session){ -->
+
+<!--   output$snapmap <- renderLeaflet({ -->
+<!--     group <- vector() -->
+<!--     if ("senior_hours" %in% input$check) { -->
+<!--       group <- append(group,"Offers Senior Hours") -->
+<!--     } -->
+
+<!--     if ("curbside_pickup" %in% input$check){ -->
+<!--       group <- append(group,"Offers Curbside Pick-up") -->
+<!--     } -->
+
+<!--     if ("delivery" %in% input$check) { -->
+<!--       group <- append(group,"Offers CSA Box Delivery") -->
+<!--     } -->
+
+<!--     if (!is_empty(group)) { -->
+<!--       mpi %>% -->
+<!--         hideGroup(list("SNAP Only Retailers","WIC Only Retailers","SNAP and WIC Accepting Retailers","Cash EBT Withdrawal Locations", -->
+<!--                         "SNAP Accepting Restaurants","SNAP Accepting Farmers Markets")) %>% -->
+<!--         showGroup(group) -->
+<!--     } else { -->
+<!--       mpi -->
+<!--     } -->
+
+<!--     }) -->
+
+<!--   output$snap_access <- renderLeaflet({ a_mp }) -->
+
+<!--   observeEvent(input$go,{ -->
+<!--     loc <- geocode_OSM(input$address,as.sf = T) -->
+<!--     leafletProxy("snapmap") %>% -->
+<!--       removeShape(c("user_address","user_address_radius")) %>% -->
+<!--       addMarkers( -->
+<!--         lng=loc$lon, -->
+<!--         lat=loc$lat, -->
+<!--         icon=homeIcon, -->
+<!--         layerId="user_address") %>% -->
+<!--       addCircles( -->
+<!--         data=loc, -->
+<!--         lng = loc$lon, -->
+<!--         lat = loc$lat, -->
+<!--         color = "#81b1f3", -->
+<!--         weight = 0.25, -->
+<!--         radius = input$slider * 1609.344, # 2-mile radius -->
+<!--         fillOpacity = 0.5, -->
+<!--         label = paste(input$slider,"-mile radius"), -->
+<!--         highlightOptions = -->
+<!--           highlightOptions( -->
+<!--             weight = 2, -->
+<!--             opacity = 1 -->
+<!--             ), -->
+<!--         layerId = "user_address_radius" -->
+<!--       ) %>% -->
+<!--       flyTo(loc$lon, loc$lat, zoom = 16-input$slider) -->
+<!--   }) -->
+
+<!--   output$facteus <- renderLeaflet({fp}) -->
+
+<!--   output$transactions <- renderPlot({ wplt }) -->
+
+<!--   output$jan <- renderPlot({ jan$plt }) -->
+<!--   output$apr <- renderPlot({ apr$plt }) -->
+
+<!--   session$onSessionEnded(stopApp) -->
+
+<!-- } -->
+
+<!-- runApp(shinyApp(ui,server),launch.browser=T) -->
+<!-- ``` -->
+
+<!-- ```{r deploy-shiny-app} -->
+<!-- rsconnect::deployApp("C:/Users/liusa/github/covid19/snap project/sam/baymap") -->
+<!-- ``` -->
