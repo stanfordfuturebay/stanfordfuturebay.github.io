@@ -9,11 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Neel Kasmalkar" />
+<meta name="author" content="Neel Kasmalkar, Derek Ouyang" />
 
 <meta name="date" content="2020-05-16" />
 
-<title>Safegraph Normalization</title>
+<title>Normalization of Safegraph Patterns Data</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -447,29 +447,28 @@ summary {
 
 
 
-<h1 class="title toc-ignore">Safegraph Normalization</h1>
-<h4 class="author">Neel Kasmalkar</h4>
+<h1 class="title toc-ignore">Normalization of Safegraph Patterns Data</h1>
+<h4 class="author">Neel Kasmalkar, Derek Ouyang</h4>
 <h4 class="date">May 16, 2020</h4>
 
 </div>
 
 <div id="TOC">
 <ul>
-<li><a href="#normalization-of-safegraph-patterns-data">Normalization of Safegraph Patterns Data</a>
-<ul>
 <li><a href="#obtaining-census-data">Obtaining Census data</a></li>
 <li><a href="#normalization-functions">Normalization Functions</a>
 <ul>
 <li><a href="#bay-area-wide-normalization">Bay Area-wide Normalization</a></li>
-<li><a href="#blockgroup-based-normalization">Blockgroup-based Normalization</a></li>
+<li><a href="#blockgroup-based-normalization">Blockgroup-based Normalization</a>
+<ul>
+<li><a href="#patterns-data-expansion">Patterns data expansion</a></li>
+<li><a href="#adjustment-for-2-4-visitor-origins">Adjustment for 2-4 visitor origins</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#demonstration">Demonstration</a></li>
-</ul></li>
 </ul>
 </div>
 
-<div id="normalization-of-safegraph-patterns-data" class="section level1">
-<h1>Normalization of Safegraph Patterns Data</h1>
 <p>This document demonstrates various normalization procedures for Safegraph patterns data. Safegraph data does not count the actual number of visits or visitors to places, but rather the movement of a subset of location-activated smartphones. To estimate the actual number of individual visits to places, we ‘normalize’ the number of raw visits, i.e. smartphone location pings in places.</p>
 <pre class="r"><code>library(tidyverse)
 library(tigris)
@@ -488,8 +487,8 @@ Sys.setenv(CENSUS_KEY=&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;)
 
 # This is the particular file path for our Stanford course. Safegraph COVID-19 data consortium members have access to the same source data.
 safegraph_address &lt;- &#39;P:/SFBI/Restricted Data Library/Safegraph/covid19analysis/&#39;</code></pre>
-<div id="obtaining-census-data" class="section level2">
-<h2>Obtaining Census data</h2>
+<div id="obtaining-census-data" class="section level1">
+<h1>Obtaining Census data</h1>
 <p>For normalization of Safegraph data, we need to know the population count of all census blocks relevant to our region of analysis. In this example, we consider the San Francisco Bay Area and its subregions. We use the American Community Survey via <code>censusapi</code> for population counts, and the census TIGER/Line shapefiles via <code>tigris</code> for identifying the geographic region.</p>
 <pre class="r"><code>#All data currently using acs_year 2018.
 acs_year = 2018
@@ -560,8 +559,8 @@ norm_ca_pop_blockgroup &lt;-
     pop = B01003_001E
   )</code></pre>
 </div>
-<div id="normalization-functions" class="section level2">
-<h2>Normalization Functions</h2>
+<div id="normalization-functions" class="section level1">
+<h1>Normalization Functions</h1>
 <p>There are many ways to do normalization. But first, let us discuss the mathematical procedure for normalization.</p>
 <ol style="list-style-type: decimal">
 <li>Compare census data and number of devices tracked by safegraph within a given region to estimate ratio of the number of actual visitors to those of raw visitors.</li>
@@ -571,8 +570,8 @@ norm_ca_pop_blockgroup &lt;-
 </ol>
 <p>The assumption of having same number of visits per visitor in step 3 is a major simplification. Since Safegraph does not distinguish the number visits by individual visitors, this is the easiest approach for estimating actual visit counts.</p>
 <p>For performing the normalization in step 1, we show two ways. The first is a macro-approach.</p>
-<div id="bay-area-wide-normalization" class="section level3">
-<h3>Bay Area-wide Normalization</h3>
+<div id="bay-area-wide-normalization" class="section level2">
+<h2>Bay Area-wide Normalization</h2>
 <p>Since the San Francisco Bay Area is our area of interest, we first estimate the population of this region (stored in <code>norm_bay_pop</code>). Then we compute the total number of devices tracked by Safegraph within this region. This number can be obtained from the home panel summary dataset of Safegraph. The ratio of the population estimate to the number of devices in the region provides us with a multiplier which allows us to translate the raw number of visitors to an estimate of the actual number of visitors.</p>
 <pre class="r"><code>#Function to do Bay normalization.
 #param patterns: Safegraph patterns dataset.
@@ -597,14 +596,22 @@ bay_multiplier &lt;- bay_pop/bay_sg_pop
 return(patterns %&gt;% mutate(visit_counts = raw_visit_counts*bay_multiplier))
 }</code></pre>
 </div>
-<div id="blockgroup-based-normalization" class="section level3">
-<h3>Blockgroup-based Normalization</h3>
+<div id="blockgroup-based-normalization" class="section level2">
+<h2>Blockgroup-based Normalization</h2>
 <p>The second approach is a micro-level normalization. We obtain the ratios of population to number of devices for each blockgroup. Since Safegraph patterns dataset provides information about the origin census blockgroups of some visitors, we can use different ratios for estimating visits depending on which blockgroup a device resides in.</p>
 <p>This approach has one problem. Not all visitors have a recorded origin census blockgroup. This is part of Safegraph’s goal to maintain privacy. If the number of visitors from a certain origin blockgroup fall below a prescribed threshold (currently 2), then the home blockgroup is not recorded for those visitors.</p>
 <p>So how do we estimate the number of visitors for those devices which have no recorded origin blockgroup? Here we make another simplifying assumption. We assume that the ratio of visitors to devices in the case of unrecorded origin blockgroups matches the overall ratio for the visitors with recorded blockgroups. In other words, we take all the devices whose origin blockgroup is known, convert them to number of visitors, then sum up the number of visitors over all such origin blockgroups and divide by the total number of devices over all such origin blockgroups. We use this ratio for the devices with no recorded origin blockgroup.</p>
-<div id="patterns-data-expansion" class="section level4">
-<h4>Patterns data expansion</h4>
+<div id="patterns-data-expansion" class="section level3">
+<h3>Patterns data expansion</h3>
 <p>In order to perform the above blockgroup-based normalization, we need to unpack the data about origin census blockgroups from the patterns data. This column is named visitor_home_cbgs and is in a JSON dictionary format of the form <code>{blockgroup id: number of raw visitors}</code>. We expand the patterns data so that for each place, there is one row for each of the origin blockgroups of its raw visitors. This will streamline the normalization process. This particular expansion is given in the function <code>expandOrigins()</code>. WARNING: this function takes a lot of time. So it is best to use it on filtered regions such as individual cities, rather than whole patterns datasets.</p>
+</div>
+<div id="adjustment-for-2-4-visitor-origins" class="section level3">
+<h3>Adjustment for 2-4 visitor origins</h3>
+<p>An adjustment needs to be made for a specific detail in the most recent versions of patterns data:</p>
+<blockquote>
+<p>Beginning with the 04-05 release, we apply differential privacy to the counts in home_cbgs, country_of_origin and device_types. We do not include a census block group or country of origin unless there are at least 2 visitors from that census block group or country of origin or with that device type as applicable. If there are between 2 and 4 visitors we show this count as 4.</p>
+</blockquote>
+<p>Because these specific recorded origins may have visitor counts of 2, 3, or 4 wherever we see a 4, the normalized visits we estimate for that block group could be off by a factor of 2. So, in our function, we consider the lower (2) and upper (4) bounds for every recorded origin that is listed as having a <code>raw_visitor_count</code> of 4, which also leads to the propagation of lower and upper bounds through the normalization process.</p>
 <pre class="r"><code>#Function to expand patterns dataset by blockgroup.
 #param patterns_data: Safegraph patterns dataset.
 #pre It should have a column visitor_home_cbgs with a JSON dictionary of blockgroup GEOIDs and number of visitors.
@@ -624,7 +631,8 @@ expandOrigins &lt;- function(patterns_data)
         data.frame(
           safegraph_place_id = patterns_data$safegraph_place_id[row],
           origin_census_block_group = NA, #origin block group is not available.
-          origin_raw_visitor_counts = patterns_data$raw_visitor_counts[row]
+          origin_raw_visitor_counts_high = patterns_data$raw_visitor_counts[row],
+          origin_raw_visitor_counts_low = patterns_data$raw_visitor_counts[row]
         )
       
     } 
@@ -639,21 +647,47 @@ expandOrigins &lt;- function(patterns_data)
         rownames_to_column() %&gt;% 
         rename(
           origin_census_block_group = &quot;rowname&quot;,
-          origin_raw_visitor_counts = &quot;.&quot;
+          origin_raw_visitor_counts_high = &quot;.&quot;
+        ) %&gt;% 
+        mutate( # Dealing with the 2-4 visitor issue
+          origin_raw_visitor_counts_low =
+            ifelse(
+              origin_raw_visitor_counts_high == 4,
+              2,
+              origin_raw_visitor_counts_high
+            )
         )
       
-      #Compute the unrecorded raw visitors by subtracting blockgroup-mapped origin_raw_visitor_counts from raw_visitor_counts.
-      unrecorded_raw_visitor_counts &lt;- 
-        max(patterns_data$raw_visitor_counts[row] -  
-        sum(json$origin_raw_visitor_counts),0)
+      #Compute the unrecorded raw visitors by subtracting blockgroup-mapped origin_raw_visitor_counts from raw_visitor_counts. Special cases need to be considered because of the 2-4 visitor issue
+      if(patterns_data$raw_visitor_counts[row] &gt; sum(json$origin_raw_visitor_counts_high)){
+        
+        unrecorded_raw_visitor_counts_high &lt;- 
+          patterns_data$raw_visitor_counts[row] - sum(json$origin_raw_visitor_counts_high)
       
+        unrecorded_raw_visitor_counts_low &lt;-
+          patterns_data$raw_visitor_counts[row] - sum(json$origin_raw_visitor_counts_low)
+        
+      } else {
+        
+        #In this rare case, there were enough origins overcounted as having 4 raw visitors that the total count for recorded origins exceeded that actual raw_visitor_count. We downscale all recorded origin visitor counts so that the sum of recorded origin visitor counts equals actual raw_visitor_count exactly.
+        json$origin_raw_visitor_counts_high &lt;-
+          json$origin_raw_visitor_counts_high/sum(json$origin_raw_visitor_counts_high)*patterns_data$raw_visitor_counts[row]
+        
+        unrecorded_raw_visitor_counts_high &lt;- 0
+        
+        unrecorded_raw_visitor_counts_low &lt;-
+          max((patterns_data$raw_visitor_counts[row] - sum(json$origin_raw_visitor_counts_low)),0)
+        
+      }
+        
       #Add one more row which contains unrecorded raw_visitor_counts.
       data_row &lt;- 
         json %&gt;% 
         rbind(
           data.frame(
             origin_census_block_group = NA,
-            origin_raw_visitor_counts = unrecorded_raw_visitor_counts
+            origin_raw_visitor_counts_high = unrecorded_raw_visitor_counts_high,
+            origin_raw_visitor_counts_low = unrecorded_raw_visitor_counts_low
           )
         ) %&gt;% 
         mutate(
@@ -710,10 +744,7 @@ normBG &lt;- function(patterns, home_summary, bay_blockgroups = norm_bay_blockgr
   #   ) %&gt;% pull(&#39;B01003_001E&#39;)
   # }
   
-  #Change the raw visitor counts based on census population for recorded block groups.
-  recorded_rows &lt;- which(!is.na(patterns$origin_census_block_group))
-  patterns$origin_visitor_counts &lt;- 0
-  patterns$origin_visitor_counts[recorded_rows] &lt;- patterns$origin_raw_visitor_counts[recorded_rows]*patterns$pop[recorded_rows]/patterns$number_devices_residing[recorded_rows]
+  #Estimate true visitor counts based on census population for recorded block groups.
   
   #To estimate number of visitors from unrecorded block groups, use the visitors-to-devices ratio generated by the aggregate recorded block groups.
   recorded_pop &lt;-
@@ -733,23 +764,40 @@ normBG &lt;- function(patterns, home_summary, bay_blockgroups = norm_bay_blockgr
 
   #Compute ratio
   recorded_ratio &lt;- recorded_pop/recorded_sg_pop
-  
   #Use the above ratio for the raw visitors with the unrecorded origin blockgroups.
-  unrecorded_rows &lt;- which(is.na(patterns$origin_census_block_group))
-  patterns$origin_visitor_counts[unrecorded_rows] &lt;- patterns$origin_raw_visitor_counts[unrecorded_rows]*recorded_ratio
+  
+  patterns &lt;-
+    patterns %&gt;% 
+    mutate(
+      origin_visitor_counts_high =
+        ifelse(
+          !is.na(origin_census_block_group),
+          origin_raw_visitor_counts_high*pop/number_devices_residing,
+          origin_raw_visitor_counts_high*recorded_ratio
+        ),
+      origin_visitor_counts_low =
+        ifelse(
+          !is.na(origin_census_block_group),
+          origin_raw_visitor_counts_low*pop/number_devices_residing,
+          origin_raw_visitor_counts_low*recorded_ratio
+        )
+    )
   
   #Finally get visit_counts by multiplying by ratio of raw visit:visitor ratio.
   patterns &lt;- 
     patterns %&gt;% 
-    mutate(visit_counts = origin_visitor_counts*raw_visit_counts/raw_visitor_counts)
+    mutate(
+      visit_counts_high = origin_visitor_counts_high*raw_visit_counts/raw_visitor_counts,
+      visit_counts_low = origin_visitor_counts_low*raw_visit_counts/raw_visitor_counts
+    )
   
   return(patterns)
 }</code></pre>
 </div>
 </div>
 </div>
-<div id="demonstration" class="section level2">
-<h2>Demonstration</h2>
+<div id="demonstration" class="section level1">
+<h1>Demonstration</h1>
 <p>We now demonstrate the output of these various functions. We first load some weekly patterns (which we have pre-processed to only CA patterns) and home summary data. Then, using the City of San Jose as an example, we use both normalization techniques.</p>
 <pre class="r"><code>ca_weekly_200503 &lt;- readRDS(paste0(safegraph_address,&quot;weekly-patterns/2020-05-03-ca-weekly-patterns.rds&quot;))
 home &lt;- readRDS(paste0(safegraph_address,&quot;weekly-patterns/2020-05-03-home-panel-summary.rds&quot;))
@@ -824,22 +872,33 @@ kable(
 </tbody>
 </table>
 <pre class="r"><code>#Compute total week visits with baywide method
-sj_bay_visit_count &lt;- sj_visits_bay %&gt;% pull(visit_counts) %&gt;% sum(na.rm = T)</code></pre>
-<p>Bay-wide normalization for San Jose gives total visits in the week of 5/3/20 as 7594160.</p>
+sj_bay_visit_count &lt;- 
+  sj_visits_bay %&gt;% 
+  pull(visit_counts) %&gt;% 
+  sum(na.rm = T)</code></pre>
+<p>Bay-wide normalization for San Jose gives total visits in the week of 5/3/20 as 7,594,160.</p>
 <pre class="r"><code>#BLOCKGROUP Method
 sj_visits_bg &lt;- normBG(sj,home)
 kable(
-  head(sj_visits_bg, 10) %&gt;% 
-    dplyr::select(location_name, origin_census_block_group, origin_raw_visitor_counts, visit_counts) %&gt;% 
-    mutate(visit_counts = round(visit_counts))
+  head(sj_visits_bg, 27) %&gt;% 
+    transmute(
+      `location name` = location_name, 
+      `origin census block group` = origin_census_block_group, 
+      `origin raw visitor counts high` = origin_raw_visitor_counts_high, 
+      `origin raw visitor counts low` = origin_raw_visitor_counts_low, 
+      `visit counts high` = round(visit_counts_high), 
+      `visit counts low` = round(visit_counts_low)
+    )
 )</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">location_name</th>
-<th align="left">origin_census_block_group</th>
-<th align="right">origin_raw_visitor_counts</th>
-<th align="right">visit_counts</th>
+<th align="left">location name</th>
+<th align="left">origin census block group</th>
+<th align="right">origin raw visitor counts high</th>
+<th align="right">origin raw visitor counts low</th>
+<th align="right">visit counts high</th>
+<th align="right">visit counts low</th>
 </tr>
 </thead>
 <tbody>
@@ -847,71 +906,241 @@ kable(
 <td align="left">Gardner Elementary</td>
 <td align="left">060855018002</td>
 <td align="right">4</td>
+<td align="right">2</td>
 <td align="right">252</td>
+<td align="right">126</td>
 </tr>
 <tr class="even">
 <td align="left">Gardner Elementary</td>
 <td align="left">NA</td>
 <td align="right">1</td>
+<td align="right">3</td>
 <td align="right">53</td>
+<td align="right">158</td>
 </tr>
 <tr class="odd">
 <td align="left">C &amp; D Semiconductor Services</td>
 <td align="left">060855045053</td>
 <td align="right">4</td>
+<td align="right">2</td>
 <td align="right">175</td>
+<td align="right">88</td>
 </tr>
 <tr class="even">
 <td align="left">C &amp; D Semiconductor Services</td>
 <td align="left">NA</td>
 <td align="right">1</td>
+<td align="right">3</td>
 <td align="right">47</td>
+<td align="right">142</td>
 </tr>
 <tr class="odd">
 <td align="left">Seventh Day Adventist Church</td>
 <td align="left">NA</td>
 <td align="right">1</td>
+<td align="right">1</td>
+<td align="right">105</td>
 <td align="right">105</td>
 </tr>
 <tr class="even">
 <td align="left">Noah’s New York Bagels</td>
 <td align="left">060855068031</td>
 <td align="right">4</td>
+<td align="right">2</td>
 <td align="right">241</td>
+<td align="right">121</td>
 </tr>
 <tr class="odd">
 <td align="left">Noah’s New York Bagels</td>
 <td align="left">060855030033</td>
 <td align="right">4</td>
+<td align="right">2</td>
 <td align="right">156</td>
+<td align="right">78</td>
 </tr>
 <tr class="even">
 <td align="left">Noah’s New York Bagels</td>
 <td align="left">060855120312</td>
 <td align="right">4</td>
+<td align="right">2</td>
 <td align="right">104</td>
+<td align="right">52</td>
 </tr>
 <tr class="odd">
 <td align="left">Noah’s New York Bagels</td>
 <td align="left">NA</td>
 <td align="right">8</td>
+<td align="right">14</td>
 <td align="right">221</td>
+<td align="right">387</td>
 </tr>
 <tr class="even">
 <td align="left">Musicians Mobile</td>
 <td align="left">060855014022</td>
 <td align="right">4</td>
+<td align="right">2</td>
 <td align="right">345</td>
+<td align="right">172</td>
+</tr>
+<tr class="odd">
+<td align="left">Musicians Mobile</td>
+<td align="left">060855023011</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">410</td>
+<td align="right">205</td>
+</tr>
+<tr class="even">
+<td align="left">Musicians Mobile</td>
+<td align="left">NA</td>
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">116</td>
+<td align="right">348</td>
+</tr>
+<tr class="odd">
+<td align="left">Friendship Hall</td>
+<td align="left">NA</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">211</td>
+<td align="right">211</td>
+</tr>
+<tr class="even">
+<td align="left">Moon Family Care</td>
+<td align="left">NA</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">26</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="left">Friendly</td>
+<td align="left">060855034012</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">211</td>
+<td align="right">105</td>
+</tr>
+<tr class="even">
+<td align="left">Friendly</td>
+<td align="left">060855123121</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">96</td>
+<td align="right">48</td>
+</tr>
+<tr class="odd">
+<td align="left">Friendly</td>
+<td align="left">NA</td>
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">86</td>
+<td align="right">201</td>
+</tr>
+<tr class="even">
+<td align="left">Temple Emanu El Preschool</td>
+<td align="left">060855004002</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">50</td>
+<td align="right">101</td>
+</tr>
+<tr class="odd">
+<td align="left">Temple Emanu El Preschool</td>
+<td align="left">NA</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Frank M Santana Park</td>
+<td align="left">060014446022</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">157</td>
+<td align="right">157</td>
+</tr>
+<tr class="odd">
+<td align="left">Frank M Santana Park</td>
+<td align="left">060855064012</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">173</td>
+<td align="right">86</td>
+</tr>
+<tr class="even">
+<td align="left">Frank M Santana Park</td>
+<td align="left">NA</td>
+<td align="right">7</td>
+<td align="right">9</td>
+<td align="right">219</td>
+<td align="right">281</td>
+</tr>
+<tr class="odd">
+<td align="left">Xplore Yoga</td>
+<td align="left">060855044102</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">153</td>
+<td align="right">76</td>
+</tr>
+<tr class="even">
+<td align="left">Xplore Yoga</td>
+<td align="left">060855043181</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">185</td>
+<td align="right">93</td>
+</tr>
+<tr class="odd">
+<td align="left">Xplore Yoga</td>
+<td align="left">060855022012</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">195</td>
+<td align="right">98</td>
+</tr>
+<tr class="even">
+<td align="left">Xplore Yoga</td>
+<td align="left">060133270001</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">156</td>
+<td align="right">78</td>
+</tr>
+<tr class="odd">
+<td align="left">Xplore Yoga</td>
+<td align="left">NA</td>
+<td align="right">28</td>
+<td align="right">36</td>
+<td align="right">1039</td>
+<td align="right">1335</td>
 </tr>
 </tbody>
 </table>
-<p>Notice how the output table includes duplicate rows for locations where there were recorded origin census block groups. Rows with <code>NA</code> block group are the remaining “unrecorded origin” visits.</p>
+<p>Notice how the output table includes duplicate rows for locations where there were recorded origin census block groups. Rows with <code>NA</code> block group are the remaining “unrecorded origin” visits. The upper and lower bounds for raw visitor counts are shown along with their effect on the overall visit counts. Note that the notation of “high” and “low” refers specifically to the choice of 4 vs. 2 for raw visitor counts of recorded origins, but the effect on raw visitor counts for unrecorded origins is flipped, and it is possible for the effect on the final visit counts to be flipped as well.</p>
 <pre class="r"><code>#Compute total month visits with blockgroup method
-sj_bg_visit_count &lt;- sj_visits_bg %&gt;% pull(visit_counts) %&gt;% sum(na.rm = T)</code></pre>
-<p>Blockgroup-based normalization for San Jose city gives total visits in the month of April 2020 as 7377626.</p>
-<p>The ratio of the output of the blockgroup method to the baywide method is 0.97.</p>
+sj_bg_visit_count_high &lt;- 
+  sj_visits_bg %&gt;% 
+  pull(visit_counts_high) %&gt;% 
+  sum(na.rm = T)
+
+sj_bg_visit_count_low &lt;- 
+  sj_visits_bg %&gt;% 
+  pull(visit_counts_low) %&gt;% 
+  sum(na.rm = T)
+
+if(sj_bg_visit_count_low &gt; sj_bg_visit_count_high){
+  hold &lt;- sj_bg_visit_count_low
+  sj_bg_visit_count_low &lt;- sj_bg_visit_count_high
+  sj_bg_visit_count_high &lt;- hold
+}</code></pre>
+<p>Blockgroup-based normalization for San Jose city gives total visits in the month of April 2020 as 6,488,523-6,921,297.</p>
+<p>The ratio of the output of the blockgroup method to the baywide method is 0.85-0.91.</p>
 <p>We believe that the blockgroup approach, given its higher spatial resolution, is a more accurate way of normalizing Safegraph data.</p>
-</div>
+<p>Contact Derek Ouyang at <a href="mailto:douyang1@stanford.edu" class="email">douyang1@stanford.edu</a> if you have any questions.</p>
 </div>
 
 
