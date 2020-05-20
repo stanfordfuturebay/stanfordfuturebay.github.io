@@ -552,12 +552,14 @@ plot_month <- function(m,abbr) {
     theme_minimal() +
     theme(legend.position = "top")) %>% 
     ggplotly(tooltip="text") %>%
-    config(displayModeBar = F)
+    config(displayModeBar = F)%>% 
+    layout(legend = list(orientation="h",x = 0.4, y = 1.1))
 
   spend1920_tbl <-
     spend1920 %>%
     left_join(mcc_codes,by=("MCC")) %>% 
     dplyr::select(MCC, label, transactions_2019,transactions_2020) %>%
+    arrange(MCC) %>% 
     dplyr::rename("2019" = "transactions_2019","2020"="transactions_2020","Description"="label") %>% 
     formattable(align = c("c","l","c","c"))
 
@@ -742,8 +744,8 @@ spending_grocers_annual <- readRDS("baymap/spending_grocers_annual.rds")
 
 grocer_annual <- 
   (ggplot(spending_grocers_annual,aes(x=as.character(`month(date)`),y=mean, color=as.character(`year(date)`), group=as.character(`year(date)`), text=paste0("$", round(mean,2)))) +
-  geom_line(size=1.2) +
-  geom_point(size=2) +
+  geom_line(size=1) +
+  geom_point(size=1.5) +
   scale_x_discrete(labels=c("1"="Jan","2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May")) +
   labs(y= "Average Monthly Spendings on Groceries ($)", x = "Date", color="Legend") +
   theme_minimal() +
@@ -772,15 +774,15 @@ spending_grocers_byweek <- readRDS("baymap/spending_grocers_byweek.rds")
 
 grocer_weekly <- 
   (ggplot(spending_grocers_byweek,aes(x=week,y=mean, color=as.character(`year(date)`),group=as.character(`year(date)`),text=paste0("Week ", week,": $", round(mean,2)))) +
-  geom_point(size=2) +
-  geom_line(size=1.2) +
+  geom_line(size=1) +
+  geom_point(size=1.5) +
   scale_x_continuous(breaks = seq(1, 22, by = 4)) +
   labs(y= "Average Weekly Spendings on Groceries ($)", x = "Week Number", color="Legend") +
   theme_minimal() +
   theme(legend.position="top")) %>% 
   ggplotly(tooltip="text") %>% 
   config(displayModeBar = F) %>% 
-  layout(legend = list(orientation="h",x = 0.4, y = -0.1))
+  layout(legend = list(orientation="h",x = 0.4, y = 1.1))
 
 grocer_weekly
 
@@ -803,7 +805,7 @@ grocer_weekday <-
   theme(legend.position="top")) %>% 
   ggplotly(tooltip="text") %>% 
   config(displayModeBar = F) %>% 
-  layout(legend = list(orientation="h",x = 0.4, y = -0.1))
+  layout(legend = list(orientation="h",x = 0.4, y = 1.1))
 
 grocer_weekday
 
@@ -943,378 +945,303 @@ walsnap_tbl
 
 # Shiny App Implementation
 
-```{r deploy-app, include=FALSE}
+```{r deploy-app, include=FALSE, eval = FALSE}
 
-rsconnect::deployApp("C:/Users/liusa/github/covid19/snap project/sam/baymap",account="stanfordfuturebay")
-rsconnect::deployApp("C:/Users/liusa/github/covid19/snap project/sam/baymap",account="samliu")
+# rsconnect::deployApp("C:/Users/liusa/github/covid19/snap project/sam/baymap",account="stanfordfuturebay")
+# rsconnect::deployApp("C:/Users/liusa/github/covid19/snap project/sam/baymap",account="samliu")
 
 ```
- 
-```{r shiny-app-sidebar}
-#
-# sidebar <- dashboardSidebar(
-#   width = "20vw",
-#   collapsed = T,
-#   sidebarMenu(
-#     menuItem(
-#       "Bay Area Study",
-#       tabName = "bay",
-#       icon = icon("search")
+
+```{r body-bay, eval = FALSE}
+
+wplt
+
+# body_bay <-
+#   sidebarLayout(
+#     position="right",
+#     sidebarPanel(
+#       width=2,
+#       textInput("address","Input Address:"),
+#       sliderInput("slider", "Miles Radius:", 1, 3, 2),
+#       actionButton("go",label="Go")
 #       ),
-#     menuItem(
-#       "SNAP Access",
-#       tabName = "access",
-#       icon = icon("universal-access")
-#       ),
-#     menuItem(
-#       "Grocery Shopping Patterns",
-#       icon = icon("shopping-cart"),
-#       tabName = "facteus",
-#       badgeLabel = "new",
-#       badgeColor = "maroon"
-#       ),
-#     menuItem(
-#       "Sources",
-#       icon = icon("book"),
-#       tabName = "sources"
+#     mainPanel(
+#       width=10,
+#       splitLayout(
+#         cellWidths = c("25%","75%"),
+#         cellArgs = list(
+#           style='white-space: normal;',
+#           style='overflow: hidden;',
+#           style='padding: 10px;'),
+#         verticalLayout(
+#           h4(strong("About the Map")),
+#           p("This map highlights the key opportunities for SNAP online integration around the San Francisco Bay Area. Each icon represents different SNAP accepting retailers as well as WIC."),
+#           h4(strong("How To Use the Map")),
+#           HTML(
+#             "<ol>
+#               <li>Scroll up and down to zoom in and out of the map</li>
+#               <li>Filter through different retailers through layers icon in the top right corner of the map</li>
+#               <li>Use the inputs from the right sidebar to zoom into a specific address with a 1, 2, or 3 mile-radius</li>
+#             </ol>"
+#           ),
+#           br(),
+#           p(strong("Disclaimer: "),"This map is not intended to substitute an all-encompassing resources map. For that, please go to this ", a("link", href="https://www.bayareacommunity.org/#/"),".",style="font-size:14px"),
+#           br(),
+#           p("Created by Samantha Liu for the ",a("Stanford Future Bay Initiative",href="http://bay.stanford.edu/covid19?utm_campaign=ConsortiumUpdate-5.18.20&utm_medium=email&utm_source=autopilot"),style="font-size:12px")
+#         ),
+#       leafletOutput("snapmap",height="75vh")
 #       )
 #     )
-# )
-#
-```
-
-```{r shiny-app-body}
-
-body <-
-  tabPanel(
-    ,
-    icon = icon("search"),
-
-        )
-      ),
-    tabItem(
-      tabName = "access",
-      tabBox(
-        id = "tabset1",
-        width=12,
-        tabPanel(
-          "About the Data",
-          paste("This section contains a brief overview of every single data map that we have in this section, and just
-                to test the lengths of this box just to make sure there are no bounds i am going to keep writing and writing
-                until i stop thinking of words which is about now. it works! perfect.")
-        ),
-        tabPanel(
-          "Key Facts",
-          "Tab content 2"),
-        tabPanel(
-          "Map Visual",
-          leafletOutput("snap_access",height="82vh")
-          )
-      )
-    ),
-    tabItem(
-      tabName = "facteus",
-
-      ),
-    tabItem(
-      tabName = "sources",
-      HTML(
-        "<h2>Where does Facteus Data come from?</h2>
-        <p>
-          All the data available here from Facteus comes from our Synthetic Data panel of debit cards. We have partnered directly with banks to use our patent-pending synthetic data process to create a synthetic version of their transaction data. The entire process is done behind the financial institution’s firewall and Facteus never has access to the original data. Our patent-pending process obfuscates each transaction to protect individual privacy and ensure a zero exact match possibility. Mathematical noise is injected into key data record attributes, however, when the data is analyzed in aggregate it retains 99.97% of the statistical attributes as the original data set.
-        </p>")
-    )
+#   )
 
 ```
 
-```{r body-bay}
+```{r body-shopping, eval = FALSE}
 
-body_bay <-
-  sidebarLayout(
-    position="right",
-    sidebarPanel(
-      width=2,
-      textInput("address","Input Address:"),
-      sliderInput("slider", "Miles Radius:", 1, 3, 2),
-      actionButton("go",label="Go")
-      ),
-    mainPanel(
-      width=10,
-      splitLayout(
-        cellWidths = c("25%","75%"),
-        cellArgs = list(
-          style='white-space: normal;',
-          style='overflow: hidden;',
-          style='padding: 10px;'),
-        verticalLayout(
-          h4(strong("About the Map")),
-          p("This map highlights the key opportunities for SNAP online integration around the San Francisco Bay Area. Each icon represents different SNAP accepting retailers as well as WIC."),
-          h4(strong("How To Use the Map")),
-          HTML(
-            "<ol>
-              <li>Scroll up and down to zoom in and out of the map</li>
-              <li>Filter through different retailers through layers icon in the top right corner of the map</li>
-              <li>Use the inputs from the right sidebar to zoom into a specific address with a 1, 2, or 3 mile-radius</li>
-            </ol>"
-          ),
-          br(),
-          p(strong("Disclaimer: "),"This map is not intended to substitute an all-encompassing resources map. For that, please go to this ", a("link", href="https://www.bayareacommunity.org/#/"),".",style="font-size:14px"),
-          br(),
-          p("Created by Samantha Liu for the ",a("Stanford Future Bay Initiative",href="http://bay.stanford.edu/covid19?utm_campaign=ConsortiumUpdate-5.18.20&utm_medium=email&utm_source=autopilot"),style="font-size:12px")
-        ),
-      leafletOutput("snapmap",height="75vh")
-      )
-    )
-  )
-
-```
-
-```{r body-shopping}
-
-body_shopping <-
-  tabBox(
-    id = "tabset2",
-    width=12,
-    tabPanel(
-      "About the Data",
-      style="padding: 20px",
-      h4("Purpose of this Analysis"),
-      p("The purpose of this analysis is to predict the number of potential people impacted by Walmart's recent ",a("Online SNAP Program",href="https://www.walmart.com/ideas/discover-grocery-pickup-delivery/walmart-grocery-pickup-accepts-snap-ebt-payments/355540")," launch. Until this program launched, SNAP beneficiaries did not have the luxury to buy their groceries online. This means SNAP recipients have higher risks of either contracting or passing on the virus during shelter-in-place orders. Even if this program turns out to not be not highly utilized, it is extremely important that every person has the equal opportunity to access grocery deliveries after COVID-19 passes."),
-      br(),
-      h4("Data Sources"),
-      p("This transaction dataset is primarily from three sources: "),
-      HTML("<ul>
-              <li>Challenger Banks - Simple, N26, etc.</li>
-              <li>Payroll Cards</li>
-              <li>Government Cards</li>
-            </ul>"),
-      p("Because of this, it's mostly tracking the purchase patterns of lower-income and younger consumers."),
-      br(),
-      p(em("Challenger banks"),"are newer smaller banks that mostly serve people who are under-banked. They are usually online-only."),
-      p(em("Payroll cards"),"are debit cards given to employees by employers who can then direct debit their payroll onto those cards."),
-      p(em("Government cards"),"are mostly cards given to an alimony recipient to allow them access to funds obtained by garnishing a wage.")
-    ),
-    tabPanel(
-      "In-store vs. Online",
-      style="padding: 20px",
-      fluidRow(
-        column(6,plotOutput("transactions")),
-        column(6, p("In this first graph, we can observe the relative change of online purchases and instore purchases at Walmart around the Bay Area once shelter-in-place (SIP) orders have been enacted. There is a sharp decrease in instore purchases and a rapid increase in online purchases. With this, we can see the behavioral effects of SIP.",style="text-align: justify"))
-        ),
-      fluidRow(
-        column(6,plotlyOutput("transactions2")),
-        column(6,p("In this second graph, we can observe the daily average 2020 to 2019 transactions ratio of both online and instore Walmart Transactions. It confirms the conclusions of the first graph.", style="text-align: justify"))
-        )
-      ),
-    tabPanel(
-      "Monthly Spendings",
-      splitLayout(
-        cellArgs = list(
-          style='white-space: normal;',
-          style='overflow: hidden;',
-          style='padding: 20px;'
-          ),
-        verticalLayout(
-          selectInput("mcc_month_l", "Month:",
-            c("January" = "jan",
-              "February" = "feb",
-              "March" = "mar",
-              "April" = "apr")
-          ),
-          plotlyOutput("mcc_l"),
-          br(),
-          formattableOutput("mcc_plt_l")
-          ),
-        verticalLayout(
-          selectInput("mcc_month_r", "Month:",
-            c("January" = "jan",
-              "February" = "feb",
-              "March" = "mar",
-              "April" = "apr")
-          ),
-          plotlyOutput("mcc_r"),
-          br(),
-          formattableOutput("mcc_plt_r")
-        )
-      )),
-      tabPanel(
-        "Grocer Spendings",
-        splitLayout(
-          verticalLayout(
-            selectInput("grocer", "Frequency:",
-                        c("Annually" = "annually",
-                          "Weekly" = "weekly",
-                          "Day of the Week" = "weekday")
-            ),
-            plotlyOutput("grocer_plt")
-          ),
-          verticalLayout(
-            h3(strong("Summary of Graphs")),
-            h4(em("Annual")),
-            p("Analysis"),
-            h4(em("Weekly")),
-            p("analysis"),
-            h4(em("Day of the Week")),
-            p("analysis")
-          )
-        )
-      ),
-    tabPanel(
-      "Walmart vs SNAP Users Map Overlay",
-      style="padding: 20px",
-      fluidRow(
-        column(8,leafletOutput("facteus",height="80vh")),
-        column(4, formattableOutput("facteus_plt"), style='white-space: normal; overflow-y: scroll; height: 80vh')
-        )
-      )
-    )
+# body_shopping <-
+#   tabBox(
+#     id = "tabset2",
+#     width=12,
+#     tabPanel(
+#       "About the Data",
+#       style="padding: 20px",
+#       h4("Purpose of this Analysis"),
+#       p("The purpose of this analysis is to predict the number of potential people impacted by Walmart's recent ",a("Online SNAP Program",href="https://www.walmart.com/ideas/discover-grocery-pickup-delivery/walmart-grocery-pickup-accepts-snap-ebt-payments/355540")," launch. Until this program launched, SNAP beneficiaries did not have the luxury to buy their groceries online. This means SNAP recipients have higher risks of either contracting or passing on the virus during shelter-in-place orders. Even if this program turns out to not be not highly utilized, it is extremely important that every person has the equal opportunity to access grocery deliveries after COVID-19 passes."),
+#       br(),
+#       h4("Data Sources"),
+#       p("This transaction dataset is primarily from three sources: "),
+#       HTML("<ul>
+#               <li>Challenger Banks - Simple, N26, etc.</li>
+#               <li>Payroll Cards</li>
+#               <li>Government Cards</li>
+#             </ul>"),
+#       p("Because of this, it's mostly tracking the purchase patterns of lower-income and younger consumers."),
+#       br(),
+#       p(em("Challenger banks"),"are newer smaller banks that mostly serve people who are under-banked. They are usually online-only."),
+#       p(em("Payroll cards"),"are debit cards given to employees by employers who can then direct debit their payroll onto those cards."),
+#       p(em("Government cards"),"are mostly cards given to an alimony recipient to allow them access to funds obtained by garnishing a wage.")
+#     ),
+#     tabPanel(
+#       "In-store vs. Online",
+#       style="padding: 20px",
+#       fluidRow(
+#         column(6,plotOutput("transactions")),
+#         column(6, p("In this first graph, we can observe the relative change of online purchases and instore purchases at Walmart around the Bay Area once shelter-in-place (SIP) orders have been enacted. There is a sharp decrease in instore purchases and a rapid increase in online purchases. With this, we can see the behavioral effects of SIP.",style="text-align: justify"))
+#         ),
+#       fluidRow(
+#         column(6,plotlyOutput("transactions2")),
+#         column(6,p("In this second graph, we can observe the daily average 2020 to 2019 transactions ratio of both online and instore Walmart Transactions. It confirms the conclusions of the first graph.", style="text-align: justify"))
+#         )
+#       ),
+#     tabPanel(
+#       "Monthly Spendings",
+#       splitLayout(
+#         cellArgs = list(
+#           style='white-space: normal;',
+#           style='overflow: hidden;',
+#           style='padding: 20px;'
+#           ),
+#         verticalLayout(
+#           selectInput("mcc_month_l", "Month:",
+#             c("January" = "jan",
+#               "February" = "feb",
+#               "March" = "mar",
+#               "April" = "apr")
+#           ),
+#           plotlyOutput("mcc_l"),
+#           br(),
+#           formattableOutput("mcc_plt_l")
+#           ),
+#         verticalLayout(
+#           selectInput("mcc_month_r", "Month:",
+#             c("January" = "jan",
+#               "February" = "feb",
+#               "March" = "mar",
+#               "April" = "apr")
+#           ),
+#           plotlyOutput("mcc_r"),
+#           br(),
+#           formattableOutput("mcc_plt_r")
+#         )
+#       )),
+#       tabPanel(
+#         "Grocer Spendings",
+#         splitLayout(
+#           verticalLayout(
+#             selectInput("grocer", "Frequency:",
+#                         c("Annually" = "annually",
+#                           "Weekly" = "weekly",
+#                           "Day of the Week" = "weekday")
+#             ),
+#             plotlyOutput("grocer_plt")
+#           ),
+#           verticalLayout(
+#             h3(strong("Summary of Graphs")),
+#             h4(em("Annual")),
+#             p("Analysis"),
+#             h4(em("Weekly")),
+#             p("analysis"),
+#             h4(em("Day of the Week")),
+#             p("analysis")
+#           )
+#         )
+#       ),
+#     tabPanel(
+#       "Walmart vs SNAP Users Map Overlay",
+#       style="padding: 20px",
+#       fluidRow(
+#         column(8,leafletOutput("facteus",height="80vh")),
+#         column(4, formattableOutput("facteus_plt"), style='white-space: normal; overflow-y: scroll; height: 80vh')
+#         )
+#       )
+#     )
 
 ```
 
-```{r body-information}
+```{r body-information, eval = FALSE}
 
-body_information <-
-  sidebarLayout(
-    position="right",
-    sidebarPanel(
-      width=3,
-      h4(strong("External Resources")),
-      p(a("USDA Website",href="https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program")),
-      p(a("Application Resources by State", href="https://www.fns.usda.gov/snap/state-directory")),
-      p(a("Feeding America",href="https://www.feedingamerica.org/take-action/advocate/federal-hunger-relief-programs/snap"))
-    ),
-    mainPanel(
-      width=9,
-      h3(strong("What is SNAP?")),
-      p("SNAP stands for the Supplemental Nutrition Assistance Program, formerly known as food stamps. It is a federal nutrition program that relieves the financial burden of providing meals and groceries for lower-income families. SNAP benefits can be used to purchase food at grocery stores, convenience stores, and some farmers' markets and co-op food programs."),
-      p("WIC is essentially SNAP for the supplemental needs of women, infants, and children. WIC provides federal grants to states for supplemental foods, health care referrals, and nutrition education for low-income pregnant, breastfeeding, and non-breastfeeding postpartum women, and to infants and children up to age five who are found to be at nutritional risk."),
-      p("For more information, refer to the provided links on the right.")
-    )
-  )
+# body_information <-
+#   sidebarLayout(
+#     position="right",
+#     sidebarPanel(
+#       width=3,
+#       h4(strong("External Resources")),
+#       p(a("USDA Website",href="https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program")),
+#       p(a("Application Resources by State", href="https://www.fns.usda.gov/snap/state-directory")),
+#       p(a("Feeding America",href="https://www.feedingamerica.org/take-action/advocate/federal-hunger-relief-programs/snap"))
+#     ),
+#     mainPanel(
+#       width=9,
+#       h3(strong("What is SNAP?")),
+#       p("SNAP stands for the Supplemental Nutrition Assistance Program, formerly known as food stamps. It is a federal nutrition program that relieves the financial burden of providing meals and groceries for lower-income families. SNAP benefits can be used to purchase food at grocery stores, convenience stores, and some farmers' markets and co-op food programs."),
+#       p("WIC is essentially SNAP for the supplemental needs of women, infants, and children. WIC provides federal grants to states for supplemental foods, health care referrals, and nutrition education for low-income pregnant, breastfeeding, and non-breastfeeding postpartum women, and to infants and children up to age five who are found to be at nutritional risk."),
+#       p("For more information, refer to the provided links on the right.")
+#     )
+#   )
 
 
 ```
 
-```{r shiny-app-ui-server}
+```{r shiny-app-ui-server, eval = FALSE}
 
-ui <-
-  navbarPage(
-    "Project SNAP",
-    theme=shinytheme("flatly"),
-    tabPanel(
-      "Bay Area Study",
-      body_bay
-    ),
-    tabPanel(
-      "Shopping Patterns",
-      body_shopping
-    ),
-    tabPanel(
-      "What is SNAP?",
-      body_information
-    )
-  )
-
-server <- function(input,output,session){
-  output$snapmap <- renderLeaflet({ mpi })
-  observeEvent(input$go,{
-    loc <- geocode_OSM(input$address,as.sf = T)
-    leafletProxy("snapmap") %>%
-      removeShape(c("user_address","user_address_radius")) %>%
-      addMarkers(
-        lng=loc$lon,
-        lat=loc$lat,
-        icon=homeIcon,
-        layerId="user_address") %>%
-      addCircles(
-        data=loc,
-        lng = loc$lon,
-        lat = loc$lat,
-        color = "#81b1f3",
-        weight = 0.25,
-        radius = input$slider * 1609.344, # 2-mile radius
-        fillOpacity = 0.5,
-        label = paste(input$slider,"-mile radius"),
-        highlightOptions =
-          highlightOptions(
-            weight = 2,
-            opacity = 1
-            ),
-        layerId = "user_address_radius"
-      ) %>%
-      flyTo(loc$lon, loc$lat, zoom = 16-input$slider)
-  })
-
-  output$facteus <- renderLeaflet({ fp })
-  output$facteus_plt <- renderFormattable({ walsnap_tbl })
-  output$transactions <- renderPlot({ wplt })
-  output$transactions2 <- renderPlotly({ ioplt })
-  output$mcc_l <- renderPlotly({ 
-    m <- input$mcc_month_l
-    if (m == "jan") {
-      jan$plt
-    } else if (m == "feb") {
-      feb$plt
-    } else if (m == "mar") {
-      mar$plt
-    } else if (m == "apr") {
-      apr$plt
-    }
-  })
-  output$mcc_plt_l <- renderFormattable({ 
-    m <- input$mcc_month_l
-    if (m == "jan") {
-      jan$tbl
-    } else if (m == "feb") {
-      feb$tbl
-    } else if (m == "mar") {
-      mar$tbl
-    } else if (m == "apr") {
-      apr$tbl
-    }
-  })
-  output$mcc_r <- renderPlotly({ 
-    m <- input$mcc_month_r
-    if (m == "jan") {
-      jan$plt
-    } else if (m == "feb") {
-      feb$plt
-    } else if (m == "mar") {
-      mar$plt
-    } else if (m == "apr") {
-      apr$plt
-    }
-  })
-  output$mcc_plt_r <- renderFormattable({ 
-    m <- input$mcc_month_r
-    if (m == "jan") {
-      jan$tbl
-    } else if (m == "feb") {
-      feb$tbl
-    } else if (m == "mar") {
-      mar$tbl
-    } else if (m == "apr") {
-      apr$tbl
-    }
-  })
-  output$grocer_plt <- renderPlotly({  
-    m <- input$grocer
-      if (m == "annually") {
-        grocer_annual
-      } else if (m == "weekly") {
-        grocer_weekly
-      } else if (m == "weekday") {
-        grocer_weekday
-      }
-    })
-
-  session$onSessionEnded(stopApp)
-}
-
-runApp(shinyApp(ui,server),launch.browser=T)
+# ui <-
+#   navbarPage(
+#     "Project SNAP",
+#     theme=shinytheme("flatly"),
+#     tabPanel(
+#       "Bay Area Study",
+#       body_bay
+#     ),
+#     tabPanel(
+#       "Shopping Patterns",
+#       body_shopping
+#     ),
+#     tabPanel(
+#       "What is SNAP?",
+#       body_information
+#     )
+#   )
+# 
+# server <- function(input,output,session){
+#   output$snapmap <- renderLeaflet({ mpi })
+#   observeEvent(input$go,{
+#     loc <- geocode_OSM(input$address,as.sf = T)
+#     leafletProxy("snapmap") %>%
+#       removeShape(c("user_address","user_address_radius")) %>%
+#       addMarkers(
+#         lng=loc$lon,
+#         lat=loc$lat,
+#         icon=homeIcon,
+#         layerId="user_address") %>%
+#       addCircles(
+#         data=loc,
+#         lng = loc$lon,
+#         lat = loc$lat,
+#         color = "#81b1f3",
+#         weight = 0.25,
+#         radius = input$slider * 1609.344, # 2-mile radius
+#         fillOpacity = 0.5,
+#         label = paste(input$slider,"-mile radius"),
+#         highlightOptions =
+#           highlightOptions(
+#             weight = 2,
+#             opacity = 1
+#             ),
+#         layerId = "user_address_radius"
+#       ) %>%
+#       flyTo(loc$lon, loc$lat, zoom = 16-input$slider)
+#   })
+# 
+#   output$facteus <- renderLeaflet({ fp })
+#   output$facteus_plt <- renderFormattable({ walsnap_tbl })
+#   output$transactions <- renderPlot({ wplt })
+#   output$transactions2 <- renderPlotly({ ioplt })
+#   output$mcc_l <- renderPlotly({ 
+#     m <- input$mcc_month_l
+#     if (m == "jan") {
+#       jan$plt
+#     } else if (m == "feb") {
+#       feb$plt
+#     } else if (m == "mar") {
+#       mar$plt
+#     } else if (m == "apr") {
+#       apr$plt
+#     }
+#   })
+#   output$mcc_plt_l <- renderFormattable({ 
+#     m <- input$mcc_month_l
+#     if (m == "jan") {
+#       jan$tbl
+#     } else if (m == "feb") {
+#       feb$tbl
+#     } else if (m == "mar") {
+#       mar$tbl
+#     } else if (m == "apr") {
+#       apr$tbl
+#     }
+#   })
+#   output$mcc_r <- renderPlotly({ 
+#     m <- input$mcc_month_r
+#     if (m == "jan") {
+#       jan$plt
+#     } else if (m == "feb") {
+#       feb$plt
+#     } else if (m == "mar") {
+#       mar$plt
+#     } else if (m == "apr") {
+#       apr$plt
+#     }
+#   })
+#   output$mcc_plt_r <- renderFormattable({ 
+#     m <- input$mcc_month_r
+#     if (m == "jan") {
+#       jan$tbl
+#     } else if (m == "feb") {
+#       feb$tbl
+#     } else if (m == "mar") {
+#       mar$tbl
+#     } else if (m == "apr") {
+#       apr$tbl
+#     }
+#   })
+#   output$grocer_plt <- renderPlotly({  
+#     m <- input$grocer
+#       if (m == "annually") {
+#         grocer_annual
+#       } else if (m == "weekly") {
+#         grocer_weekly
+#       } else if (m == "weekday") {
+#         grocer_weekday
+#       }
+#     })
+# 
+#   session$onSessionEnded(stopApp)
+# }
+# 
+# runApp(shinyApp(ui,server),launch.browser=T)
 ```
 
-```{r archive, include=FALSE}
+```{r archive, include=FALSE, eval = FALSE}
 
   # output$snapmap <- renderLeaflet({
   #   group <- vector()
@@ -1372,5 +1299,76 @@ runApp(shinyApp(ui,server),launch.browser=T)
 #
 # apr_grocers <- plot_grocers("04")
 # apr_grocers
+
+#
+# sidebar <- dashboardSidebar(
+#   width = "20vw",
+#   collapsed = T,
+#   sidebarMenu(
+#     menuItem(
+#       "Bay Area Study",
+#       tabName = "bay",
+#       icon = icon("search")
+#       ),
+#     menuItem(
+#       "SNAP Access",
+#       tabName = "access",
+#       icon = icon("universal-access")
+#       ),
+#     menuItem(
+#       "Grocery Shopping Patterns",
+#       icon = icon("shopping-cart"),
+#       tabName = "facteus",
+#       badgeLabel = "new",
+#       badgeColor = "maroon"
+#       ),
+#     menuItem(
+#       "Sources",
+#       icon = icon("book"),
+#       tabName = "sources"
+#       )
+#     )
+# )
+#
+
+# body <-
+#   tabPanel(
+#     ,
+#     icon = icon("search"),
+# 
+#         )
+#       ),
+#     tabItem(
+#       tabName = "access",
+#       tabBox(
+#         id = "tabset1",
+#         width=12,
+#         tabPanel(
+#           "About the Data",
+#           paste("This section contains a brief overview of every single data map that we have in this section, and just
+#                 to test the lengths of this box just to make sure there are no bounds i am going to keep writing and writing
+#                 until i stop thinking of words which is about now. it works! perfect.")
+#         ),
+#         tabPanel(
+#           "Key Facts",
+#           "Tab content 2"),
+#         tabPanel(
+#           "Map Visual",
+#           leafletOutput("snap_access",height="82vh")
+#           )
+#       )
+#     ),
+#     tabItem(
+#       tabName = "facteus",
+# 
+#       ),
+#     tabItem(
+#       tabName = "sources",
+#       HTML(
+#         "<h2>Where does Facteus Data come from?</h2>
+#         <p>
+#           All the data available here from Facteus comes from our Synthetic Data panel of debit cards. We have partnered directly with banks to use our patent-pending synthetic data process to create a synthetic version of their transaction data. The entire process is done behind the financial institution’s firewall and Facteus never has access to the original data. Our patent-pending process obfuscates each transaction to protect individual privacy and ensure a zero exact match possibility. Mathematical noise is injected into key data record attributes, however, when the data is analyzed in aggregate it retains 99.97% of the statistical attributes as the original data set.
+#         </p>")
+#     )
 ```
 
