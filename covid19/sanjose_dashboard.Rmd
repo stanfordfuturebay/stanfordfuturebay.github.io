@@ -1,0 +1,2018 @@
+---
+title: "San Jose Social Distancing Compliance"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    css: styles.css
+---
+
+<style>
+.datatables{
+    overflow: auto;
+}
+</style>
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(leaflet)
+library(plotly)
+library(sf)
+library(DT)
+library(shinydashboard)
+
+# Keeping this data private, per Safegraph's request. Will need to publish the dashboard again with every new data update.
+sj_percenthome_bg <- 
+  readRDS("sj_percenthome_bg.rds") %>% 
+  filter(origin_census_block_group != "060855051002")
+
+sj_blockgroups <- readRDS("sj_blockgroups.rds")
+
+sj_citycouncil_districts <- readRDS("sj_citycouncil_districts.rds")
+
+sj_boundary <- readRDS("sj_boundary.rds")
+
+sj_centroid <-
+  sj_boundary %>% 
+  st_centroid() %>% 
+  st_coordinates()
+
+block_Ids <-
+  sj_percenthome_bg %>% 
+  pull(origin_census_block_group) %>% 
+  as.character() %>% 
+  unique()
+
+district_Ids <- 1:10 %>% as.character()
+
+teal_pal <- colorNumeric(
+  palette = colorRamp(c("#FFFFFF", "#015a68"), interpolate="spline"),
+  domain = 
+    sj_percenthome_bg %>% 
+    pull(`% Leaving Home`) %>% 
+    unique()
+)
+
+#Weekday vs. Weekend comparison code
+weekday_found <- readRDS("weekday_found.rds")
+weekend_found <- readRDS("weekend_found.rds")
+weekdays_reduced <- readRDS("weekdays_reduced.rds")
+weekends_reduced <- readRDS("weekends_reduced.rds")
+
+#Parks
+all_parks_geometry <- 
+  readRDS('park_output_geometry.rds')
+
+all_parks <- 
+  readRDS('park_output.rds') %>% 
+  filter(Name != "Guadalupe River Park Community Garden")
+
+#max_temp and max get the maximum y value for the parks time_series
+max_global <-
+  all_parks %>% 
+  pull(mov_avg) %>% 
+  max()+10
+
+max_temp <-
+  all_parks %>%
+  group_by(date) %>%
+  summarise(mean = mean(mov_avg),sd = sd(mov_avg))
+
+max <- max(max_temp$mean + max_temp$sd)+10
+
+park_Ids <- paste0("park",1:nrow(all_parks))
+
+green_pal <- colorNumeric(
+  palette = "Greens",
+  domain = 
+    c(0,all_parks %>% 
+    pull(Visits) %>% 
+    unique())
+)
+
+#weekends
+weekends <-
+  sj_percenthome_bg %>% 
+  filter(!duplicated(date)) %>% 
+  arrange(date) %>% 
+  mutate(
+    x = 
+      case_when(
+        (date %>% as.numeric()) %% 7 == 1 ~ date + 1,
+        (date %>% as.numeric()) %% 7 == 4 ~ date - 1,
+        TRUE ~ date
+      ),
+    y = 
+      ifelse(
+        (date %>% as.numeric()) %% 7 %in% c(2,3),
+        max_global,
+        0
+      )
+  ) %>% 
+  dplyr::select(x,y)
+
+#San Jose weather data
+sj_weather <- readRDS('sj_weather.rds')
+
+rain <-
+  sj_weather %>%
+  group_by(date) %>%
+  summarize(rain_avg = mean(precip)) %>%
+  mutate(
+    graph_height = ifelse(as.numeric(rain_avg) >= 9.5,max_global,0 ),
+    normalization = rain_avg/max(rain_avg)*60+30,
+    normalization2 = rain_avg/max(rain_avg)
+  )
+
+sun <- 
+  sj_weather %>%
+  group_by(date) %>%
+  summarize(sun_avg = mean(srad)) %>%
+  mutate(
+    first_norm = sun_avg - min(sun_avg),
+    normalization = first_norm/ max(first_norm)*60 + 30,
+    normalization2 = first_norm/max(first_norm)
+  )
+
+weather_Ids <-
+  sj_weather %>% 
+  pull(geoid) %>%
+  as.character() %>% 
+  unique() %>% 
+  paste0("w",.)
+
+blue_pal <- colorNumeric(
+  palette = "Blues",
+  domain = 
+    c(0.4,sj_weather %>% 
+    pull(precip) %>% 
+    unique())
+)
+
+#non-essential businesses
+all_NEB <- 
+  readRDS("sj_all_NE_businesses_daily.rds") %>% 
+  filter(is.finite(Visits)) %>% 
+  mutate(
+    Sector = ifelse(
+      nchar(Sector) > 15,
+      paste0(substr(Sector,1,13),".."),
+      Sector
+    )
+  )
+
+NEB_Ids <- 
+  all_NEB %>% 
+  pull(safegraph_place_id) %>% 
+  as.character() %>% 
+  unique()
+
+NEB_pal <- colorFactor(
+  palette = "Spectral",
+  domain = all_NEB$Sector
+)
+
+#demographics loading
+sj_dem_distancing_combined <- readRDS("sj_socialdistancing_demdata_prepost_v2.rds")
+```
+
+Home
+===================================== 
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+sliderInput(
+  "date", 
+  label = "Date:",
+  min = min(sj_percenthome_bg$date),
+  max = max(sj_percenthome_bg$date),
+  value = max(sj_percenthome_bg$date),
+  timeFormat = "%m/%d"
+)
+
+radioButtons(
+  "districts",
+  "District to highlight on map and chart:",
+  c(
+    "None" = "",
+    "District 1" = "1",
+    "District 2" = "2",
+    "District 3" = "3",
+    "District 4" = "4",
+    "District 5" = "5",
+    "District 6" = "6",
+    "District 7" = "7",
+    "District 8" = "8",
+    "District 9" = "9",
+    "District 10" = "10"
+  ),
+  selected = ""
+)
+```
+
+See more information at the [Dashboard FAQ](https://stanfordfuturebay.github.io/sanjose_faq.html). Data courtesy of [Safegraph](https://www.safegraph.com/covid-19-data-consortium). Lead student contributors: Julia Wagenfehr, Cameron Tenner, Simone Speizer, Maeve Givens
+
+Column
+-----------------------------------------------------------------------
+
+### Percent of People Leaving Home in San Jose, by Block Group
+
+```{r}
+leafletOutput("map")
+```
+
+```{r, context="server"}
+output$map <- renderLeaflet({
+  
+  leaflet() %>% 
+    addProviderTiles(providers$CartoDB.Positron) %>% 
+    addMapPane("blocks", 410) %>% 
+    addMapPane("districts", 420) %>% 
+    addLegend(
+      data = sj_percenthome_bg,
+      pal = teal_pal,
+      values = ~`% Leaving Home`,
+      title = "% Leaving<br>Home",
+      opacity = 0.5
+    ) %>% 
+    setView(-121.87,37.30,10)
+})
+
+outputOptions(output, "map", priority = 14, suspendWhenHidden = F)
+```
+
+```{r, context="server"}
+observeEvent(input$date,{
+
+  leafletProxy("map") %>% 
+    addPolygons(
+      data = sj_percenthome_bg %>% 
+        filter(date == isolate(input$date)) %>% 
+        left_join(sj_blockgroups, by ="origin_census_block_group") %>%
+        st_as_sf(),
+      layerId = block_Ids,
+      fillColor = ~teal_pal(`% Leaving Home`),
+      color = "white",
+      weight = 0.5,
+      opacity = 0.5,
+      fillOpacity = 0.7,
+      label = ~paste0(`% Leaving Home`,"% leaving home"),
+      highlightOptions = 
+        highlightOptions(
+          weight = 2.25,
+          opacity = 1
+        ),
+      options = 
+        pathOptions(
+          pane = "blocks"
+        )
+    ) %>% 
+    addPolygons(
+      data = sj_weather %>% 
+        filter(date == input$date) %>%
+        left_join(
+          sj_blockgroups,
+          by = c("geoid" = "origin_census_block_group")
+        ) %>%
+        st_as_sf(),
+      layerId = weather_Ids,
+      fill = F,
+      color = ~blue_pal(precip),
+      weight = 1,
+      opacity = 1,
+      label = ~paste0(precip," mm total precipitation on ", date,"."),
+      options = 
+        pathOptions(
+          pane = "blocks"
+        )
+    ) 
+  
+}, priority = 7)
+```
+
+```{r, context="server"}
+observeEvent(input$districts,{
+  
+  leafletProxy("map") %>%
+    removeShape(district_Ids) %>%
+    addPolygons(
+      data =
+        sj_citycouncil_districts %>%
+        filter(id %in% input$districts),
+      layerId = district_Ids,
+      fill = F,
+      color = "#F58311",
+      weight = 2,
+      opacity = 1,
+      label = input$districts,
+      highlightOptions = 
+        highlightOptions(
+          weight = 2.25,
+          opacity = 1
+        ),
+      options = 
+        pathOptions(
+          pane = "districts"
+        )
+    )
+}, priority = 6)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### {.no-padding}
+
+<style>
+.nav-tabs-custom {
+  margin-top:-1px;
+  margin-left:-1px;
+  margin-right:-1px;
+}
+</style>
+
+```{r}
+tabBox(
+  width = "100%",
+  height = "45vh",
+  tabPanel(
+    "City vs. District", 
+    plotlyOutput("graph", height = "38vh"),
+    style = "width:100%; height:100%"
+  ),
+  tabPanel(
+    "Weekends vs. Weekdays",
+    plotlyOutput("comparisongraph", height = "38vh"),
+    style = "width:100%; height:100%"
+  )
+)
+```
+
+```{r, context="server"}
+output$graph <- renderPlotly({
+  
+  data <-
+    unique(sj_percenthome_bg$date) %>% 
+    map_dfr(function(specificdate){
+      
+      sj_percenthome_bg_altered <-
+        sj_percenthome_bg %>% 
+        filter(date == specificdate)
+      
+      data.frame(
+        date = specificdate,
+        mean_percenthome = round(mean(sj_percenthome_bg_altered$`% Leaving Home`),digits = 1),
+        sd_percenthome = round(sd(sj_percenthome_bg_altered$`% Leaving Home`),digits = 1)
+      )
+    }) %>% 
+    arrange(date)
+
+  plot_ly(
+    data = data,
+    x = ~date
+  ) %>% 
+    add_trace(
+      x = weekends$x,
+      y = weekends$y,
+      type = "scatter",
+      mode = "lines",
+      fill = "tozeroy",
+      fillcolor = "rgba(112,112,112,0.25)",
+      line = list(color = "transparent"),
+      name = "Weekends",
+      showlegend=T
+    ) %>% 
+    add_trace(
+      x = rain$date,
+      y = rain$normalization,
+      type = "scatter",
+      mode = "lines",
+      fill = "tozeroy",
+      fillcolor = "rgba(0,85,162,0.25)",
+      line = list(color = "transparent"),
+      name = paste0("Rain"),
+      showlegend=T,
+      visible = "legendonly"
+    ) %>% 
+    add_trace(
+      x = sun$date,
+      y = sun$normalization,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(229,168,35)"),
+      name = paste0("Solar Radiation"),
+      showlegend=T,
+      visible = "legendonly"
+    ) %>% 
+    add_trace(
+      x = c("2020-03-16" %>% as.Date(),"2020-03-16" %>% as.Date()),
+      y = c(-10,110),
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(63,63,63)",dash = "dot"),
+      name = "Shelter-in-Place Order",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      y = ~mean_percenthome-sd_percenthome,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "transparent"),
+      name = "City, +/- 1 S.D.",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      y = ~mean_percenthome+sd_percenthome,
+      type = "scatter",
+      mode = "lines",
+      fill = "tonexty",
+      fillcolor = "rgba(0,110,127,0.25)",
+      line = list(color = "transparent"),
+      name = "City, +/- 1 S.D.",
+      showlegend=T
+    ) %>% 
+    add_trace(
+      y = ~mean_percenthome,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(0,0,0)"),
+      name = "City, Mean",
+      showlegend=T
+    ) %>% 
+    add_trace(
+      type = "scatter",
+      mode = "lines",
+      x = c(isolate(input$date),isolate(input$date)),
+      y = c(-10,110),
+      line = list(color = "#006E7F"),
+      name = "Current Map View",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      type = "scatter",
+      mode = "lines",
+      x = c(isolate(input$date),isolate(input$date)),
+      y = c(-10,110),
+      line = list(color = "#006E7F"),
+      name = "Current Map View",
+      showlegend=F
+    ) %>% 
+    layout(
+      margin = list(t = 25),
+      paper_bgcolor='rgb(255,255,255)', 
+      plot_bgcolor='rgb(229,229,229)',
+      xaxis = list(
+        title = "",
+        gridcolor = 'rgb(255,255,255)',
+        showgrid = TRUE,
+        showline = FALSE,
+        showticklabels = TRUE,
+        tickcolor = 'rgb(127,127,127)',
+        ticks = 'outside',
+        zeroline = FALSE,
+        fixedrange = T,
+        range = c(min(sj_percenthome_bg$date),max(sj_percenthome_bg$date)+1)
+      ),
+      yaxis = list(
+        title = "Percent Leaving Home",
+        gridcolor = 'rgb(255,255,255)',
+        showgrid = TRUE,
+        showline = FALSE,
+        showticklabels = TRUE,
+        tickcolor = 'rgb(127,127,127)',
+        ticks = 'outside',
+        zeroline = FALSE,
+        fixedrange = T,
+        range = c(30,90)
+      ),
+      annotations = list(
+        xref = "x",
+        yref = "y",
+        x = "2020-03-16" %>% as.Date(),
+        y = 90,
+        text = "Shelter-in-Place Order",
+        xanchor = "center",
+        yanchor = "bottom",
+        showarrow = F
+      ),
+      legend = list(
+        x = 0.05, 
+        y = 0.05,
+        bgcolor = 'rgba(229,229,229,0.5)'
+      )
+    ) %>% 
+    config(displayModeBar = F)
+  
+})
+
+outputOptions(output, "graph", priority = 12, suspendWhenHidden = F)
+```
+
+```{r, context="server"}
+observeEvent(input$districts,{
+    
+  if(input$districts == ""){
+    
+    plotlyProxy("graph") %>% 
+      plotlyProxyInvoke("deleteTraces", list(7,8)) %>%
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(isolate(input$date),isolate(input$date)),
+          y = c(-10,110),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      ) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(isolate(input$date),isolate(input$date)),
+          y = c(-10,110),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  } else {
+    
+    district_data <-
+      sj_percenthome_bg %>%
+      filter(DISTRICTS %in% input$districts)
+  
+    district_data <-
+      unique(district_data$date) %>%
+      map_dfr(function(specificdate){
+  
+        sj_percenthome_bg_altered <-
+          district_data %>%
+          filter(date == specificdate)
+  
+        data.frame(
+          date = specificdate,
+          mean_percenthome = round(mean(sj_percenthome_bg_altered$`% Leaving Home`),digits = 1),
+          sd_percenthome = round(sd(sj_percenthome_bg_altered$`% Leaving Home`),digits = 1)
+        )
+      })
+  
+    plotlyProxy("graph") %>% 
+      plotlyProxyInvoke("deleteTraces", list(7,8)) %>%
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          x = district_data$date,
+          y = district_data$mean_percenthome,
+          type = "scatter",
+          mode = "lines",
+          line = list(color = "#F58311"),
+          name = paste0("District ",input$districts,", Mean"),
+          showlegend=T
+        )
+      ) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(isolate(input$date),isolate(input$date)),
+          y = c(-10,110),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  }
+
+}, priority = 9)
+```
+
+```{r, context="server"}
+observeEvent(input$date,{
+  
+  if(isolate(input$districts) == ""){
+    
+    plotlyProxy("graph") %>% 
+      plotlyProxyInvoke("deleteTraces",  list(7,8)) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(input$date,input$date),
+          y = c(-10,110),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      ) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(input$date,input$date),
+          y = c(-10,110),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  } else {
+    
+    plotlyProxy("graph") %>% 
+      plotlyProxyInvoke("deleteTraces", 8) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(input$date,input$date),
+          y = c(-10,110),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  }
+
+}, priority = 8)
+```
+
+```{r, context="server"}
+output$comparisongraph <- renderPlotly({
+plot_ly() %>% 
+  add_trace(
+    x = rain$date,
+    y = rain$normalization,
+    type = "scatter",
+    mode = "lines",
+    fill = "tozeroy",
+    fillcolor = "rgba(0,85,162,0.25)",
+    line = list(color = "transparent"),
+    name = paste0("Rain"),
+    showlegend=T,
+    visible = "legendonly"
+  ) %>% 
+  add_trace(
+    x = sun$date,
+    y = sun$normalization,
+    type = "scatter",
+    mode = "lines",
+    line = list(color = "rgb(229,168,35)"),
+    name = paste0("Solar Radiation"),
+    showlegend=T,
+    visible = "legendonly"
+  ) %>% 
+  add_trace(
+    x = weekdays_reduced$date,
+    y = weekdays_reduced$mean,
+    name = "Weekdays",
+    type = "bar",
+    marker = list(
+      color = "rgba(0,110,127,0.25)"
+    ),
+    showlegend = F
+  ) %>%
+  add_trace(
+    x = weekends_reduced$date,
+    y = weekends_reduced$mean,
+    name = "Weekends",
+    type = "bar",
+    marker = list(color = "rgba(112,112,112,0.5)"),
+    showlegend = F
+  ) %>% 
+  add_trace(
+    x = weekend_found$date,
+    y = weekend_found$point_mean,
+    type = "scatter",
+    mode = "lines+markers",
+    marker = list(color = "rgb(63,63,63)"),
+    line = list(color = "rgb(63,63,63)"),
+    name = "Weekends"
+  ) %>%
+  add_trace(
+    x = weekday_found$date,
+    y = weekday_found$point_mean,
+    type = "scatter",
+    mode = "lines+markers",
+    marker = list(color = "#015a68"),
+    line = list(color = "#015a68"),
+    name = "Weekdays"
+  ) %>%
+  add_trace(
+    x = c("2020-03-16" %>% as.Date(),"2020-03-16" %>% as.Date()),
+    y = c(-10,110),
+    type = "scatter",
+    mode = "lines",
+    line = list(color = "rgb(63,63,63)",dash = "dot"),
+    name = "Shelter-in-Place Order",
+    showlegend=F
+  ) %>% 
+  add_trace(
+    type = "scatter",
+    mode = "lines",
+    x = c(isolate(input$date),isolate(input$date)),
+    y = c(-10,110),
+    line = list(color = "#006E7F"),
+    name = "Current Map View",
+    showlegend=F
+  ) %>% 
+  layout(
+    margin = list(t = 25),
+    paper_bgcolor='rgb(255,255,255)', 
+    plot_bgcolor='rgb(229,229,229)',
+    xaxis = list(
+      title = "",
+      gridcolor = 'rgb(255,255,255)',
+      showgrid = TRUE,
+      showline = FALSE,
+      showticklabels = TRUE,
+      tickcolor = 'rgb(127,127,127)',
+      ticks = 'outside',
+      zeroline = FALSE,
+      fixedrange = T,
+      range = c(min(sj_percenthome_bg$date),max(sj_percenthome_bg$date)+1)
+    ),
+    yaxis = list(
+      title = "Percent Leaving Home",
+      gridcolor = 'rgb(255,255,255)',
+      showgrid = TRUE,
+      showline = FALSE,
+      showticklabels = TRUE,
+      tickcolor = 'rgb(127,127,127)',
+      ticks = 'outside',
+      zeroline = FALSE,
+      fixedrange = T,
+      range = c(30,90)
+    ),
+    annotations = list(
+      xref = "x",
+      yref = "y",
+      x = "2020-03-16" %>% as.Date(),
+      y = 90,
+      text = "Shelter-in-Place Order",
+      xanchor = "center",
+      yanchor = "bottom",
+      showarrow = F
+    ),
+    legend = list(
+      xanchor = "right",
+      x = 0.95, 
+      y = 0.95,
+      bgcolor = 'rgba(229,229,229,0.5)'
+    )
+  ) %>% 
+  config(displayModeBar = F)
+
+})
+
+outputOptions(output, "comparisongraph", priority = 21, suspendWhenHidden = F)
+```
+
+```{r}
+observeEvent(input$date,{
+  
+  plotlyProxy("comparisongraph") %>% 
+    plotlyProxyInvoke("deleteTraces", list(7)) %>% 
+    plotlyProxyInvoke(
+      "addTraces",
+      list(
+        type = "scatter",
+        mode = "lines",
+        x = c(input$date,input$date),
+        y = c(-10,110),
+        line = list(color = "#006E7F"),
+        name = "Current Map View",
+        showlegend=F
+      )
+    )
+  
+})
+```
+
+
+### Key Insights (last updated 5/11, based on data up to 5/7) {data-height=500}
+
+<style>
+ol ul {
+    margin-bottom: 10px;
+}
+</style>
+
+1. **The average percent of people leaving home in San Jose reached its highest on Thursday, April 30 (55%), since the shelter-in-place order was enacted on March 16**. The day of greatest compliance continues to be Sunday April 5 (40.7% leaving home), though rain was likely a factor. More detailed weather analysis is coming soon.
+
+2. In previous weeks, there was a pattern of increased stay-at-home compliance on the weekends. However, in the first week of May, this pattern nearly inverted for the first time in 2020 (50% leaving home on weekdays vs. 51% leaving home on weekends). More analysis is needed to understand what changes in behavior are driving this inversion, but **it may suggest that the pattern of “shelter-in-place during the week, leave home on the weekends” is overriding traditional work patterns**.
+
+3. There has been no change in the district compliance comparisons in May. The three categories remain as follows:
+
+   * Above Average Compliance: District 1, District 4, District 8, District 10
+   * Nearly Average Compliance: District 2, District 6, District 7 District 9
+   * **Below Average Compliance: District 3, District 5**
+
+Parks
+=====================================
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+The following data are from [Safegraph](https://www.safegraph.com/covid-19-data-consortium) and are estimates based on a representative sample of devices (scaled up to full population visits using the "Scaling Factor"). See more information at the [Dashboard FAQ](https://stanfordfuturebay.github.io/sanjose_faq.html).
+
+```{r}
+sliderInput(
+  "parkdate", 
+  label = "Date:",
+  min = min(all_parks$date),
+  max = max(all_parks$date),
+  value = max(all_parks$date),
+  timeFormat = "%m/%d"
+)
+
+parkchoices <-
+  c(
+    "",
+    all_parks$Name %>% 
+      unique() %>% 
+      as.character() %>% 
+      sort()
+  )
+
+selectizeInput(
+  "parkselect", 
+  label = "Highlight one park on map/chart:", 
+  choices = parkchoices, 
+  selected = "",
+  multiple = FALSE,
+  width = NULL, 
+  size = 1,
+  options = list(
+    placeholder = "Type here"
+  )
+)
+
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Map of Park Visits, by Date {data-height=500}
+
+```{r}
+leafletOutput("parkmap")
+```
+
+```{r, context="server"}
+output$parkmap <- renderLeaflet({
+  
+  leaflet() %>% 
+    addProviderTiles(providers$CartoDB.Positron) %>% 
+    addMapPane("blocks", 410) %>% 
+    addMapPane("parks", 420) %>% 
+    addPolygons(
+      data = sj_boundary,
+      fill = F,
+      color = "gray",
+      weight = 1,
+      label = ~NAME
+    )
+})
+
+outputOptions(output, "parkmap", priority = 11, suspendWhenHidden = F)
+```
+
+```{r, context="server"}
+observeEvent(input$parkdate,{
+  
+  leafletProxy("parkmap") %>% 
+    addPolygons(
+      data = all_parks %>% 
+        filter(date == input$parkdate) %>%
+        left_join(
+          all_parks_geometry,
+          by = "safegraph_place_id"
+        ) %>%
+        st_as_sf(),
+      layerId = park_Ids,
+      fillColor = ~green_pal(Visits),
+      color = "green",
+      weight = 0.5,
+      opacity = 0.5,
+      fillOpacity = 0.5,
+      label = ~paste0(Name, ": ", Visits," total visits on day of ", date,"."),
+      highlightOptions = 
+        highlightOptions(
+          weight = 2.25,
+          opacity = 1
+        ),
+      options = 
+        pathOptions(
+          pane = "parks"
+        )
+    ) %>% 
+    addPolygons(
+      data = all_parks %>% 
+        filter(date == input$parkdate) %>% 
+        filter(Name == isolate(input$parkselect)) %>% 
+        left_join(
+          all_parks_geometry,
+          by = "safegraph_place_id"
+        ) %>%
+        st_as_sf(),
+      layerId = "parkselect",
+      fill = F,
+      color = "red",
+      weight = 2,
+      opacity = 1,
+      options = 
+        pathOptions(
+          pane = "parks"
+        )
+    ) %>% 
+    addPolygons(
+      data = sj_weather %>% 
+        filter(date == input$parkdate) %>%
+        left_join(
+          sj_blockgroups,
+          by = c("geoid" = "origin_census_block_group")
+        ) %>%
+        st_as_sf(),
+      layerId = weather_Ids,
+      fillColor = ~blue_pal(precip),
+      color = F,
+      fillOpacity = 0.5,
+      label = ~paste0(precip," mm total precipitation on ", date,"."),
+      highlightOptions = 
+        highlightOptions(
+          weight = 2.25,
+          opacity = 1
+        ),
+      options = 
+        pathOptions(
+          pane = "blocks"
+        )
+    )  
+  
+}, priority = 4)
+```
+
+```{r, context="server"}
+observeEvent(input$parkselect,{
+  
+  if(input$parkselect != ""){
+    
+    coords <- all_parks %>% 
+      filter(Name == input$parkselect) %>% 
+      .[1,] %>%
+      left_join(
+          all_parks_geometry,
+          by = "safegraph_place_id"
+        ) %>%
+      st_as_sf() %>% 
+      st_transform(4326) %>% st_centroid() %>% st_coordinates()
+    
+    leafletProxy("parkmap") %>% 
+      addPolygons(
+        data = all_parks %>% 
+          filter(date == isolate(input$parkdate)) %>% 
+          filter(Name == input$parkselect) %>%
+          left_join(
+            all_parks_geometry,
+            by = "safegraph_place_id"
+          ) %>%
+          st_as_sf() %>% 
+          st_transform(4326),
+        layerId = "parkselect",
+        fill = F,
+        color = "red",
+        weight = 2,
+        opacity = 1,
+        options = 
+        pathOptions(
+          pane = "parks"
+        )
+      ) %>% 
+      setView(lng = coords[1,1],lat = coords[1,2], zoom = 14)
+    
+  }
+    
+}, priority = 4)
+```
+
+### Table of Park Visits, by Date {data-height=500}
+
+```{r}
+dataTableOutput("parktable")
+```
+
+```{r, context="server"}
+observeEvent(input$parkdate,{
+
+  output$parktable <- renderDataTable(
+    all_parks %>% 
+      filter(date == input$parkdate) %>% 
+      dplyr::select(Name,Visits,`Visits, 5-Day Moving Average` = mov_avg,`Visits per Acre`, `Scaling Factor`),
+    options = list(
+      pageLength = 10,
+      order = list(2,'dsc'),
+      dom = 'tp'
+    )
+  )
+  
+  outputOptions(output, "parktable", priority = 20, suspendWhenHidden = F)
+  
+}, priority = 20)
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### Daily Park Visits in San Jose, by Date {data-height=500}
+
+```{r}
+plotlyOutput("parkgraph")
+```
+
+```{r, context="server"}
+output$parkgraph <- renderPlotly({
+  
+  data <-
+    unique(all_parks$date) %>% 
+    map_dfr(function(specificdate){
+      
+      all_parks_altered <-
+        all_parks %>% 
+        filter(date == specificdate)
+      
+      data.frame(
+        date = specificdate,
+        mean_visit_counts = round(mean(all_parks_altered$mov_avg),digits = 1),
+        sd_visit_counts = round(sd(all_parks_altered$mov_avg),digits = 1)
+      )
+    })
+  
+  
+  plot_ly(
+    data = data,
+    x = ~date
+  ) %>% 
+    add_trace(
+      x = weekends$x,
+      y = weekends$y,
+      type = "scatter",
+      mode = "lines",
+      fill = "tozeroy",
+      fillcolor = "rgba(112,112,112,0.25)",
+      line = list(color = "transparent"),
+      name = "Weekends",
+      showlegend=T
+    ) %>% 
+    add_trace(
+      x = rain$date,
+      y = rain$normalization2*max,
+      type = "scatter",
+      mode = "lines",
+      fill = "tozeroy",
+      fillcolor = "rgba(0,85,162,0.25)",
+      line = list(color = "transparent"),
+      name = paste0("Rain"),
+      showlegend=T,
+      visible = "legendonly"
+    ) %>% 
+    add_trace(
+      x = sun$date,
+      y = sun$normalization2*max,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(229,168,35)"),
+      name = paste0("Solar Radiation"),
+      showlegend=T,
+      visible = "legendonly"
+    ) %>%
+    add_trace(
+      x = c("2020-03-16" %>% as.Date(),"2020-03-16" %>% as.Date()),
+      y = c(-10,max_global+10),
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(63,63,63)",dash = "dot"),
+      name = "Santa Clara County Shelter-in-Place Order",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      x = c("2020-03-20" %>% as.Date(),"2020-03-20" %>% as.Date()),
+      y = c(-10,max_global+10),
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(63,63,63)",dash = "dot"),
+      name = "Playground Closures",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      x = c("2020-04-01" %>% as.Date(),"2020-04-01" %>% as.Date()),
+      y = c(-10,max_global+10),
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(63,63,63)",dash = "dot"),
+      name = "Park Amenity Closures",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      x = c("2020-04-08" %>% as.Date(),"2020-04-08" %>% as.Date()),
+      y = c(-10,max_global+10),
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(63,63,63)",dash = "dot"),
+      name = "Park and Parking Lot Closures",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      y = ~mean_visit_counts-sd_visit_counts,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "transparent"),
+      name = "City, +/- 1 S.D.",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      y = ~mean_visit_counts+sd_visit_counts,
+      type = "scatter",
+      mode = "lines",
+      fill = "tonexty",
+      fillcolor = "rgba(31,164,99,0.25)",
+      line = list(color = "transparent"),
+      name = "City, +/- 1 S.D.",
+      showlegend=T
+    ) %>% 
+    add_trace(
+      y = ~mean_visit_counts,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = "rgb(0,0,0)"),
+      name = "City, 5-Day Moving Average",
+      showlegend=T
+    ) %>% 
+    add_trace(
+      type = "scatter",
+      mode = "lines",
+      x = c(max(all_parks$date),max(all_parks$date)),
+      y = c(-10,max+10),
+      line = list(color = "#006E7F"),
+      name = "Current Map View",
+      showlegend=F
+    ) %>% 
+    add_trace(
+      type = "scatter",
+      mode = "lines",
+      x = c(max(all_parks$date),max(all_parks$date)),
+      y = c(-10,max+10),
+      line = list(color = "#006E7F"),
+      name = "Current Map View",
+      showlegend=F
+    ) %>%
+    layout(
+      margin = list(t = 25),
+      paper_bgcolor='rgb(255,255,255)', 
+      plot_bgcolor='rgb(229,229,229)',
+      xaxis = list(
+        title = "",
+        gridcolor = 'rgb(255,255,255)',
+        showgrid = TRUE,
+        showline = FALSE,
+        showticklabels = TRUE,
+        tickcolor = 'rgb(127,127,127)',
+        ticks = 'outside',
+        zeroline = FALSE,
+        fixedrange = T,
+        range = c(min(all_parks$date),max(all_parks$date)+1)
+      ),
+      yaxis = list(
+        title = "Daily Park Visits",
+        gridcolor = 'rgb(255,255,255)',
+        showgrid = TRUE,
+        showline = FALSE,
+        showticklabels = TRUE,
+        tickcolor = 'rgb(127,127,127)',
+        ticks = 'outside',
+        zeroline = FALSE,
+        fixedrange = T,
+        range = c(0,max)
+      ),
+      annotations = list(
+        list(
+          xref = "x",
+          yref = "y",
+          x = "2020-03-16" %>% as.Date(),
+          y = max,
+          text = "A",
+          xanchor = "center",
+          yanchor = "bottom",
+          showarrow = F
+        ),
+        list(
+          xref = "x",
+          yref = "y",
+          x = "2020-03-20" %>% as.Date(),
+          y = max,
+          text = "B",
+          xanchor = "center",
+          yanchor = "bottom",
+          showarrow = F
+        ),
+        list(
+          xref = "x",
+          yref = "y",
+          x = "2020-04-01" %>% as.Date(),
+          y = max,
+          text = "C",
+          xanchor = "center",
+          yanchor = "bottom",
+          showarrow = F
+        ),
+        list(
+          xref = "x",
+          yref = "y",
+          x = "2020-04-08" %>% as.Date(),
+          y = max,
+          text = "D",
+          xanchor = "center",
+          yanchor = "bottom",
+          showarrow = F
+        )
+      ),
+      legend = list(
+        xanchor = "left",
+        yanchor = "top",
+        x = 0,
+        y = -0.2,
+        bgcolor = 'rgb(255,255,255)'
+      )
+    ) %>% 
+    config(displayModeBar = F)
+  
+})
+
+outputOptions(output, "parkgraph", priority = 10, suspendWhenHidden = F)
+```
+
+```{r, context="server"}
+observeEvent(input$parkselect,{
+    
+  if(input$parkselect == ""){
+    
+    plotlyProxy("parkgraph") %>% 
+      plotlyProxyInvoke("deleteTraces", list(10,11)) %>%
+      plotlyProxyInvoke(
+        "relayout", 
+        list(
+          yaxis = 
+            list(
+              title = "Daily Park Visits",
+              range = c(0,max)),
+          annotations = list(
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-03-16" %>% as.Date(),
+              y = max,
+              text = "A",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            ),
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-03-20" %>% as.Date(),
+              y = max,
+              text = "B",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            ),
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-04-01" %>% as.Date(),
+              y = max,
+              text = "C",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            ),
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-04-08" %>% as.Date(),
+              y = max,
+              text = "D",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            )
+          )
+        )
+      ) %>%
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(isolate(input$parkdate),isolate(input$parkdate)),
+          y = c(-10,max_global+10),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      ) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(isolate(input$parkdate),isolate(input$parkdate)),
+          y = c(-10,max_global+10),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  } else {
+    
+    data <-
+      all_parks %>% 
+      filter(Name == input$parkselect)
+    
+    specific_park_max <- max(data$mov_avg)+10
+    new_max <- pmax(max, specific_park_max)
+  
+    plotlyProxy("parkgraph") %>% 
+      plotlyProxyInvoke("deleteTraces", list(10,11)) %>%
+      plotlyProxyInvoke(
+        "relayout", 
+        list(
+          yaxis = 
+            list(
+              title = "Daily Park Visits",
+              range = c(0,new_max)),
+          annotations = list(
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-03-16" %>% as.Date(),
+              y = new_max,
+              text = "A",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            ),
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-03-20" %>% as.Date(),
+              y = new_max,
+              text = "B",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            ),
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-04-01" %>% as.Date(),
+              y = new_max,
+              text = "C",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            ),
+            list(
+              xref = "x",
+              yref = "y",
+              x = "2020-04-08" %>% as.Date(),
+              y = new_max,
+              text = "D",
+              xanchor = "center",
+              yanchor = "bottom",
+              showarrow = F
+            )
+          )
+        )
+      ) %>%
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          x = data$date,
+          y = data$mov_avg,
+          type = "scatter",
+          mode = "lines",
+          line = list(color = "rgb(227,39,39)"),
+          name = paste0(input$parkselect, ", 5-Day Moving Average"),
+          showlegend=T
+        )
+      ) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(isolate(input$parkdate),isolate(input$parkdate)),
+          y = c(-10,max_global+10),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  }
+
+}, priority = 5)
+```
+
+```{r, context="server"}
+observeEvent(input$parkdate,{
+  
+  if(isolate(input$parkselect) == ""){
+    
+    plotlyProxy("parkgraph") %>% 
+      plotlyProxyInvoke("deleteTraces", list(10,11)) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(input$parkdate,input$parkdate),
+          y = c(-10,max_global+10),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      ) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(input$parkdate,input$parkdate),
+          y = c(-10,max_global+10),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  } else {
+    
+    plotlyProxy("parkgraph") %>% 
+      plotlyProxyInvoke("deleteTraces", list(11)) %>% 
+      plotlyProxyInvoke(
+        "addTraces",
+        list(
+          type = "scatter",
+          mode = "lines",
+          x = c(input$parkdate,input$parkdate),
+          y = c(-10,max_global+10),
+          line = list(color = "#006E7F"),
+          name = "Current Map View",
+          showlegend=F
+        )
+      )
+    
+  }
+    
+}, priority = 5)
+```
+
+### Full List of Park Closure Actions {data-height=500}
+
+- Friday, March 13- announced closure of Happy Hollow Park & Zoo (located in Kelley Park) and the Action Sports Park (Bike Park/Skate Park) located in Lake Cunningham Regional Park.
+- **(A)** Monday, March 16- Santa Clara County Shelter-in-Place Order
+- **(B)** Friday, March 20- announced closure of all 286 City playgrounds (immediate signage went up the following weekend, followed later by better signage and snow fencing took about a week)
+- Thursday, March 26- announced closure of Alum Rock Park and Communications Hill Staircase/Trail effective March 27
+- **(C)** Wednesday, April 1- announced closure, effective immediately, of all dog parks; tennis, pickle ball, futsal, and basketball courts; outdoor gym equipment and playgrounds; picnic and barbecue areas; drinking fountains; restrooms; disc golf areas and sport fields (effective prior day with County Order); it took about three days to caution tape/snow fence and post signs at all these locations (1,000+ including park benches)
+- **(D)** Wednesday, April 8- announced weekend (April 11-12) closure of the following:
+
+| **Regional Park Closures** | **Neighborhood Parks: Parking Lot Closures (parks themselves will remain open)** |
+|:----|:----|
+| Overfelt Gardens Park<br>Kelley Park<br>Almaden Lake Park<br>Lake Cunningham Park<br>Edenvale Garden Park<br>Municipal Rose Garden<br>Alum Rock Park<br>Emma Prusch Farm Park<br>Guadalupe Oak Grove | Canyon Creek Park<br>Cataldi Park<br>Flickinger Park<br>Fowler Creek Park<br>Guadalupe Gardens<br>Houge Park<br>Kirk Park<br>Lone Bluff<br>Los Paseos<br>Penitencia Creek Park<br>Ramac Park<br>Ryland Park<br>San Antonio Tot Lot<br>Silver Creek Linear Park & Picnic Area<br>Starbird Park<br>Tamien Park<br>Vista Montana Park<br>Vista Park<br>Watson Park |
+
+- Friday, April 24- announced that violations of park rules or unauthorized entry of closed areas in parks is being enforced with fines of \$100-\$500; also more visual signs mentioning fines were placed in key locations this weekend (April 25-26).
+
+Non-Essential Businesses
+=====================================
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+The following data are from [Safegraph](https://www.safegraph.com/covid-19-data-consortium) and are estimates based on a representative sample of devices. Essential business designation is based on a [qualitative mapping](https://docs.google.com/spreadsheets/d/1piMnUpohkY-HquAhuKEzeJVhCdmxTX75b8S6mnNjxQY/edit#gid=2054105981) performed by students between NAICS Codes and [CA's state guidance on essential workforce](https://covid19.ca.gov/img/EssentialCriticalInfrastructureWorkers.pdf). Further work is needed to map Santa Clara County's local designations. **Disclaimer: Based on initial conversations with City staff, we believe that the data as shown likely suffers from errors in visit attribution due to the location, size, and density of retail businesses, and should not be interpreted as reflective of true visits until/unless refinements can be made.**
+
+```{r}
+sliderInput(
+  "NEBdate", 
+  label = "Date:",
+  min = min(all_NEB$date),
+  max = max(all_NEB$date),
+  value = max(all_NEB$date),
+  timeFormat = "%m/%d"
+)
+
+NEBchoices <-
+  c(
+    "All",
+    all_NEB %>% 
+      filter(Visits > 0) %>% 
+      pull(Description) %>% 
+      unique() %>% 
+      as.character() %>% 
+      sort()
+  )
+
+selectizeInput(
+  "NEBselect", 
+  label = "Highlight one non-essential category on chart/map:", 
+  choices = NEBchoices, 
+  selected = "All",
+  multiple = FALSE,
+  width = NULL, 
+  size = 1,
+  options = list(
+    placeholder = "Type here"
+  )
+)
+
+```
+
+Column
+-----------------------------------------------------------------------
+### Map of Top 100 Non-Essential Businesses by Daily Visits {data-height=600}
+
+```{r}
+leafletOutput("NEBmap")
+```
+
+```{r, context="server"}
+output$NEBmap <- renderLeaflet({
+  leaflet() %>% 
+    addProviderTiles(providers$CartoDB.Positron) %>%  
+    addPolygons(
+      data = sj_boundary,
+      fill = F,
+      weight = 1,
+      color = "black"
+    ) %>%
+    addLegend(
+      data = all_NEB %>% 
+        filter(date==max(date)) %>%
+        dplyr::arrange(desc(Visits)) %>% 
+        .[1:100,] %>%
+        filter(!is.na(Visits)),
+      pal = NEB_pal,
+      values = ~Sector,
+      title = "Sector",
+      opacity = 1
+    )
+    
+})
+
+outputOptions(output, "NEBmap", priority = 14, suspendWhenHidden = F)
+```
+
+```{r, context="server"}
+observeEvent(input$NEBdate,{
+  
+  if(input$NEBselect == "All"){
+    data <- all_NEB %>% 
+      filter(date == input$NEBdate) %>%
+      dplyr::arrange(desc(Visits)) %>% .[1:100,] %>%
+      filter(!is.na(Visits))
+  } else {
+    data <- all_NEB %>% 
+      filter(date == input$NEBdate) %>%
+      filter(Description == isolate(input$NEBselect)) %>% 
+      dplyr::arrange(desc(Visits)) %>% .[1:100,] %>%
+      filter(!is.na(Visits))
+  }
+  
+  leafletProxy("NEBmap") %>%  
+    removeShape(NEB_Ids) %>% 
+    addCircles(
+      data = data, 
+      lng = ~longitude,
+      lat = ~latitude,
+      layerId = NEB_Ids,
+      radius = ~sqrt(Visits)*10, 
+      fillColor =  ~NEB_pal(Sector), 
+      color = "black",
+      weight = 0.5,
+      opacity = .5,
+      fillOpacity = .5,
+      label = ~paste0(Name,", Daily Visits:", Visits)
+    )
+  
+}, priority = 7)
+```
+
+```{r, context="server"}
+
+observeEvent(input$NEBselect,{
+  
+  if(input$NEBselect == "All"){
+    data <-
+      all_NEB %>%
+      filter(date == isolate(input$NEBdate)) %>%
+      dplyr::arrange(desc(Visits)) %>% 
+      .[1:100,] %>%
+      filter(!is.na(Visits))
+  } else {
+    data <- 
+      all_NEB %>%
+      filter(date == isolate(input$NEBdate)) %>%
+      filter(Description == input$NEBselect) %>%
+      dplyr::arrange(desc(Visits)) %>% 
+      .[1:20,] %>%
+      filter(!is.na(Visits))
+  }
+
+  leafletProxy("NEBmap") %>%
+    removeShape(NEB_Ids) %>%
+    addCircles(
+      data = data,
+      lng = ~longitude,
+      lat = ~latitude,
+      layerId = NEB_Ids,
+      radius = ~sqrt(Visits)*10, 
+      fillColor =  ~NEB_pal(Sector), 
+      color = "black",
+      weight = 0.5,
+      opacity = .5,
+      fillOpacity = .5,
+      label = ~paste0(Name,", Daily Visits:", Visits)
+    )
+
+}, priority = 5)
+```
+
+### Table of Estimated Non-Essential Businesses' Daily Visits by Date {data-height=400}
+
+```{r}
+dataTableOutput("NEBtable")
+```
+
+```{r, context="server"}
+observeEvent(input$NEBdate,{
+  NEB_filter <- 
+    all_NEB %>% 
+    filter(date == input$NEBdate) %>%
+    dplyr::arrange(desc(Visits)) %>% 
+    .[1:20,] %>%
+    filter(!is.na(Visits))
+  
+  output$NEBtable <- 
+    renderDataTable(
+      NEB_filter %>% 
+      dplyr::select(Name, Address, Visits, Description), #,`Visits, 5-Day Moving Average` = mov_avg,`Visits per Acre`, `Scaling Factor`),
+    options = list(
+      pageLength = 5,
+      order = list(3,'dsc'),
+      dom = 'tp'
+    )
+  ) 
+  
+  outputOptions(output, "NEBtable", priority = 20, suspendWhenHidden = F)
+  
+}, priority = 30)
+```
+      
+      
+```{r, context="server"}
+observeEvent(input$NEBselect,{
+  
+  if(input$NEBselect == "All"){
+    NEB_filter <- 
+      all_NEB %>% 
+      filter(date == input$NEBdate) %>%
+      dplyr::arrange(desc(Visits)) %>% 
+      .[1:20,] %>%
+      filter(!is.na(Visits))
+  } else {
+    NEB_filter <- 
+      all_NEB %>% 
+      filter(date == input$NEBdate) %>%
+      filter(Description == input$NEBselect) %>%
+      dplyr::arrange(desc(Visits)) %>% 
+      .[1:20,] %>%
+      filter(!is.na(Visits))
+  }
+  
+  output$NEBtable <- 
+    renderDataTable(
+      NEB_filter %>%
+      dplyr::select(Name,Address, Visits,Description),
+    options = list(
+      pageLength = 5,
+      order = list(3,'dsc'),
+      dom = 'tp'
+    )
+  ) 
+  
+  outputOptions(output, "NEBtable", priority = 20, suspendWhenHidden = F)
+  
+}, priority = 20)
+```
+
+Correlation Analysis
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+
+### Key Insights From Demographic Data
+
+1. Block groups with higher percentages of households earning over $125,000 annually tend to have a greater increase in staying at home following the shelter-in-place order.
+
+2. Block groups with higher percentages of individuals with a degree at the Associate's level or higher also tend to have a greater increase in staying at home; however, some of this effect may be related to the correlation between education and income.
+
+3. Block groups with higher percentages of individuals that are Hispanic/Latino tend to have smaller increases in staying home; however, the effect of Hispanic/Latino population disappears when considered in combination with other demographic variables.
+
+4. Of the demographic variables that we considered, the combination of income, education, Asian population, child population, and young adult population of a census block group provides the greatest predictive ability for the change in staying at home. Higher block group averages of income and education, as well as larger Asian and child populations, are associated with larger increases in staying at home; in contrast, a larger young adult population is associated with smaller increases in staying at home.
+
+**Methodology**: Using [Safegraph](https://www.safegraph.com/covid-19-data-consortium) data, for each census block group in San Jose (blue circle on the plot), we calculate the average percent of devices leaving home on weekdays before (1/1/20-2/29/20) and after shelter-in-place (3/16/20-5/10/20). Information on demographic variables at the census block group level is from the American Community Survey 2014-2018 5 year summary data. [View the full report here](http://stanfordfuturebay.github.io/sanjose_correlation).
+
+Column {.tabset .tabset-fade data-width=650}
+-----------------------------------------------------------------------
+
+### Income
+
+```{r}
+fig_ami <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`% over 125,000`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`% over 125,000`,
+      y = ~ami_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of households making over $125,000'), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+  
+
+fig_ami
+```
+
+### Education
+
+```{r}
+fig_educ <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`percent associates or higher`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`percent associates or higher`,
+      y = ~educ_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of residents with a degree at the Associate\'s level or higher'), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_educ
+```
+
+### Hispanic/Latino
+
+```{r}
+fig_hisp <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`% hispanic/latino`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`% hispanic/latino`,
+      y = ~hisp_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of residents that are Hispanic/Latino', autorange = "reversed"), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_hisp
+```
+
+### Asian
+
+```{r}
+fig_asian <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`% Asian`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`% Asian`,
+      y = ~asian_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of residents that are Asian'), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_asian
+```
+
+### Elderly
+
+```{r}
+fig_elderly <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`percent elderly`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`percent elderly`,
+      y = ~elderly_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% elderly'), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_elderly
+```
+
+### Young Adults
+
+```{r}
+fig_young <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`percent 20-29`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`percent 20-29`,
+      y = ~young_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of residents ages 20-29', autorange = "reversed"), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_young
+```
+
+### Internet
+
+```{r}
+fig_internet <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`percent high speed`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`percent high speed`,
+      y = ~internet_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of household with high speed internet access'), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_internet
+```
+
+### English
+
+```{r}
+fig_english <- 
+  plot_ly (sj_dem_distancing_combined) %>%
+    add_trace(
+      x = ~`% speaking english > well`, 
+      y = ~`% leaving home`, 
+      frame = ~`Before or After Shelter-in-Place`, 
+      type = 'scatter', 
+      mode = 'markers', 
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~`% speaking english > well`,
+      y = ~english_trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(size = 5, color = 'rgba(255, 165, 0, 1)'),
+      frame = ~`Before or After Shelter-in-Place`,
+      showlegend = F
+    ) %>% 
+  animation_button(visible = F) %>%
+  animation_slider(
+    pad = list(t =75),
+    currentvalue = list(visible=F)
+  ) %>%
+  layout(xaxis = list(title = '% of residents speaking English well'), yaxis = list(title = '% leaving home'), margin = list(l = 75,r = 75)) %>% 
+  config(displayModeBar = F)
+
+fig_english
+```
