@@ -807,13 +807,14 @@ sj &lt;- ca_weekly_200503 %&gt;% filter(city ==&#39;San Jose&#39;)  </code></pre
 sj_visits_bay &lt;- normBay(sj,home)
 kable(
   head(sj_visits_bay,10) %&gt;% 
-    dplyr::select(location_name, raw_visit_counts, visit_counts) %&gt;% 
+    dplyr::select(location_name, raw_visitor_counts, raw_visit_counts, visit_counts) %&gt;% 
     mutate(visit_counts = round(visit_counts))
 )</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="left">location_name</th>
+<th align="right">raw_visitor_counts</th>
 <th align="right">raw_visit_counts</th>
 <th align="right">visit_counts</th>
 </tr>
@@ -821,51 +822,61 @@ kable(
 <tbody>
 <tr class="odd">
 <td align="left">Gardner Elementary</td>
+<td align="right">5</td>
 <td align="right">10</td>
 <td align="right">355</td>
 </tr>
 <tr class="even">
 <td align="left">C &amp; D Semiconductor Services</td>
+<td align="right">5</td>
 <td align="right">9</td>
 <td align="right">320</td>
 </tr>
 <tr class="odd">
 <td align="left">Seventh Day Adventist Church</td>
+<td align="right">1</td>
 <td align="right">4</td>
 <td align="right">142</td>
 </tr>
 <tr class="even">
 <td align="left">Noah’s New York Bagels</td>
+<td align="right">20</td>
 <td align="right">21</td>
 <td align="right">746</td>
 </tr>
 <tr class="odd">
 <td align="left">Musicians Mobile</td>
+<td align="right">10</td>
 <td align="right">22</td>
 <td align="right">781</td>
 </tr>
 <tr class="even">
 <td align="left">Friendship Hall</td>
+<td align="right">7</td>
 <td align="right">8</td>
 <td align="right">284</td>
 </tr>
 <tr class="odd">
 <td align="left">Moon Family Care</td>
 <td align="right">1</td>
+<td align="right">1</td>
 <td align="right">36</td>
 </tr>
 <tr class="even">
 <td align="left">Friendly</td>
+<td align="right">11</td>
 <td align="right">12</td>
 <td align="right">426</td>
 </tr>
 <tr class="odd">
 <td align="left">Temple Emanu El Preschool</td>
 <td align="right">1</td>
+<td align="right">1</td>
 <td align="right">36</td>
 </tr>
 <tr class="even">
 <td align="left">Frank M Santana Park</td>
+<td align="right">16</td>
 <td align="right">19</td>
 <td align="right">675</td>
 </tr>
