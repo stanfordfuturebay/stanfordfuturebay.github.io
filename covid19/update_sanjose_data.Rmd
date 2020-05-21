@@ -1,0 +1,226 @@
+---
+title: "Update San Jose Dashboard Data"
+author: "Derek Ouyang, Cameron Tenner, Julia Wagenfehr"
+date: "4/24/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: false
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = F}
+library(knitr)
+opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+```{r libraries}
+library(tidyverse)
+library(tigris)
+library(censusapi)
+library(sf)
+library(mapview)
+library(plotly)
+library(schoolmath)
+
+options(
+  tigris_class = "sf",
+  tigris_use_cache = T
+)
+```
+
+Use this script to update the private safegraph data.
+
+# San Jose block groups
+
+```{r, results = "hide"}
+# Bay counties not specifically used in this processing, but shown here for illustration of how to grab county geographies quickly.
+bay_county_names <-
+  c(
+    "Alameda",
+    "Contra Costa",
+    "Marin",
+    "Napa",
+    "San Francisco",
+    "San Mateo",
+    "Santa Clara",
+    "Solano",
+    "Sonoma"
+  )
+
+bay_blockgroups <-
+  bay_county_names %>% 
+  map(function(x){
+    block_groups("CA",x,progress_bar=F) %>% 
+      pull(GEOID)
+  }) %>% unlist()
+
+bay_counties <-
+  counties("CA", cb = F, progress_bar=F) %>% 
+  filter(NAME %in% bay_county_names)
+
+scc_blockgroups <-
+  block_groups("CA","Santa Clara", cb=F, progress_bar=F) %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+
+# Below are specific SJ tracts sent to us by San Jose staff
+sj_tracts <- st_read("P:/SFBI/Data Library/San_Jose/CSJ_Census_Tracts/CSJ_Census_Tracts.shp") %>% 
+  st_as_sf() %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+
+sj_citycouncil_districts <- st_read("P:/SFBI/Data Library/San_Jose/City Council Districts/CITY_COUNCIL_DISTRICTS.shp") %>% 
+  mutate(
+    id = DISTRICTS %>% as.character()
+  ) %>% 
+  dplyr::select(id) %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+```
+
+```{r}
+sj_blockgroups <- 
+  scc_blockgroups %>% 
+  st_centroid() %>% 
+  st_join(sj_tracts, left = F) %>% 
+  st_join(sj_citycouncil_districts) %>% 
+  st_set_geometry(NULL) %>% 
+  left_join(scc_blockgroups%>% dplyr::select(GEOID), by = "GEOID") %>% 
+  st_as_sf() %>% 
+  transmute(
+    origin_census_block_group = GEOID %>% as.character(),
+    DISTRICTS = id
+  ) %>% 
+  st_transform("+proj=longlat +datum=WGS84 +no_defs")
+
+# the spatial join leaves off two blockgroups which are touching district 9. The following code assigns those to district 9
+sj_blockgroups$DISTRICTS[is.na(sj_blockgroups$DISTRICTS)] <- 9
+
+saveRDS(sj_blockgroups,"sj_blockgroups.rds")
+sj_blockgroups <- readRDS("sj_blockgroups.rds")
+
+saveRDS(sj_citycouncil_districts, "~/GitHub/stanfordfuturebay.github.io/data/sj_citycouncil_districts.rds")
+sj_citycouncil_districts <- 
+  readRDS("sj_citycouncil_districts.rds")
+```
+
+# Filter new Bay data to SJ
+
+```{r}
+# This is exactly in the format of Safegraph's social distancing product, but pre-processed to be filtered to just Bay Area counties and saved as an .rds file.
+bay_socialdistancing <-
+  readRDS("P:/SFBI/Restricted Data Library/Safegraph/covid19analysis/bay_socialdistancing_v2.rds")
+
+sj_socialdistancing <-
+  bay_socialdistancing %>%
+filter(origin_census_block_group %in% sj_blockgroups$origin_census_block_group)
+
+saveRDS(sj_socialdistancing, file = "P:/SFBI/Restricted Data Library/Safegraph/covid19analysis/sj_socialdistancing.rds")
+
+sj_percenthome_bg <-
+  sj_socialdistancing %>%
+  mutate(
+    `% Leaving Home` = ((1-completely_home_device_count/device_count)* 100) %>% round(1),
+    date = date_range_start %>%  substr(1,10) %>% as.Date()
+  ) %>%
+  dplyr::select(
+    origin_census_block_group,
+    date,
+    `% Leaving Home`
+  ) %>% 
+  left_join(sj_blockgroups %>% st_set_geometry(NULL), by ="origin_census_block_group")
+
+saveRDS(sj_percenthome_bg, "sj_percenthome_bg.rds")
+# This can't be shared publicly. It is sitting in a private GitHub repo.
+```
+
+#Weekend vs. Weekday processing
+
+The dashboard includes a plot that has average values for sets of weekdays and weekends. The code below does the processing for this plot in particular.
+
+```{r}
+weekends <-
+  sj_percenthome_bg %>% 
+  filter(!duplicated(date)) %>% 
+  arrange(date) %>% 
+  mutate(
+    date = 
+      case_when(
+        (date %>% as.numeric()) %% 7 == 1 ~ date + 1,
+        (date %>% as.numeric()) %% 7 == 4 ~ date - 1,
+        TRUE ~ date
+      ),
+    value = 
+      ifelse(
+        (date %>% as.numeric()) %% 7 %in% c(2,3),
+        500,
+        0
+      )
+  ) %>% 
+  dplyr::select(date,value) %>%
+  unique()
+
+day_signal <-
+  sj_percenthome_bg %>%
+  left_join(
+    weekends,
+    by = "date"
+  )
+
+designated_weekdays <-
+  day_signal %>%
+  filter(is.na(value) | value == 0)
+
+designated_weekends <-
+  day_signal %>%
+  filter(value == 500)
+
+weekdays_reduced <-
+  designated_weekdays %>%
+  group_by(date) %>%
+  summarize(mean = mean(`% Leaving Home`)) %>%
+  mutate(
+    day_name = weekdays(date),
+    point_mean = 0
+  )
+
+weekends_reduced <-
+  designated_weekends %>%
+  group_by(date) %>%
+  summarize(mean = mean(`% Leaving Home`)) %>%
+  mutate(
+    day_name = weekdays(date),
+    point_mean = 0
+  )
+
+#for weekends
+for(i in 1:nrow(weekends_reduced)){
+  if(is.odd(i)){
+    weekends_reduced$point_mean[i] = (weekends_reduced$mean[i] + weekends_reduced$mean[i+1]) / 2
+  } else{
+    weekends_reduced$point_mean[i] = (weekends_reduced$mean[i] + weekends_reduced$mean[i-1]) / 2
+  }
+}
+
+#for weekdays
+for(i in 1:nrow(weekdays_reduced)){
+  if(weekdays_reduced$day_name[i] == "Wednesday" & i >=4){
+    weekdays_reduced$point_mean[i] = (weekdays_reduced$mean[i-2] + weekdays_reduced$mean[i-1]+weekdays_reduced$mean[i]+weekdays_reduced$mean[i+1] + weekdays_reduced$mean[i+2]) / 5
+  } else if (weekdays_reduced$day_name[i] == "Wednesday" & i < 4){
+    weekdays_reduced$point_mean[i] = (weekdays_reduced$mean[i] + weekdays_reduced$mean[i+1]+weekdays_reduced$mean[i+2])/3
+  }
+}
+
+weekday_found <-
+  weekdays_reduced %>%
+  filter(day_name == "Wednesday")
+
+weekend_found <- 
+  weekends_reduced %>%
+  filter(day_name == "Sunday")
+
+write_rds(weekday_found,'weekday_found.rds')
+write_rds(weekend_found,'weekend_found.rds')
+write_rds(weekdays_reduced,'weekdays_reduced.rds')
+write_rds(weekends_reduced,'weekends_reduced.rds')
+```
