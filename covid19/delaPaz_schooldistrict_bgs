@@ -1,0 +1,139 @@
+---
+title: "schooldistrics"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+install.packages("totalcensus")
+install.packages("dplyr")
+```
+
+```{r load libraries}
+library(censusapi)
+library(tidycensus)
+library(tidyverse)
+library(tidyverse)
+library(sf)
+library(geojsonsf)
+library(mapview)
+library(dplyr)
+library(leaflet)
+library(maps)
+library(censusapi)
+library(tidycensus)
+library(tidyverse)
+library(sf)
+library(geojsonsf)
+library(mapview)
+library(dplyr)
+library(plotly)
+library(tigris)
+library(readxl)
+library(leaflet)
+library(RColorBrewer)
+library(sp)
+library(usmap)
+library(data.table)
+library(totalcensus)
+mapviewOptions(basemaps = "CartoDB.Positron")
+options(
+  tigris_class = "sf",
+  tigris_use_cache = TRUE
+)
+Sys.setenv(CENSUS_KEY="0c313bd613a7281ae62c2fbb004d156d647e9c94")
+```
+
+```{r download census data}
+download_census <-
+  download_census("acs5", year = 1025, states = c("CA"))
+```
+
+```{r test}
+data <- read_xlsx("/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/GRF19/grf19_lea_zcta5ce10.xlsx")
+# LEID = Local education agency identification numbers.
+# filter by school districts
+scc_district_names <-
+  c(
+    "Alum Rock Union Elementary School District",
+    "Berryessa Union School District",
+    "Cambrian School District",
+    "Campbell Union High School District",
+    "Campbell Union Elementary School District",
+    "Cupertino Union Elementary School District",
+    "East Side Union High School District",
+    "Evergreen Elementary School District",
+    "Franklin-McKinley Elementary School District",
+    "Fremont Union High School District",
+    "Gilroy Unified School District",
+    "Lakeside Joint Elementary School District",
+    "Loma Prieta Joint Union Elementary School District",
+    "Los Altos School District",
+    "Los Gatos Union School District",
+    "Los Gatos-Saratoga Joint Union High School District",
+    "Luther Burbank Elementary School District",
+    "Milpitas Unified School District",
+    "Montebello Elementary School District",
+    "Moreland School District",
+    "Morgan Hill Unified School District",
+    "Mount Pleasant Elementary School District",
+    "Mountain View–Los Altos Union High School District",
+    "Mountain View Whisman School District",
+    "Oak Grove Elementary School District",
+    "Orchard Elementary School District",
+    "Palo Alto Unified School District",
+    "San Jose Unified School District",
+    "Santa Clara Unified School District",
+    "Saratoga Union School District",
+    "Sunnyvale Elementary School District"
+  )
+#use this to look up zipcodes, and then get zipcodes to map to acs data somehow -- maybe using total census? Issue here is that some schools span multiple zipcodes
+
+grf_blkgrp <-
+  read_xlsx("/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/GRF19/grf19_lea_blkgrp.xlsx")
+
+scc_dstrct_bg <-
+  grf_blkgrp[is.element(grf_blkgrp$NAME_LEA19, scc_district_names),]
+
+#mapping this
+
+sj_blockgroups_districts <- 
+  scc_dstrct_bg %>% 
+  filter(BLKGRP %in% sj_blockgroups$GEOID) %>% 
+  left_join(sj_blockgroups, by = c("BLKGRP" = "GEOID")) %>% 
+  st_as_sf() %>%
+  st_set_crs(4326) %>%
+  st_transform(projection)
+
+mapview(sj_blockgroups_districts %>% dplyr::select('NAME_LEA19'), layer.name = "School districts by blockgroup")
+  
+```
+
+```{r}
+raw <- 
+  getCensus(
+    name = "acs/acs5",
+    vintage = 2018,
+    region = "block group:*", 
+    regionin = "state:06+county:085",
+    vars = "group(B28002)"
+  ) %>%
+  mutate(
+    blockgroup = paste0(state,county,tract,block_group)
+  ) %>%
+  select_if(!names(.) %in% c("GEO_ID","state","county","tract","block_group","NAME")) %>%
+  dplyr::select(-c(contains("EA"),contains("MA"),contains("M"))) %>% 
+  gather(
+    key = "variable", 
+    value = "estimate", 
+    -blockgroup
+  ) %>% 
+  mutate(
+    label = acs_vars$label[match(variable,acs_vars$name)]
+  )
+```
+
+

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -391,6 +390,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -435,7 +435,7 @@ summary {
 
 <h1 class="title toc-ignore">San Jose Dashboard FAQ</h1>
 <h4 class="author">Stanford Future Bay Initiative</h4>
-<h4 class="date">Last updated: May 15</h4>
+<h4 class="date">Last updated: May 28</h4>
 
 </div>
 
@@ -463,6 +463,13 @@ summary {
 <p>Answer: Due to Safegraph’s data collection methods and the format of their datasets, we are unable to analyze and display simultaneous visits to a destination. The Safegraph data only outlines weekly, daily, and hourly visits to each destination, and does not specify if certain visits from different origins overlap in a particular time frame.</p>
 <p><strong>Question: Do you make population adjustments based on the estimated numbers of devices?</strong></p>
 <p>Answer: Yes, we do make population adjustments. We first find the ratio between the number of devices that Safegraph monitors for a specific geography (e.g. census block group), which they report, and the total Census population for that same geography (using 2018 American Communities Survey 5-Year Summaries). We then take this ratio and multiply it by the daily visit counts reported by Safegraph (always a subset of the devices they monitor). The result is a normalized visit estimation for each destination of interest.</p>
+<p>Additionally, Safegraph collects device visit information to “places of interest” like parks or grocery stores and includes some information about a device’s origin census block group. The visit counts in the Safegraph dataset fall into either one of these three cases:</p>
+<ul>
+<li>For origin block groups that have a total visit count of &gt;= 5, the exact visit number is displayed.</li>
+<li>For origin block groups that have a total visit count of &lt; 5 but &gt; 1, the visit number defaults to 4 (even though there may actually be 2 or 3 visits). As a result, we have a lower and upper bound of visits for these specific cases. Each visit data point displayed on the dashboard represents the mean of the lower and upper bound visit counts.</li>
+<li>For origin block groups that have a total visit count of 1, Safegraph does not record specific block groups. We consider all unrecorded block groups as their own cohort which has its own lower and upper bound of visits that corresponds with the considerations in the previous bullet.</li>
+</ul>
+<p>A more detailed explanation can be found <a href="https://stanfordfuturebay.github.io/covid19/safegraph_normalization_explainer.html">here</a>.</p>
 <p><strong>Question: Why do some block groups with commercial and industrial businesses (such as the San Jose International Airport) have an overall lower compliance than other block groups?</strong></p>
 <p>Answer: Safegraph determines a device’s “home” as the common nighttime location of that mobile device over a 6 week period. As a result, areas with a large number of nighttime workers will seem to have a lower level of compliance, because Safegraph perceives their “home” to be their workplace. When these workers leave their workplace in the morning, they are counted as leaving their home. We have removed the block group that contains the San Jose International Airport to account for this inaccuracy, because the level of compliance in the block group was quite low yet the block group does not have a large residential area. When examining other block groups that contain commercial or industrial businesses, keep in mind the compliance showing on the dashboard may be artificially lowered by overnight workers.</p>
 <p><strong>Question: How is weather accounted for in the analysis?</strong></p>
