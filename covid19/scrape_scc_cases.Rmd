@@ -1,0 +1,87 @@
+---
+title: "Scrape SCC Cases"
+author: "Derek Ouyang"
+date: "5/11/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: false
+    code_folding: show
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = F}
+library(knitr)
+opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+```{r libraries}
+library(tidyverse)
+library(sf)
+library(rvest)
+library(RSelenium)
+library(seleniumPipes)
+```
+
+To set up RSelenium, follow the instructions at https://docs.ropensci.org/RSelenium/articles/docker.html#rselenium-and-running-containers-1. I downloaded Docker Desktop for Windows, used standalone-firefox:3.141.59. You'll need to pull the firefox image and run the firefox image from Command Prompt. I did:
+
+```
+docker pull selenium/standalone-firefox:3.141.59
+docker run -d -p 4445:4444 -v /dev/shm:/dev/shm selenium/standalone-firefox:3.141.59
+```
+
+Afterwards, you can just use Docker Desktop you to interact with the "docker", like pausing/starting. Once it's "running", you can switch to R. To get IP address, I typed ipconfig in Command Prompt. Replace with your own IP address in the code below.
+
+```{r}
+remDr <- remoteDriver(
+  remoteServerAddr = "ipaddresshere",
+  port = 4445L
+)
+remDr$open()
+```
+
+https://www.sccgov.org/sites/covid19/Pages/dashboard.aspx
+
+View Developer Tools. Inspect the dashboard of interest. Look for the URL for the PowerBI window on its own, which will make scraping easier. I'm assuming for now this URL doesn't change over time; if it does, you merely have to look for the right URL again.
+
+https://app.powerbigov.us/view?r=eyJrIjoiZTg2MTlhMWQtZWE5OC00ZDI3LWE4NjAtMTU3YWYwZDRlOTNmIiwidCI6IjBhYzMyMDJmLWMzZTktNGY1Ni04MzBkLTAxN2QwOWQxNmIzZiJ9
+
+View Developer Tools again. Inspect a single bar of the Cases by Specimen Collection Date bar chart to find the right part of the HTML. First thing I noticed was that for the bar elements, class = "column setFocusRing". Assuming this class is only used for these bar charts, then we can extract aria-labels which have the useful information we want. There are potentially many other ways to get the desired information. 
+
+Refer to https://cran.r-project.org/web/packages/RSelenium/vignettes/basics.html for more guidance on how to use RSelenium functions.
+
+```{r}
+remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiZTg2MTlhMWQtZWE5OC00ZDI3LWE4NjAtMTU3YWYwZDRlOTNmIiwidCI6IjBhYzMyMDJmLWMzZTktNGY1Ni04MzBkLTAxN2QwOWQxNmIzZiJ9")
+
+webElem <- remDr$findElements(using = "class", value = "column")
+
+cases <-
+  1:length(webElem) %>% 
+  map(function(x){
+    webElem[[x]]$getElementAttribute("aria-label") %>% as.character()
+  }) %>% 
+  unlist() %>% 
+  as.data.frame()
+```
+
+Note that this includes bars for both charts in order. The first 105 are the cumulative cases chart, the next 105 are the new cases charts. From here you're working with a dataframe and you can parse as desired.
+
+```{r}
+cumulative_cases <-
+  cases %>% 
+  rename(text = ".") %>% 
+  filter(grepl("Total_cases",text)) %>% 
+  separate(text, c("date","cases"), sep = "\\.") %>% 
+  mutate(
+    date = 
+      substr(date,6,nchar(.)) %>% 
+      as.Date("%A, %B %d, %Y"),
+    cases = 
+      substr(cases,13,nchar(.)) %>% 
+      as.numeric()
+  )
+  
+ggplot(data = cumulative_cases) +
+  geom_line(aes(x = date, y = cases))
+```

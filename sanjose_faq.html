@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -190,6 +189,66 @@ window.buildTabsets = function(tocID) {
 };
 
 </script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia');
+  rCodeBlocks.each(function() {
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    if (show || $(this)[0].classList.contains('fold-show'))
+      div.addClass('in');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide' : 'Code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+    });
+  });
+
+}
+</script>
 <style type="text/css">.hljs-literal {
 color: #990073;
 }
@@ -331,6 +390,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -344,6 +404,9 @@ summary {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -360,27 +423,83 @@ summary {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">San Jose Dashboard FAQ</h1>
 <h4 class="author">Stanford Future Bay Initiative</h4>
-<h4 class="date">Last updated: April 22</h4>
+<h4 class="date">Last updated: May 28</h4>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#general">General</a></li>
+<li><a href="#data-collection">Data Collection</a></li>
+<li><a href="#data-interpretation">Data Interpretation</a></li>
+<li><a href="#parks">Parks</a></li>
+</ul>
+</div>
 
-<div id="frequently-asked-questions" class="section level2">
-<h2>Frequently Asked Questions</h2>
-<p><strong>Is there a “grace area” that allows a phone to travel, say, around the block (for a walk) but still registers as “completely at home”?</strong></p>
-<p>Answer: Safegraph, as part of its data anonymization, does not directly tie its device location to city blocks or buildings. Instead, they aggregate their device locations to standardized <a href="https://www.movable-type.co.uk/scripts/geohash.html">Geohash-7 grids</a>, one grid being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 grid in which their home is located. The data will register movement into any other Geohash-7 grid, and we can see counts and distances traveled of devices as such. Ultimately, the “grace area” for a phone is different for every person, depending on where that person lives within a larger standardized Geohash-7 grid, and “walking around the block” may not be detectable if the walking route happens to stay within that grid.</p>
-<p><strong>What can this tool tell us in regard to compliance as orders shift?</strong></p>
-<p>Answer: This tool allows one to examine the level of compliance within San Jose districts and individual block groups. When orders change, you can easily see the before/after shifts in the percentage of people staying at home, both on the interactive map and time series. The shift in trends may shine light on the efficacy of the order.</p>
-<p><strong>Why are there peaks in the percentage of people that stay at home on weekends, even after the COVID-19 shelter-in-place order was enacted?</strong></p>
+<div id="general" class="section level1">
+<h1>General</h1>
+<p><strong>Question: If I have questions about the dashboard or see errors, who should I contact?</strong></p>
+<p>Answer: Reach out to Lecturer Derek Ouyang at <a href="mailto:douyang1@stanford.edu" class="email">douyang1@stanford.edu</a>.</p>
+</div>
+<div id="data-collection" class="section level1">
+<h1>Data Collection</h1>
+<p><strong>Question: Is there a “grace area” that allows a phone to travel, say, around the block (for a walk) but still registers as “completely at home”?</strong></p>
+<p>Answer: Safegraph, as part of its data anonymization, does not directly tie its device location to city blocks or buildings. Instead, they aggregate their device locations to standardized Geohash-7 grids, one grid being 153 meters x 153 meters in size. In order for a phone to register as completely at home, the device must not leave the Geohash-7 grid in which their home is located. The data will register movement into any other Geohash-7 grid, and we can see counts and distances traveled of devices as such. Ultimately, the “grace area” for a phone is different for every person, depending on where that person lives within a larger standardized Geohash-7 grid, and “walking around the block” may not be detectable if the walking route happens to stay within that grid.</p>
+<p><strong>Question: How are visits counted in places that do not have cell service (for example, Alum Rock Park)?</strong></p>
+<p>Answer: The visits are not tracked by phone reception per se, but rather GPS reception. It’s possible to have an accurate GPS reading even when you don’t have phone service, and the GPS data will be synced once cell service or wifi is regained. However if you are in a big canyon or if GPS is obscured for other reasons then we may see undersampling, and depending on how the battery saving mechanisms are implemented, lack of cell service may mean fewer GPS pings are collected.</p>
+<p><strong>Question: Would it be possible to look at simultaneous visits to a specific destination (e.g. park)?</strong></p>
+<p>Answer: Due to Safegraph’s data collection methods and the format of their datasets, we are unable to analyze and display simultaneous visits to a destination. The Safegraph data only outlines weekly, daily, and hourly visits to each destination, and does not specify if certain visits from different origins overlap in a particular time frame.</p>
+<p><strong>Question: Do you make population adjustments based on the estimated numbers of devices?</strong></p>
+<p>Answer: Yes, we do make population adjustments. We first find the ratio between the number of devices that Safegraph monitors for a specific geography (e.g. census block group), which they report, and the total Census population for that same geography (using 2018 American Communities Survey 5-Year Summaries). We then take this ratio and multiply it by the daily visit counts reported by Safegraph (always a subset of the devices they monitor). The result is a normalized visit estimation for each destination of interest.</p>
+<p>Additionally, Safegraph collects device visit information to “places of interest” like parks or grocery stores and includes some information about a device’s origin census block group. The visit counts in the Safegraph dataset fall into either one of these three cases:</p>
+<ul>
+<li>For origin block groups that have a total visit count of &gt;= 5, the exact visit number is displayed.</li>
+<li>For origin block groups that have a total visit count of &lt; 5 but &gt; 1, the visit number defaults to 4 (even though there may actually be 2 or 3 visits). As a result, we have a lower and upper bound of visits for these specific cases. Each visit data point displayed on the dashboard represents the mean of the lower and upper bound visit counts.</li>
+<li>For origin block groups that have a total visit count of 1, Safegraph does not record specific block groups. We consider all unrecorded block groups as their own cohort which has its own lower and upper bound of visits that corresponds with the considerations in the previous bullet.</li>
+</ul>
+<p>A more detailed explanation can be found <a href="https://stanfordfuturebay.github.io/covid19/safegraph_normalization_explainer.html">here</a>.</p>
+<p><strong>Question: Why do some block groups with commercial and industrial businesses (such as the San Jose International Airport) have an overall lower compliance than other block groups?</strong></p>
+<p>Answer: Safegraph determines a device’s “home” as the common nighttime location of that mobile device over a 6 week period. As a result, areas with a large number of nighttime workers will seem to have a lower level of compliance, because Safegraph perceives their “home” to be their workplace. When these workers leave their workplace in the morning, they are counted as leaving their home. We have removed the block group that contains the San Jose International Airport to account for this inaccuracy, because the level of compliance in the block group was quite low yet the block group does not have a large residential area. When examining other block groups that contain commercial or industrial businesses, keep in mind the compliance showing on the dashboard may be artificially lowered by overnight workers.</p>
+<p><strong>Question: How is weather accounted for in the analysis?</strong></p>
+<p>Answer: We display weather patterns on the dashboard in two ways. For the maps on the “Home” and “Parks” page, we show rain/solar radiation patterns at the census block group granularity level. This allows the user to see how precipitation levels vary across different areas in San Jose. For all time series, we created an option to overlay rain/solar radiation patterns on the chart. Note that there are no y-axis values associated with rain/solar radiation measurements in the timeseries. Instead, we normalized the weather data to fit the social distancing compliance graphs, which draws attention to weather patterns vs. movement behavior rather than specific weather measurements.</p>
+<p>In general, we see that rain and solar radiation are inversely proportional (i.e. on a very rainy day, the solar radiation is low). Additionally, weather may be a confounding variable in movement behavior. For example, after the Santa Clara County shelter-in-place order was enacted on March 16, 2020, there were large dips in the percentage of people leaving home on the weekends of March 21st and April 5th. After incorporating weather into the analysis, we see that these dates correspond with rainy weather. What we previously thought to be strong stay-at-home compliance could merely be attributed to peoples’ aversion to the rain. We hope to conduct further statistical analysis to get a sense of the degree that rain affects movement.</p>
+<p>We obtained the weather data shown in the dashboard from Climatology Lab’s gridMET dataset, which contains meteorological data for the whole US spanning from 1979-yesterday. <a href="http://www.climatologylab.org/gridmet.html">Climatology Lab Website</a></p>
+</div>
+<div id="data-interpretation" class="section level1">
+<h1>Data Interpretation</h1>
+<p><strong>Question: Why are there peaks in the percentage of people that stay at home on weekends, even after the COVID-19 shelter-in-place order was enacted?</strong></p>
 <p>Answer: The peaks in the percentage of people staying at home on the weekends are likely attributed to the movement behavior of essential workers. Although others working from home may increase their out-of-house movements over the weekends, the overall bump is likely driven by the significant number of essential workers who reduce their movement on the weekends.</p>
-<p><strong>Are fully closed parks (Alum Rock and Communications Hill Staircase/Trail) and closed/locked areas (dog parks, sports fields, tennis/pickleball/futsal courts) visited at all, and what days/times would be best for proactive visits to key hotspots?</strong></p>
+<p><strong>Question: What can this tool tell us in regard to compliance as orders shift?</strong></p>
+<p>Answer: This tool allows one to examine the level of compliance within San Jose districts and individual block groups. When orders change, you can easily see the before/after shifts in the percentage of people staying at home, both on the interactive map and time series. The shift in trends may shine light on the efficacy of the order.</p>
+<p><strong>Question: What would the trigger point be to set an alert or recommendation to modify compliance?</strong></p>
+<p>Answer: Currently, we have no specific trigger point, but have chosen to report under “Key Insights” the weekends when the percentage of people leaving home has exceeded the lowest observed weekend amount since the county shelter-in-place order took effect. The lowest percentage of people leaving home occurred on Sunday, April 5th, so every Sunday since then has been worth “alerting” City staff to, in our opinion. With more discussion, we can incorporate more nuanced trigger points into the dashboard, including by specific geographies and destination types.</p>
+<p><strong>Question: How does the percentage of young residents in a block group correlate with social distancing compliance? </strong></p>
+<p>Answer: A higher percent of residents in a block group that are young adults (ages 20-29) correlates with a smaller decrease in movement in that block group following the shelter-in-place order, while a higher percentage of residents that are children has little correlation with a change in movement. A former version of the demographics panel contained a graph of percentage of devices leaving home in a block group and percentage of residents in that block group that are younger than 30; the effect seen in that graph was therefore likely dominated by the young adult correlation.</p>
+</div>
+<div id="parks" class="section level1">
+<h1>Parks</h1>
+<p><strong>Question: Are fully closed parks (Alum Rock and Communications Hill Staircase/Trail) and closed/locked areas (dog parks, sports fields, tennis/pickleball/futsal courts) visited at all, and what days/times would be best for proactive visits to key hotspots?</strong></p>
 <p>Answer: We are working on providing park visits directly on the dashboard. We’ll be able to drill down to the hour (though we may not see patterns for a given hour week by week) and have some sense of where they’re coming from (only if there are 2 or more visitors from an origin census block group in their device pool). Analyzing subsections of the park is currently not possible with the data, but if City staff can provide a detailed list of sub-park amenities and locations, we can work with Safegraph to incorporate them into the dataset.</p>
-<p><strong>How do we account for unhoused individuals in parks and trails?</strong></p>
+<p><strong>Question: How do we account for unhoused individuals in parks and trails?</strong></p>
 <p>Answer: This unfortunately is unlikely to be accountable using the Safegraph data.</p>
+<p><strong>Question: Why do some parks appear divided into separate subsections?</strong></p>
+<p>Answer: In a previous version, we used City GIS data in which some parks were broken up into separate subsections. The Safegraph data does not necessarily provide visits to particular subsections. We recently received Safegraph’s own geometries; moving forward, we will implement these new geometries in the dashboard, and the parks will no longer appear to be split into multiple pieces. Additionally, we will now have a more accurate area count and visit per acre value for each park.</p>
+<p><strong>Question: Does the park time plot show a running average or daily snapshot of visits?</strong></p>
+<p>Answer: The park time plot shows a 5-day running average of visits to both individual parks and all parks in San Jose. Note: Prior to May 5, 2020, the park time plot showed a daily snapshot of visits. We switched from a daily snapshot to a 5-day running average in order to make the plot easier to read.</p>
+<p><strong>Question: Is there any park visit data for before March 1st, 2020?</strong></p>
+<p>Answer: We hope to eventually show daily park visit data starting before March 1st, 2020, but Safegraph does not have a clear timeline yet for when they’ll produce this backlogged data. We will soon be able to compare historic park visit data, which will give insight on visit differences between different months/years.</p>
 </div>
 
 
@@ -416,6 +535,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
