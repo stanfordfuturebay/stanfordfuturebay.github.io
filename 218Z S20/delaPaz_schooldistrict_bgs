@@ -1,0 +1,406 @@
+---
+title: "schooldistrics"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+install.packages("totalcensus")
+install.packages("dplyr")
+install.packages("rgeos")
+install.packages("rgdal")
+install.packages("spdep")
+install.packages("randomcoloR", type = "binary")
+```
+
+```{r load libraries}
+library(censusapi)
+library(tidycensus)
+library(tidyverse)
+library(tidyverse)
+library(sf)
+library(geojsonsf)
+library(mapview)
+library(dplyr)
+library(leaflet)
+library(maps)
+library(censusapi)
+library(tidycensus)
+library(tidyverse)
+library(plotly)
+library(tigris)
+library(readxl)
+library(leaflet)
+library(RColorBrewer)
+library(sp)
+library(usmap)
+library(data.table)
+library(totalcensus)
+library(maptools)
+library(rgeos)
+library(rgdal)
+library(spdep)
+library(ggplot2)
+library(randomcoloR)
+mapviewOptions(basemaps = "CartoDB.Positron")
+options(
+  tigris_class = "sf",
+  tigris_use_cache = TRUE
+)
+Sys.setenv(CENSUS_KEY="0c313bd613a7281ae62c2fbb004d156d647e9c94")
+```
+
+# San Jose block groups
+
+```{r, results = "hide"}
+# Bay counties not specifically used in this processing, but shown here for illustration of how to grab county geographies quickly.
+# bay_county_names <-
+#   c(
+#     "Alameda",
+#     "Contra Costa",
+#     "Marin",
+#     "Napa",
+#     "San Francisco",
+#     "SanMateo",
+#     "Santa Clara",
+#     "Solano",
+#     "Sonoma"
+#   )
+# bay_blockgroups <-
+#   bay_county_names %>% 
+#   map(function(x){
+#     block_groups("CA",x,progress_bar=F) %>% 
+#       pull(GEOID)
+#   }) %>% unlist()
+# bay_counties <-
+#   counties("CA", cb = F, progress_bar=F) %>% 
+#   filter(NAME %in% bay_county_names)
+# scc_blockgroups <-
+#   block_groups("CA","Santa Clara", cb=F, progress_bar=F) %>% 
+#   st_transform('+proj=longlat +datum=WGS84')
+# 
+# # Below are specific SJ tracts sent to us by San Jose staff
+# sj_tracts <- st_read("/Users/stanforduser/pCloud Drive/Shared/SFBI/Data Library/San_Jose/CSJ_Census_Tracts/CSJ_Census_Tracts.shp") %>% 
+#   st_as_sf() %>% 
+#   st_transform('+proj=longlat +datum=WGS84')
+# 
+# sj_citycouncil_districts <- st_read("/Users/stanforduser/pCloud Drive/Shared/SFBI/Data Library/San_Jose/City Council Districts/CITY_COUNCIL_DISTRICTS.shp") %>% 
+#   mutate(
+#     id = DISTRICTS %>% as.character()
+#   ) %>% 
+#   dplyr::select(id) %>% 
+#   st_transform('+proj=longlat +datum=WGS84')
+# ```
+# 
+# ```{r}
+# sj_blockgroups <- 
+#   scc_blockgroups %>% 
+#   st_centroid() %>% 
+#   st_join(sj_tracts, left = F) %>% 
+#   st_join(sj_citycouncil_districts) %>% 
+#   st_set_geometry(NULL) %>% 
+#   left_join(scc_blockgroups%>% dplyr::select(GEOID), by = "GEOID") %>% 
+#   st_as_sf() %>% 
+#   transmute(
+#     origin_census_block_group = GEOID %>% as.character(),
+#     DISTRICTS = id
+#   ) %>% 
+#   st_transform("+proj=longlat +datum=WGS84 +no_defs")
+# # the spatial join leaves off two blockgroups which are touching district 9. The following code assigns those to district 9
+# sj_blockgroups$DISTRICTS[is.na(sj_blockgroups$DISTRICTS)] <- 9
+# saveRDS(sj_blockgroups,"sj_blockgroups.rds")
+# sj_blockgroups <- readRDS("sj_blockgroups.rds")
+# saveRDS(sj_citycouncil_districts, "/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/sj_citycouncil_districts.rds")
+# sj_citycouncil_districts <- 
+#   readRDS("/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/sj_citycouncil_districts.rds")
+
+acs_vars = readRDS("/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/censusData2018_acs_acs5.rds")
+
+sc_blockgroups <-
+  block_groups("CA","Santa Clara", cb=F, progress_bar=F) %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+# Get San Jose geometry
+sj_geom <- places("CA", cb = F, progress_bar = FALSE) %>% 
+  filter(NAME == "San Jose") %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+# Filter to Santa Clara block groups within San Jose geometry
+sj_blockgroups <- sc_blockgroups[st_contains(sj_geom, sc_blockgroups %>% st_centroid())[[1]],]
+```
+
+```{r, results="hide" download census data}
+download_census <-
+  download_census("acs5", year = 1025, states = c("CA"))
+
+acs_vars <-
+  listCensusMetadata(
+    name = "2018/acs/acs5",
+    type = "variables"
+  )
+
+saveRDS(acs_vars, file = "/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/censusData2018_acs_acs5.rds")
+```
+
+```{r test}
+data <- read_xlsx("/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/GRF19/grf19_lea_zcta5ce10.xlsx")
+# LEID = Local education agency identification numbers.
+# filter by school districts
+scc_district_names <-
+  c(
+    "Alum Rock Union Elementary School District", #elementary + middle
+    "Berryessa Union School District", #elementary and middle
+    "Cambrian School District", #elementary, middle, alt
+    "Campbell Union High School District",
+    "Campbell Union Elementary School District", #elem and middle
+    "Cupertino Union Elementary School District", #elem and middle
+    "East Side Union High School District", #hs
+    "Evergreen Elementary School District", #k-8
+    "Franklin-McKinley Elementary School District", #elem, middle, charter
+    "Fremont Union High School District",
+    "Gilroy Unified School District", #hs, middle, elem
+    "Lakeside Joint Elementary School District", # partners with campbell union and loma prieta
+    "Loma Prieta Joint Union Elementary School District", #one middle, one elem
+    "Los Altos School District", #k-8
+    "Los Gatos Union School District", #k-8
+    "Los Gatos-Saratoga Joint Union High School District",
+    "Luther Burbank Elementary School District", #k-8
+    "Milpitas Unified School District", #k-8
+    "Montebello Elementary School District", #now closed
+    "Moreland School District", #k-8
+    "Morgan Hill Unified School District", #elem, middle, hs
+    "Mount Pleasant Elementary School District", #k-8
+    "Mountain View–Los Altos Union High School District", #k-12
+    "Mountain View Whisman School District", #k-8
+    "Oak Grove Elementary School District", #one ms, one elem
+    "Orchard Elementary School District", #one k-8 school
+    "Palo Alto Unified School District", #k-8
+    "San Jose Unified School District", #k-12
+    "Santa Clara Unified School District", #k-12
+    "Saratoga Union School District", #k-8
+    "Sunnyvale Elementary School District" #feeder for fremont, k-8
+  )
+
+scc_elem_district_names <-
+  c(
+    "Alum Rock Union Elementary School District", #elementary + middle
+    "Berryessa Union School District", #elementary and middle
+    "Cambrian School District", #elementary, middle, alt
+    "Campbell Union Elementary School District", #elem and middle
+    "Cupertino Union Elementary School District", #elem and middle
+    "Evergreen Elementary School District", #k-8
+    "Franklin-McKinley Elementary School District", #elem, middle, charter
+    "Gilroy Unified School District", #hs, middle, elem
+    "Lakeside Joint Elementary School District", # partners with campbell union and loma prieta
+    "Loma Prieta Joint Union Elementary School District", #one middle, one elem
+    "Los Altos School District", #k-8
+    "Los Gatos Union School District", #k-8
+    "Luther Burbank Elementary School District", #k-8
+    "Milpitas Unified School District", #k-8
+    "Moreland School District", #k-8
+    "Morgan Hill Unified School District", #elem, middle, hs
+    "Mount Pleasant Elementary School District", #k-8
+    "Mountain View–Los Altos Union High School District", #k-12
+    "Mountain View Whisman School District", #k-8
+    "Oak Grove Elementary School District", #one ms, one elem
+    "Orchard Elementary School District", #one k-8 school
+    "Palo Alto Unified School District", #k-8
+    "San Jose Unified School District", #k-12
+    "Santa Clara Unified School District", #k-12
+    "Saratoga Union School District", #k-8
+    "Sunnyvale Elementary School District" #feeder for fremont, k-8
+  )
+
+scc_hs_district_names <-
+  c(
+    "Campbell Union High School District",
+    "East Side Union High School District", #hs
+    "Fremont Union High School District",
+    "Gilroy Unified School District", #hs, middle, elem
+    "Los Gatos-Saratoga Joint Union High School District",
+    "Morgan Hill Unified School District", #elem, middle, hs
+    "Mountain View–Los Altos Union High School District", #k-12
+    "San Jose Unified School District", #k-12
+    "Santa Clara Unified School District" #k-12s
+  )
+  
+#use this to look up zipcodes, and then get zipcodes to map to acs data somehow -- maybe using total census? Issue here is that some schools span multiple zipcodes
+
+grf_blkgrp <-
+  read_xlsx("/Users/stanforduser/Documents/GitHub/218z/delaPaz_Jessica/GRF19/grf19_lea_blkgrp.xlsx")
+
+scc_dstrct_all_bg <-
+  grf_blkgrp[is.element(grf_blkgrp$NAME_LEA19, scc_district_names),]
+
+scc_dstrct_elem_bg <-
+  grf_blkgrp[is.element(grf_blkgrp$NAME_LEA19, scc_elem_district_names),]
+
+scc_dstrct_hs_bg <-
+  grf_blkgrp[is.element(grf_blkgrp$NAME_LEA19, scc_hs_district_names),]
+
+#mapping theses
+
+sj_blockgroups_districts_all <- 
+  scc_dstrct_all_bg %>% 
+  filter(BLKGRP %in% sj_blockgroups$GEOID) %>% 
+  left_join(sj_blockgroups, by = c("BLKGRP" = "GEOID")) %>% 
+  st_as_sf() %>%
+  st_set_crs(4326) %>%
+  select(-c("COUNT", "WATERAREA", "STATEFP", "COUNTYFP", "MTFCC", "FUNCSTAT", "ALAND", "AWATER")) 
+sj_blockgroup_summary <-
+  sj_blockgroups_districts_all %>%
+  group_by(NAME_LEA19) %>%
+  summarise(geom = st_union(geometry), BLKGRP = list(unique(BLKGRP)))
+
+#plot(sj_blockgroups_districts_all, col = sj_blockgroups_districts_all$color)
+ggplot(data = sj_blockgroup_summary) + geom_sf(aes(fill = NAME_LEA19))
+#mapview(sj_blockgroups_districts_all %>% dplyr::select('NAME_LEA19'), layer.name = "School districts by block group")
+
+#elem
+
+sj_blockgroups_districts_elem <- 
+  scc_dstrct_elem_bg %>% 
+  filter(BLKGRP %in% sj_blockgroups$GEOID) %>% 
+  left_join(sj_blockgroups, by = c("BLKGRP" = "GEOID")) %>% 
+  st_as_sf() %>%
+  st_set_crs(4326) %>%
+  select(-c("COUNT", "WATERAREA", "STATEFP", "COUNTYFP", "MTFCC", "FUNCSTAT", "ALAND", "AWATER")) %>%
+  rename(elem_districts = NAME_LEA19) %>%
+  group_by(elem_districts) %>%
+  summarize(geom = st_union(geometry), BLKGRP = ) 
+
+#mapview(sj_blockgroups_districts_elem %>% dplyr::select('NAME_LEA19'), layer.name = "School districts by block group")
+ggplot(data = sj_blockgroups_districts_elem) + geom_sf(aes(fill = elem_districts)) #would be good to add labels
+
+#hs
+sj_blockgroups_districts_hs <- 
+  scc_dstrct_hs_bg %>% 
+  filter(BLKGRP %in% sj_blockgroups$GEOID) %>% 
+  left_join(sj_blockgroups, by = c("BLKGRP" = "GEOID")) %>% 
+  st_as_sf() %>%
+  st_set_crs(4326) %>%
+  select(-c("COUNT", "WATERAREA", "STATEFP", "COUNTYFP", "MTFCC", "FUNCSTAT", "ALAND", "AWATER")) %>%
+  rename(hs_districts = NAME_LEA19) %>%
+  group_by(hs_districts) %>%
+  summarize(geom = st_union(geometry))
+  
+
+#mapview(sj_blockgroups_districts_hs %>% dplyr::select('NAME_LEA19'), layer.name = "School districts by block group")
+ggplot(data = sj_blockgroups_districts_hs) + geom_sf(aes(fill = hs_districts))
+
+  
+
+#to summarize, we need a new data frame that gives the NAME_LEA19, the associated geometries, and the associated blockgroups
+sj_district_data <-
+  sj_blockgroups_districts_all %>%
+  group_by(NAME_LEA19)%>%
+  summarize(BLKGRP = toString(unique(BLKGRP)))
+  
+```
+
+Might be good to figure out overlapping districts
+
+Next, we might want to find the students associated with these school districts, using Armelle's code maybe? We could find households with children and find out how many children are in that household.
+
+broadband access? sec/cpu data, number carriers per block group
+registered users by block
+
+process school + school district (just google around, but also safegraph data-- looking at code Maeve and Julia are using, like poi_ca, get naics code; should be able to find shp file online)
+
+```{r household info districtification}
+# Concept: AGE OF OWN CHILDREN UNDER 18 YEARS IN FAMILIES AND SUBFAMILIES BY LIVING ARRANGEMENTS BY EMPLOYMENT STATUS OF PARENTS; PRESENCE OF OWN CHILDREN UNDER 18 YEARS BY AGE OF OWN CHILDREN UNDER 18 YEARS BY EMPLOYMENT STATUS FOR FEMALES 20 TO 64 YEARS	
+
+#presence of children by bg
+sj_kids_by_block <-
+  getCensus(
+    name = "acs/acs5",
+    vintage = 2018,
+    region = "block group:*", 
+    regionin = "state:06+county:085",
+    vars = "group(B23003)"
+  ) %>%
+  mutate(
+    blockgroup =
+      paste0(state,county,tract,block_group)
+  ) %>% 
+  select_if(!names(.) %in% c("GEO_ID","state","county","tract","block_group","NAME")) %>% 
+  dplyr::select(-c(contains("EA"),contains("MA"),contains("M"))) %>%
+  group_by(blockgroup) %>%
+  summarize(
+    Total = B23003_002E,
+    'Under 6yo' = B23003_003E,
+    '6-17 yo' = B23003_017E
+  ) %>%
+  rename(BLKGRP = blockgroup)
+
+#Next we want to put match all these children to their school districts. we want to show which districts are most dense
+sj_kids_bg <-
+  sj_blockgroups_districts_all %>%
+  select(c(NAME_LEA19, BLKGRP, geom)) %>%
+  merge(sj_kids_by_block, by="BLKGRP") #%>%
+  #aggregate(by=list(sj_kids_districts$NAME_LEA19), FUN=toString)
+
+#children density, total
+mapview(sj_kids_bg %>% dplyr::select('Total'), layer.name = "total children density by household by block group")
+
+#children density >6yo
+mapview(sj_kids_bg %>% dplyr::select('Under 6yo'), layer.name = "children (>6yo) density by block group")
+
+#children density 6-17yo
+mapview(sj_kids_bg %>% dplyr::select('6-17 yo'), layer.name = "children (6-17yo) density by block group")
+
+#children density in school districts
+sj_kids_districts_total <-
+  sj_kids_bg %>%
+  group_by(NAME_LEA19) %>%
+  summarise(Total = sum(Total))
+mapview(sj_kids_districts_total %>% dplyr::select('Total'), layer.name = "total children density by household by district")
+
+
+#need the blockgrounds that correspond to each district 
+
+sj_kids_districts_elem <-
+  sj_kids_bg %>%
+  group_by(NAME_LEA19) %>%
+  rename(under_6yo = `Under 6yo`) %>%
+  summarise(`under_6yo` = sum(under_6yo))
+mapview(sj_kids_districts_elem %>% dplyr::select('under_6yo'), layer.name = "total children under 6yo density by household by district")
+  
+#now to match these children to schools districts (hard bc some are hs and some are elem. this just draws boundaries). to do this, I'm thinking I should create some type of for-loop
+
+ggplot(data = sj_kids_districts_elem) +
+  geom_sf()+
+  geom_sf(data = sj_kids_districts_elem, fill = NA) +
+  geom_text(data = sj_kids_districts_elem, aes(X, Y, label = NAME_LEA19), size = 5) +
+  coord_sf(xlim = c(-88, -78), ylim = c(24.5, 33), expand = FALSE)
+```
+ 
+ #can we just get school district boundaries? narrow down everything to East Side SJ --> figure out critical areas
+ Devices per household? 
+
+```{r}
+raw <- 
+  getCensus(
+    name = "acs/acs5",
+    vintage = 2018,
+    region = "block group:*", 
+    regionin = "state:06+county:085",
+    vars = "group(B28002)"
+  ) %>%
+  mutate(
+    blockgroup = paste0(state,county,tract,block_group)
+  ) %>%
+  select_if(!names(.) %in% c("GEO_ID","state","county","tract","block_group","NAME")) %>%
+  dplyr::select(-c(contains("EA"),contains("MA"),contains("M"))) %>% 
+  gather(
+    key = "variable", 
+    value = "estimate", 
+    -blockgroup
+  ) %>% 
+  mutate(
+    label = acs_vars$label[match(variable,acs_vars$name)]
+  )
+```
+
+
