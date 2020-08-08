@@ -36,9 +36,9 @@
 
     <script>
       (async () => {
-        const response = await fetch('https://api.github.com/repos/stanfordfuturebay/stanfordfuturebay.github.io/contents/covid19');
+        const response = await fetch('https://api.github.com/repos/stanfordfuturebay/stanfordfuturebay.github.io/contents/218Z-S20');
         const data = await response.json();
-        let htmlString = "<h1>Stanford Future Bay Initiative: COVID-19 Rapid Response Projects</h1>The following is a collection of scripts referenced in Derek Ouyang's Safegraph Data Consortium Seminar on 5/20 that we think may be useful for Consortium partners. You may also view these files directly in GitHub (search stanfordfuturebay).<br><br><ul>";
+        let htmlString = "<h1>Stanford Future Bay Initiative: COVID-19 Rapid Response Projects</h1>The following is a collection of web reports produced by students in 218Z, Spring 20. You may also view these files directly in GitHub (search stanfordfuturebay).<br><br><ul>";
         for (let file of data) {
         test = file.name.substring(0);
           if(file.name != "_config.yml" & file.name != "index.md" & file.name != ".DS_Store" & file.name != "404.html") {
