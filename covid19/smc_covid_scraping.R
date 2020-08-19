@@ -101,7 +101,10 @@ dem_data_smc_cleaned <- dem_data_smc %>%
   rename(text = ".") %>% 
   separate(text, c("demographic", "value"), sep = "\\.") %>% 
   separate(value, c(NA, "category", "number")) %>% 
-  mutate(number = as.numeric(number)) %>%
+  mutate(number = as.numeric(number),
+         # clean a little bit since the format is a little different for a couple of the age group listings between cases and deaths data
+         demographic = ifelse(demographic == "Age Group 0 to 9", "Age Group < 9", demographic),
+         demographic = ifelse(demographic == "Age Group 10 to 19", "Age Group 10-19", demographic)) %>%
   spread(key = category, value = number)
 
 write.csv(dem_data_smc_cleaned, "covid19/smc_covid_dem_data_scraped.csv")
