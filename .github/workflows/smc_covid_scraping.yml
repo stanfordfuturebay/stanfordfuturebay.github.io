@@ -1,0 +1,59 @@
+# This workflow scrapes SMC COVID data from the SMC dashboards
+# Code based on https://github.com/mattkerlogue/google-covid-mobility-scrape/blob/master/.github/workflows/main.yaml 
+# and https://github.com/marketplace/actions/github-push
+# Uses starting selenoid server from https://github.com/marketplace/actions/start-selenoid-server
+
+name: SMC COVID Scraping
+
+# Controls when the action will run. Triggers the workflow at a specific time; for now, 12pm PST/7pm UTC
+on:
+  schedule:
+    - cron: '0 19 * * *'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "scrape"
+  scrape:
+    # The type of runner that the job will run on. Needs to be ubuntu to use the start selenoid server action
+    runs-on: ubuntu-latest
+
+    steps:
+    # Start selenoid server
+    - name: Start selenoid
+      uses: Xotabu4/selenoid-github-action@v1
+    
+    # Checks-out the repository
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+    
+    # Install R
+    - uses: r-lib/actions/setup-r@master
+      with:
+        r-version: '4.0.2'
+
+    # Set up R. Note the first line was needed to make sure the curl package worked
+    - name: Install R packages
+      run: |
+        sudo apt-get install -y libcurl4-openssl-dev
+        R -e 'install.packages("tidyverse")'
+        R -e 'install.packages("RSelenium")'
+        R -e 'install.packages("seleniumPipes")'
+        R -e 'install.packages("dplyr")'
+    # Run R script to scrape data
+    - name: Scrape data
+      run: R -e 'source("covid19/smc_covid_scraping.R", echo = TRUE)'
+      
+    # Add new files in correct folder
+    - name: Commit files
+      run: |
+        git config --local user.name github-actions
+        git config --local user.email "actions@github.com"
+        git add covid19/*
+        git commit -am "Updating data"
+    
+    # Push changes
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
