@@ -56,6 +56,29 @@ tests_smc <- tests_clean %>%
 
 write.csv(tests_smc, "covid19/smc_tests_scraped.csv")
 
+# now get demographic data
+remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+Sys.sleep(5)
+webElem <- remDr$findElements(using = "class", value = "bar") # these are the elements that correspond to the demographic data bar charts (note they are bars rather than columns)
+dem_data_smc <- 1:length(webElem) %>% 
+  map(function(x){
+    webElem[[x]]$getElementAttribute("aria-label") %>% as.character()
+  }) %>% 
+  unlist() %>% 
+  as.data.frame()
+
+dem_data_smc_cleaned <- dem_data_smc %>%
+  rename(text = ".") %>% 
+  separate(text, c("demographic", "value"), sep = "\\.") %>% 
+  separate(value, c(NA, "category", "number")) %>% 
+  mutate(number = as.numeric(number),
+         # clean a little bit since the format is a little different for a couple of the age group listings between cases and deaths data
+         demographic = ifelse(demographic == "Age Group 0 to 9", "Age Group < 9", demographic),
+         demographic = ifelse(demographic == "Age Group 10 to 19", "Age Group 10-19", demographic)) %>%
+  spread(key = category, value = number)
+
+write.csv(dem_data_smc_cleaned, "covid19/smc_covid_dem_data_scraped.csv")
+
 # also get cases data, from same dashboard
 webElem <- remDr$findElements(using = "class", value = "column") # these correspond to the bars in the bar charts of cases over time 
 
@@ -85,29 +108,6 @@ cases_clean <-
 
 write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
 
-
-# now get demographic data
-remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
-Sys.sleep(5)
-webElem <- remDr$findElements(using = "class", value = "bar") # these are the elements that correspond to the demographic data bar charts (note they are bars rather than columns)
-dem_data_smc <- 1:length(webElem) %>% 
-  map(function(x){
-    webElem[[x]]$getElementAttribute("aria-label") %>% as.character()
-  }) %>% 
-  unlist() %>% 
-  as.data.frame()
-
-dem_data_smc_cleaned <- dem_data_smc %>%
-  rename(text = ".") %>% 
-  separate(text, c("demographic", "value"), sep = "\\.") %>% 
-  separate(value, c(NA, "category", "number")) %>% 
-  mutate(number = as.numeric(number),
-         # clean a little bit since the format is a little different for a couple of the age group listings between cases and deaths data
-         demographic = ifelse(demographic == "Age Group 0 to 9", "Age Group < 9", demographic),
-         demographic = ifelse(demographic == "Age Group 10 to 19", "Age Group 10-19", demographic)) %>%
-  spread(key = category, value = number)
-
-write.csv(dem_data_smc_cleaned, "covid19/smc_covid_dem_data_scraped.csv")
 
 # code below is to scrape hospital data, which I don't actually keep as active because the SMC dashboard only displays hospital data for the most recent 12 days, so we need to use data from other sources anyway
 
