@@ -15,7 +15,7 @@ remDr <- remoteDriver(
 )
 remDr$open()
 
-# first getting testing data, which we will use to get case data over time
+# first getting testing data
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiMWI5NmE5M2ItOTUwMC00NGNmLWEzY2UtOTQyODA1YjQ1NWNlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
 Sys.sleep(5)
 webElem <- remDr$findElements(using = "class", value = "column") # these correspond to the bars in the bar chart of testing over time
