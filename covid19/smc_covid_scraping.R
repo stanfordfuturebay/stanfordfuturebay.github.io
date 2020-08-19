@@ -1,0 +1,136 @@
+# this file includes code for scraping the data for covid testing, cases, and demographics (and hospitalizations) from the 
+# SMC county dashboards of this data
+# for use in Github Actions workflow, with RSelenium loaded already
+
+library(RSelenium)
+library(seleniumPipes)
+library(tidyverse)
+library(dplyr)
+
+remDr <- remoteDriver(
+  remoteServerAddr = "localhost",
+  port = 4444L,
+  path = "/wd/hub",
+  browserName = "chrome"
+)
+remDr$open()
+
+# first getting testing data, which we will use to get case data over time
+remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiMWI5NmE5M2ItOTUwMC00NGNmLWEzY2UtOTQyODA1YjQ1NWNlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+Sys.sleep(5)
+webElem <- remDr$findElements(using = "class", value = "column") # these correspond to the bars in the bar chart of testing over time
+
+# the next chunk of code is from Derek's previous scraping of the lab testing dashboard for SMC
+tests <-
+  1:length(webElem) %>% 
+  map(function(x){
+    webElem[[x]]$getElementAttribute("aria-label") %>% as.character() # aria-label includes the relevant information about the column
+  }) %>% 
+  unlist() %>% 
+  as.data.frame()
+
+tests_clean <-
+  tests %>% 
+  rename(text = ".") %>% 
+  separate(text, c("date","test_text"), sep = "\\.") %>% 
+  separate(test_text, c(NA,"type",NA,"tests")) %>% 
+  mutate(
+    date = 
+      substr(date,23,nchar(.)) %>% 
+      as.Date("%A, %B %d, %Y"),
+    tests = 
+      tests %>% 
+      as.numeric()
+  ) %>% 
+  spread(
+    key = type,
+    value = tests
+  )
+
+tests_smc <- tests_clean %>% 
+  dplyr::select(date, Positive, Negative) %>% 
+  rename(pos_tests = Positive, neg_tests = Negative) %>%
+  mutate(cumulative_pos = cumsum(pos_tests), # get cumulative positive tests
+         total_tests = pos_tests + neg_tests, # total tests
+         perc_pos = pos_tests / total_tests) # percent positive tests
+
+write.csv(tests_smc, "covid19/smc_tests_scraped.csv")
+
+# also get cases data, from same dashboard
+webElem <- remDr$findElements(using = "class", value = "column") # these correspond to the bars in the bar charts of cases over time 
+
+cases <-
+  1:length(webElem) %>% 
+  map(function(x){
+    webElem[[x]]$getElementAttribute("aria-label") %>% as.character() # aria-label includes the relevant information about the column
+  }) %>% 
+  unlist() %>% 
+  as.data.frame()
+
+cases_clean <-
+  cases %>% 
+  rename(text = ".") %>% 
+  separate(text, c("date","cases_text"), sep = "\\.") %>% 
+  separate(cases_text, c(NA,"type",NA,NA,NA,"cases")) %>% # everything else designated as NA isn't relevant
+  mutate(
+    date = 
+      substr(date,6,nchar(.)) %>% # just get relevant date information
+      as.Date("%A, %B %d, %Y"),
+    cases = 
+      cases %>% 
+      as.numeric()
+  ) %>%
+  spread(key = type, value = cases) %>%
+  rename(new_cases = New, total_cases = Total)
+
+write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
+
+
+# now get demographic data
+remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+Sys.sleep(5)
+webElem <- remDr$findElements(using = "class", value = "bar") # these are the elements that correspond to the demographic data bar charts (note they are bars rather than columns)
+dem_data_smc <- 1:length(webElem) %>% 
+  map(function(x){
+    webElem[[x]]$getElementAttribute("aria-label") %>% as.character()
+  }) %>% 
+  unlist() %>% 
+  as.data.frame()
+
+dem_data_smc_cleaned <- dem_data_smc %>%
+  rename(text = ".") %>% 
+  separate(text, c("demographic", "value"), sep = "\\.") %>% 
+  separate(value, c(NA, "category", "number")) %>% 
+  mutate(number = as.numeric(number)) %>%
+  spread(key = category, value = number)
+
+write.csv(dem_data_smc_cleaned, "covid19/smc_covid_dem_data_scraped.csv")
+
+# code below is to scrape hospital data, which I don't actually keep as active because the SMC dashboard only displays hospital data for the most recent 12 days, so we need to use data from other sources anyway
+
+# # now get hospital data
+# remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiOWNiMjVlZDAtOWYzYS00ZmYwLTg5MmEtMTViODNlZmFlMTZlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+# Sys.sleep(5)
+# webElem <- remDr$findElements(using = "class", value = "column") # similar to testing dashboard, relevant information is in the columns
+# hosp_smc <- 1:length(webElem) %>% 
+#   map(function(x){
+#     webElem[[x]]$getElementAttribute("aria-label") %>% as.character()
+#   }) %>% 
+#   unlist() %>% 
+#   as.data.frame()
+# 
+# # note that in this, the first set of values correspond to the chart for confirmed cases only (chart on the left in the dashboard). the following ones are for the ICU occupancy and acute care occupancy charts (on the right) 
+# hosp_smc_cleaned <- hosp_smc %>% 
+#   rename(text = ".") %>% 
+#   separate(text, c("date", "description"), sep = "\\.") %>%
+#   separate(description, c("description", "number"), sep = -3) %>%
+#   mutate(number = as.numeric(gsub("[[:alpha:]]", " ", number)),
+#          date = substr(date, 6, length(date)),
+#          description = trimws(description)) %>%
+#   filter(description == "Acute Care" | description == "ICU") %>%
+#   spread(key = description, value = number) %>%
+#   mutate(total_hospitalized_covid_confirmed = `Acute Care` + `ICU`)
+# 
+# write.csv(hosp_smc_cleaned, "covid19/smc_hosp_data_scraped.csv")
+
+remDr$close()
