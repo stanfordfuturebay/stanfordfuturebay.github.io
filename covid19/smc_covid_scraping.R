@@ -77,7 +77,32 @@ dem_data_smc_cleaned <- dem_data_smc %>%
          demographic = ifelse(demographic == "Age Group 10 to 19", "Age Group 10-19", demographic)) %>%
   spread(key = category, value = number)
 
-write.csv(dem_data_smc_cleaned, "covid19/smc_covid_dem_data_scraped.csv")
+# find the text that tells us about update dates
+text_objs <- remDr$findElements(using = "class", value = "textRun")
+text_vals <- 1:length(text_objs) %>% 
+  map(function(x){
+    text_objs[[x]]$getElementText() %>% unlist()
+  }) %>% 
+  unlist() %>% 
+  as.data.frame()
+
+# find the text with the case update date
+case_update_date_str <- text_vals %>%
+  filter(grepl("case data", tolower(.), fixed = TRUE))
+case_update_date_str <- tolower(case_update_date_str$.)
+
+# text with death update date
+death_update_date_str <- text_vals %>%
+  filter(grepl("death data", tolower(.), fixed = TRUE))
+death_update_date_str <- tolower(death_update_date_str$.)
+index_start_death <- unname(str_locate(death_update_date_str, "death data")[1,1])
+death_update_date_str <- substr(death_update_date_str, index_start_death, nchar(death_update_date_str))
+
+# add these to the data frame to be saved
+date_str_vectors <- data.frame(case_update_date_str, death_update_date_str)
+dem_data_smc_cleaned_with_dates <- bind_rows(dem_data_smc_cleaned, date_str_vectors)
+
+write.csv(dem_data_smc_cleaned_with_dates, "covid19/smc_covid_dem_data_scraped.csv")
 
 # also get cases data, from same dashboard
 webElem <- remDr$findElements(using = "class", value = "column") # these correspond to the bars in the bar charts of cases over time 
