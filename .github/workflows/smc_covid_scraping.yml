@@ -5,7 +5,7 @@
 
 name: SMC COVID Scraping
 
-# Controls when the action will run. Triggers the workflow at a specific time, here 4am PST/11am UTC
+# Controls when the action will run. Triggers the workflow at a specific time, here 4am PST/11am UTC (aiming to run at a time when no other changes are being pushed)
 on:
   schedule:
     - cron: '0 11 * * *'
