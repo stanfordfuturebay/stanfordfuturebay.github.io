@@ -157,6 +157,12 @@ if (length(webElem) != 0) {
   write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
 }
 
+# save a csv with the most recent scrape time
+scrape_time_df <- data.frame(scrape_last_time_ran = Sys.time())
+write.csv(scrape_time_df, "covid19/smc_scrape_last_time_ran.csv")
+
+
+
 # code below is to scrape hospital data, which I don't actually keep as active because the SMC dashboard only displays hospital data for the most recent 12 days, so we need to use data from other sources anyway
 
 # # now get hospital data
