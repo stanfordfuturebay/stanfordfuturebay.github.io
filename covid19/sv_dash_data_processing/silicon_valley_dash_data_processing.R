@@ -65,7 +65,7 @@ case_dem_update_date <- c(smc_case_update_date_dem, max(scc_cases_by_date$date))
 death_dem_update_date <- c(smc_death_update_date_dem, max(scc_deaths_by_date$date))
 dem_update_times <- data.frame(county_name, case_dem_update_date, death_dem_update_date)
 # save csv
-write.csv(cases_by_date, "covid19/sv_dash_data_processing/sv_dem_update_times.csv")
+write.csv(dem_update_times, "covid19/sv_dash_data_processing/sv_dem_data_update_times.csv")
 
 # join the data for SMC with SCC data
 cases_by_date <- scc_cases_by_date %>% 
