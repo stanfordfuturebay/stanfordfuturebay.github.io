@@ -271,4 +271,4 @@ write.csv(comparison_df, "covid19/sv_dash_data_processing/comparison_cases_by_da
 
 # save a csv with the most recent run time
 run_time_df <- data.frame(last_time_processed = Sys.time())
-write.csv(run_time_df, "covid19/sv_dash_data_processing/last_time_processed.csv")
+write.csv(run_time_df, "covid19/sv_dash_data_processing/last_time_processing_attempted.csv")
