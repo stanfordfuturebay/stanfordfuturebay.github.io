@@ -1,0 +1,54 @@
+# This workflow automates the running of code that processes data for the Silicon Valley 
+# COVID-19 dashboard
+
+name: Silicon Valley COVID-19 Dashboard Data Processing
+
+# Controls when the action will run. Triggers the workflow at a specific time
+on:
+  schedule:
+    - cron: '30 16 * * *'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "process"
+  process:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out the repository
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+    
+    # Install R
+    - uses: r-lib/actions/setup-r@master
+      with:
+        r-version: '4.0.2'
+
+    # Set up R
+    - name: Install R packages
+      run: |
+        R -e 'install.packages("tidyverse")'
+        R -e 'install.packages("lubridate")'
+        R -e 'install.packages("jsonlite")'
+        R -e 'install.packages("pracma")'
+    
+    # Run R script to process data
+    - name: Process data
+      run: R -e 'source("covid19/sv_dash_data_processing/silicon_valley_dash_data_processing.R", echo = TRUE)'
+      
+    # Add new files in correct folder
+    - name: Commit files
+      run: |
+        git config --local user.name github-actions
+        git config --local user.email "actions@github.com"
+        git add covid19/sv_dash_data_processing/*
+        git commit -am "Updating processed data"
+    
+    # Push changes
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
