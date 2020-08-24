@@ -6,7 +6,7 @@ name: Silicon Valley COVID-19 Dashboard Data Processing
 # Controls when the action will run. Triggers the workflow at a specific time
 on:
   schedule:
-    - cron: '30 16 * * *'
+    - cron: '45 16 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
