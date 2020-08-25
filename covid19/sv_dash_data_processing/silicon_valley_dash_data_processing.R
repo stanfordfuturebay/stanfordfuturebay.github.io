@@ -97,6 +97,12 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date)) {
   
   # save csv
   write.csv(cases_by_date, "covid19/sv_dash_data_processing/sv_cases_by_date.csv")
+  
+  # save csv for the update dates
+  case_update_date <- c(as.Date(max(scc_cases_by_date$date)), max(smc_cases_by_date$date))
+  county_name <- c("SCC", "SMC")
+  case_update_date_df <- data.frame(county_name, case_update_date)
+  write.csv(case_update_date_df, "covid19/sv_dash_data_processing/sv_cases_update_dates.csv")
 }
 
 # DEATHS OVER TIME
@@ -121,6 +127,12 @@ if (!is.null(scc_deaths_by_date) & !is.null(smc_data_cfa)) {
   
   # save csv
   write.csv(deaths_by_date, "covid19/sv_dash_data_processing/sv_deaths_by_date.csv")
+
+  # save csv for the update dates
+  deaths_update_date <- c(as.Date(max(scc_deaths_by_date$date)), max(smc_data_cfa$date))
+  county_name <- c("SCC", "SMC")
+  deaths_update_date_df <- data.frame(county_name, deaths_update_date)
+  write.csv(deaths_update_date_df, "covid19/sv_dash_data_processing/sv_deaths_update_dates.csv") 
 }
 
 # CASES AND DEATHS DEMOGRAPHICS
@@ -247,6 +259,12 @@ if (!is.null(scc_hosp_by_date) & !is.null(smc_data_cfa)) {
   
   # save csv
   write.csv(hosp_by_date, "covid19/sv_dash_data_processing/sv_hosp_by_date.csv")
+  
+  # save csv for the update dates
+  hosp_update_date <- c(as.Date(max(scc_hosp_by_date$date)), max(smc_data_cfa$date))
+  county_name <- c("SCC", "SMC")
+  hosp_update_date_df <- data.frame(county_name, hosp_update_date)
+  write.csv(hosp_update_date_df, "covid19/sv_dash_data_processing/sv_hosp_update_dates.csv") 
 }
 
 # TESTING
@@ -276,6 +294,12 @@ if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date)) {
   
   # save csv
   write.csv(testing_by_date, "covid19/sv_dash_data_processing/sv_testing_by_date.csv")
+
+  # save csv for the update dates
+  testing_update_date <- c(as.Date(max(scc_testing_by_date$collection_date)), max(smc_testing_by_date$date))
+  county_name <- c("SCC", "SMC")
+  testing_update_date_df <- data.frame(county_name, testing_update_date)
+  write.csv(testing_update_date_df, "covid19/sv_dash_data_processing/sv_testing_update_dates.csv") 
 }
 
 # COMPARISONS
@@ -337,6 +361,14 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & !is.null(ca_data
   
   # save csv
   write.csv(comparison_df, "covid19/sv_dash_data_processing/comparison_cases_by_date.csv")
+  
+  # save csv for the update dates
+  comp_update_date <- c(as.Date(max(scc_cases_by_date$date)), max(smc_cases_by_date$date),
+                        max(total_ca_cases_by_day$date), max(us_data$date),
+                        max(world_data$date))
+  region_name <- c("SCC", "SMC", "CA", "US", "World")
+  comp_update_date_df <- data.frame(region_name, comp_update_date)
+  write.csv(comp_update_date_df, "covid19/sv_dash_data_processing/comparison_cases_update_dates.csv") 
 }
 
 # save a csv with the most recent run time
