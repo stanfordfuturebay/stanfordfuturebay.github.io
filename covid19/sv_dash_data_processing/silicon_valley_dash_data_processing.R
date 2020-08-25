@@ -59,13 +59,12 @@ smc_case_update_date_str <- smc_dem_data %>%
   filter(!is.na(case_update_date_str))
 smc_case_update_date_dem <- parse_date_time(smc_case_update_date_str$case_update_date_str, orders = "mdy")
 
-# save demographic update times
-county_name <- c("SMC", "SCC")
-case_dem_update_date <- c(smc_case_update_date_dem, max(scc_cases_by_date$date))
-death_dem_update_date <- c(smc_death_update_date_dem, max(scc_deaths_by_date$date))
-dem_update_times <- data.frame(county_name, case_dem_update_date, death_dem_update_date)
+# save demographic update times for SMC
+update_date <- c(smc_case_update_date_dem, smc_death_update_date_dem)
+data_type <- c("cases demographics", "deaths demographics")
+dem_update_times <- data.frame(data_type, update_date)
 # save csv
-write.csv(dem_update_times, "covid19/sv_dash_data_processing/sv_dem_data_update_times.csv")
+write.csv(dem_update_times, "covid19/sv_dash_data_processing/smc_dem_data_update_dates.csv")
 
 # join the data for SMC with SCC data
 cases_by_date <- scc_cases_by_date %>% 
