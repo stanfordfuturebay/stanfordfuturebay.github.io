@@ -5,6 +5,7 @@ library(tidyverse)
 library(lubridate)
 library(jsonlite)
 library(pracma)
+library(googlesheets4)
 options(
   tigris_class = "sf",
   tigris_use_cache = T
@@ -306,6 +307,24 @@ if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date)) {
 if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & !is.null(ca_data) & 
     !is.null(us_data) & !is.null(world_data)) {
   
+  # process SMC and SCC data
+  cases_by_date <- scc_cases_by_date %>% 
+    rename(new_cases_scc = new_cases, total_cases_scc = total_cases) %>%
+    full_join(smc_cases_by_date %>% 
+                dplyr::select(date, new_cases, total_cases) %>% 
+                rename(total_cases_smc = total_cases, new_cases_smc = new_cases)) %>% 
+    # check if there are dates that aren't listed, which we assume have zero new cases
+    full_join(data.frame(date = seq(min(scc_cases_by_date$date), max(scc_cases_by_date$date), by = "days"))) %>% 
+    arrange(date) %>%
+    # combine SCC and SMC values
+    mutate(new_cases_scc = replace_na(new_cases_scc, 0),
+           total_cases_scc = cumsum(new_cases_scc),
+           new_cases_smc = replace_na(new_cases_smc, 0), 
+           total_cases_smc = cumsum(new_cases_smc),
+           new_cases = new_cases_scc + new_cases_smc, 
+           total_cases = cumsum(new_cases),
+           new_cases_mov7 = movavg(new_cases, 7, type = "s"))
+  
   # process CA data
   total_ca_cases_by_day <- ca_data %>% 
     # replace any NAs with zero
@@ -337,12 +356,14 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & !is.null(ca_data
     mutate(total_cases = cumsum(new_cases),
            new_cases_mov7 = movavg(new_cases, 7, type = "s"))
   
-  # population data to normalize cases and death counts
-  smc_pop <- 773244 # source: California Department of Finance (E-1 Estimates for January 2020)
-  scc_pop <- 1961969 # source: California Department of Finance (E-1 Estimates for January 2020)
-  ca_pop <- 39782870 # source: California Department of Finance (E-1 Estimates for January 2020)
-  us_pop <- 329135084 # source: U.S. Census Bureau, Population Clock Estimate
-  world_pop <- 7795000000 # source: UN Population Fund, World Population Dashboard
+  # population data to normalize cases and death counts from JVSV's google sheets with this info
+  gs4_deauth()
+  pop_vals <- read_sheet("https://docs.google.com/spreadsheets/d/1wUUUTglF5sTRFWIeUIWvHYrCFSjY7eoKZSy3B_ArIZA/edit?ts=5f47d197#gid=0")
+  smc_pop <- (pop_vals %>% filter(Geography == "San Mateo County"))$Estimate
+  scc_pop <- (pop_vals %>% filter(Geography == "Santa Clara County"))$Estimate
+  ca_pop <- (pop_vals %>% filter(Geography == "California"))$Estimate
+  us_pop <- (pop_vals %>% filter(Geography == "United States"))$Estimate
+  world_pop <- (pop_vals %>% filter(Geography == "World"))$Estimate
   
   # make data frame of the new daily case count for SMC+SCC, CA, and US, normalized by population
   comparison_df <- rbind(cases_by_date %>% 
