@@ -1,0 +1,168 @@
+---
+title: "Shaping the Future of the Bay: Intro to Urban Data Analysis"
+author: "Stanford Future Bay Initiative"
+date: "Last updated: `r format(Sys.Date(), '%B %d')`"
+output: 
+  bookdown::gitbook:
+    df_print: paged
+    split_by: section
+    includes:
+      in_header: header.html
+    config:
+      toc:
+        collapse: none
+        scroll_highlight: yes
+        before: |
+          <li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+        after: null
+      toolbar:
+        position: fixed
+      edit : null
+      download: null
+      search: yes
+      fontsettings:
+        theme: white
+        family: sans
+        size: 2
+      sharing:
+        facebook: no
+        github: no
+        twitter: no
+        linkedin: no
+        weibo: no
+        instapaper: no
+        vk: no
+        all: no
+      info: no
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Introduction
+
+Test
+
+## Software Setup
+
+- Download the latest version of R [here](https://cran.r-project.org/).
+- Download RStudio [here](https://www.rstudio.com/products/rstudio/download/).
+- Make sure you're set up fully on Slack. You should be on a main #218z channel and probably on many more soon. Note you can insert code using the "Code block" option. Otherwise, on Slack you can just say "hey my code is updated on the covid19 repo" and others will know how to access your code.
+- (UPDATE: In April we switched to a new server, "P Drive". See new steps [here](https://docs.google.com/document/d/1-zSK-N5H-Zf6bbmv5pFIzCkWIKol8pWb73pSu8Plwrg/edit).) Get connected to our server which stores big files including "restricted files" you won't be allowed to download onto your machine. Click [here](https://docs.google.com/document/d/11heDXJx-B1gPhkF2tkkJtUbEVAf91RvUjov9FegmXUA/edit?folder=1gNhYwPydkd3LaBhXU4qKTCkWs7xShy3z) for instructions. **This tends to need troubleshooting, especially on a Mac, and is very important to get working, so work on this one ASAP and reach out to Neel on Slack for help.**
+- Make sure your GitHub account is working. When you click [here](https://github.com/stanfordfuturebay/covid19) you should be able to see documents. 
+- Download GitHub Desktop [here](https://desktop.github.com/). Follow the online tutorials to clone `stanfordfuturebay/covid19` onto your own machine. That means you should be able to go to a folder on your computer and see files like `rbasics.Rmd`.
+
+Once all the above is ready to go, then I'd recommend you open up RStudio, open `rbasics.Rmd`, and then you should be able to follow along in the .Rmd version of what you also see on the webpage. 
+
+## RStudio Interface
+
+- Double check your RStudio version under Help > About RStudio, and your R version under Tools > Global Options. You will also always be able to check package versions under Tools > Check for package updates. When you experience errors, we'll want to be able to investigate version compatibility as a source of the error. As of now, I (Derek) am using RStudio Version 1.2.1335 and R Version 3.6.1.
+- Typically the first thing I do is set the working directory for whatever I'm working. That's typically the bottom right window, "Files" tab, navigate to your desired folder (usually the repo you want to ultimately push to), then click the gear button > Set as working directory. 
+- In the script window itself, the white gear wheel has an option to show chunk output "inline" or "in console". By default it's "inline", but I almost always switch to "in console". 
+- Reminder that you can type commands directly into the console. Usually I use this to view data frames, typing `View(whatever)`, view field names quickly using `colnames(whatever)`, map things quickly using `mapview(whatever)`, etc.
+- For running script "inline", you can put your blinking typing cursor on any part of a line and do `Ctrl+Enter` (or the Mac equivalent) and the whole line will run. If you only want to run part of a line (especially %>% pipelines), then you highlight a section before typing `Ctrl+Enter`. `Ctrl+Shift+Enter` will run the entire chunk. I also use `Ctrl+Up/Dn` and `Ctrl+PgUp/PgDn` for fast navigation through the document.
+- Generally keep in mind that most stuff is "designed" to be easy and you often have to do the Googling yourself to seek out those efficiency gains. Don't assume that something can't be done, and so you have to be stuck doing something that seems difficult to you. This is of course very true when it comes to functions and packages too.
+- You can type `?somefunction` in the console to get a quick tutorial in the bottom right window, though this isn't always as useful as Googling.
+- Comment out and uncomment lines by putting your cursor anywhere on the line and typing `Ctrl+Shift+C`.
+
+## R Markdown Files
+
+Test 
+
+We'll be making the full use of .Rmd format capabilities, which involves knitting to HTML. 
+
+When you open a new .Rmd file, you'll notice a template is provided. For the most part though, I tend to just erase that and copy/paste script from existing .Rmd files.
+
+At the top, between two `---` lines, is something called YAML (I leave you to Google to your heart's desire for more insight, and just give you the basic orientation here), which feeds high-level information to the "knitting" operation, which takes your document and does the "HTML web development" for you. For example, it's where you can select preset table of contents parameters so you never have to bother with designing the HTML. Just know there are many cool parameters you can learn to use up there to make your web page even cooler; otherwise, ignore it.
+
+The template gives you a setup chunk, which I'm including now. A chunk is created by a pair of three back-ticks, and a bracketed set of parameters. Note that you can quickly create a chunk using `Ctrl+Alt+I`, one of the most common shortcuts I use.
+
+```{r setup, warning = F}
+library(knitr)
+opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+The chunk above has 2 lines. It also has `setup` and `warning = F` written after `r`. I'll explain `warning = F` soon. The word you put right after `r` basically just names the chunk. This can help with quick navigation using the drop-down menu on the bottom of this script window; otherwise I usually don't name my chunks out of laziness. It might be easier to organize using headers in the non-chunk areas using hashtags, as you've seen me use already. `Ctrl+Shift+O` opens a Google Doc style outline on the right tab and can help with navigating your document.
+
+I assume you already know how to install packages and the importance of `library()` to load packages. `knitr` is basically a must for turning .Rmd to HTML. `opts_chunk$set()` comes from `knitr`, and it sets global options for how every chunk is displayed in your HTML. 
+
+- `echo = T` (you can type `T/F` or `TRUE/FALSE`) shows the code in a gray box. Keep in mind you can see how this looks in the web page version.
+- `warning = F` and `message = F` prevents a lot of annoying red messages from showing up in the web page, that otherwise you sometimes see in the RStudio console. Trust me this is a good idea to not show in your web pages.
+- Another useful one we're setting as a global option is `include = F`. This would execute code in the background but not show the code itself on the web page. Usually the chunk above would not be included (but you would need to run the code itself in the background).
+- There are other potentially useful parameters you can Google.
+- Note these any of these can otherwise be individually listed after commas in the `{r}` bracket, affecting only the one chunk. That's why the chunk above had `warning = F`, to prevent a warning that might show up when running `library(knitr)` (just a versioning notice).
+
+Next you would usually have a "loading libraries" chunk. I usually do libraries and options in one chunk.
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(sf)
+library(mapview)
+library(leaflet)
+library(tigris)
+library(censusapi)
+
+options(
+  tigris_class = "sf"
+)
+
+Sys.setenv(CENSUS_KEY="c8aa67e4086b4b5ce3a8717f59faa9a28f611dab")
+```
+
+This happens to be the "essential" packages in my tutorial, and we'll go over each one by one.
+
+For `options()`, there are plenty you might end up learning to use, specific to different packages. `tigris_class = "sf"` just happens to be an important one for `tigris` functions, which we'll explain later. I'll also explain the `Sys.setenv()` function later in the  `censusapi` section.
+
+Otherwise, there's not much else unique to .Rmd files. Most of the action of course happens in the code chunks themselves. The writing that's happening in non-chunk areas is in "markdown" language, like an easy HTML, and you can find really good cheat sheets online for **bold**, *italics*, tables, etc. which honestly I just look up when I want to do something specific. 
+
+Lastly, just note there's a "Knit" button next to the white gear, and that's what you ultimately click to export HTML. If successful, it'll put a `rbasics.html` into your working directory. You are welcome to try it, though you don't have to push this back to GitHub.
+
+## Publishing R Markdown Reports
+
+I myself know very little about GitHub, and just get by with the “user friendly” version that’s GitHub Desktop. Basically, GitHub is like Google Drive but you have to actively “fetch/pull” to get updates from the cloud downloaded to your machine, and “commit/push” to send your changes to the overwrite what’s in the cloud. We have repos which are like Drive folders with members who can edit. GitHub keeps track of changes and often irritates you by being very very meticulous about it. Best practice is to always pull before you get started on anything, to make sure you’re working off the latest version someone else might have edited, and then push regularly and especially when you’re done working on something, so others can access it. You’re trying to avoid branches that can’t be merged. If you want to play it safe, then you just create your own “something_yourname.Rmd” copies of everything that nobody else would edit, which is probably fine to start with.
+
+GitHub Desktop makes things easy, similar to having a Drive or Dropbox folder synced to your desktop. But you still need to use the GitHub Desktop window to do pull/push commands carefully. Honestly the best thing to do is just go on the GitHub Desktop site and do their tutorial if you’ve never used it. Practice cloning the covid19 repo, maybe make a copy of this script with your own name, and then practice pushing it back to the covid19 repo where everyone will see it. You’re going to want to get comfortable with this quickly.
+
+The final step of publishing your HTML involves cloning the stanfordfuturebay.github.io repo, manually copying/moving your HTML file in that repo, and then pushing. It’s as simple as that. This is a special feature repo that specifically plugs into the GitHub Pages tool, and basically that special repo treats its contents like web page contents. whatever your name.html file is named, a minute or so after pushing, you can go to stanfordfuturebay.github.io/name URL like any webpage. Note that when you start working with more complex interactive maps and charts, you might start to have other support files/folders that get generated by the “knitting” function that you have to copy/paste over along with the .html file. And that’s basically all there is to it. Practice this as much as you want to start to create your own URLs (though at some point we’ll start to structure/manage this shared webpage more carefully).
+
+OK, now we’ll finally get into R coding.
+
+## Reading files
+
+Test
+
+## Saving files
+
+Test
+
+## Loops
+
+Test
+
+## Manipulating data
+
+Test
+
+## Plots
+
+Test
+
+## Geospatial data
+
+Test
+
+## Census data
+
+Test
+
+# Populations
+
+Test
+
+## Spatial joins
+
+Test
+
+## Equity analysis
+
+Test
