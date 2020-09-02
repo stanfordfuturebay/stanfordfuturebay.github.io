@@ -77,7 +77,8 @@ try(world_data <- read_csv("https://covid19.who.int/WHO-COVID-19-global-data.csv
 # including being able to more easily note the data update time
 
 # CASES OVER TIME
-if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date)) {
+if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & 
+    (nrow(scc_cases_by_date) > 0) & (nrow(smc_cases_by_date) > 0)) {
   # join the data for SMC with SCC data
   cases_by_date <- scc_cases_by_date %>% 
     rename(new_cases_scc = new_cases, total_cases_scc = total_cases) %>%
@@ -107,7 +108,8 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date)) {
 }
 
 # DEATHS OVER TIME
-if (!is.null(scc_deaths_by_date) & !is.null(smc_data_cfa)) {
+if (!is.null(scc_deaths_by_date) & !is.null(smc_data_cfa) & 
+    (nrow(scc_deaths_by_date) > 0) & (nrow(smc_data_cfa) > 0)) {
   deaths_by_date <- scc_deaths_by_date %>% 
     dplyr::select(date, total, cumulative) %>% rename(new_deaths_scc = total, total_deaths_scc = cumulative) %>% 
     full_join(smc_data_cfa %>% 
@@ -138,7 +140,9 @@ if (!is.null(scc_deaths_by_date) & !is.null(smc_data_cfa)) {
 
 # CASES AND DEATHS DEMOGRAPHICS
 if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths) & 
-    !is.null(scc_race_deaths) & !is.null(smc_dem_data)) {
+    !is.null(scc_race_deaths) & !is.null(smc_dem_data) & (nrow(scc_age_cases) > 0) & 
+    (nrow(scc_race_cases) > 0) & (nrow(scc_age_deaths) > 0) & 
+    (nrow(scc_race_deaths) > 0) & (nrow(smc_dem_data) > 0)) {
   
   # clean the SMC demographic data and split into two data frames for race and age
   smc_race_data <- smc_dem_data %>% 
@@ -242,7 +246,8 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
 }
 
 # HOSPITALIZATIONS
-if (!is.null(scc_hosp_by_date) & !is.null(smc_data_cfa)) {
+if (!is.null(scc_hosp_by_date) & !is.null(smc_data_cfa) & 
+    (nrow(scc_hosp_by_date) > 0) & (nrow(smc_data_cfa) > 0)) {
   hosp_by_date <- scc_hosp_by_date %>% 
     dplyr::select(date, covid_total) %>%  # only using confirmed COVID-19 hospitalizations, not ones under investigation
     rename(hospitalized_scc = covid_total) %>%
@@ -269,7 +274,8 @@ if (!is.null(scc_hosp_by_date) & !is.null(smc_data_cfa)) {
 }
 
 # TESTING
-if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date)) {
+if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date) & 
+    (nrow(scc_testing_by_date) > 0) & (nrow(smc_testing_by_date) > 0)) {
   testing_by_date <- scc_testing_by_date %>%
     dplyr::select(collection_date, post_rslt, neg_rslt, total) %>%
     rename(pos_scc = post_rslt, neg_scc = neg_rslt, total_scc = total) %>%
@@ -305,7 +311,9 @@ if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date)) {
 
 # COMPARISONS
 if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & !is.null(ca_data) & 
-    !is.null(us_data) & !is.null(world_data)) {
+    !is.null(us_data) & !is.null(world_data) & (nrow(scc_cases_by_date) > 0) & 
+    (nrow(smc_cases_by_date) > 0) & (nrow(ca_data) > 0) & (nrow(us_data) > 0) & 
+    (nrow(world_data) > 0)) {
   
   # process SMC and SCC data
   cases_by_date <- scc_cases_by_date %>% 
