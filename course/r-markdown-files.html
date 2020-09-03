@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analysis</title>
-  <meta name="description" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analysis" />
+  <title>1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analysis" />
+  <meta property="og:title" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analysis" />
+  <meta name="twitter:title" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R" />
   
   
   
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="rstudio-interface.html"/>
-<link rel="next" href="publishing-r-markdown-reports.html"/>
+<link rel="next" href="github.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -52,353 +52,6 @@
 <script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
-
-<script>
-/* ========================================================================
- * Bootstrap: transition.js v3.3.7
- * http://getbootstrap.com/javascript/#transitions
- * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
-
-
-+function ($) {
-  'use strict';
-
-  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
-  // ============================================================
-
-  function transitionEnd() {
-    var el = document.createElement('bootstrap')
-
-    var transEndEventNames = {
-      WebkitTransition : 'webkitTransitionEnd',
-      MozTransition    : 'transitionend',
-      OTransition      : 'oTransitionEnd otransitionend',
-      transition       : 'transitionend'
-    }
-
-    for (var name in transEndEventNames) {
-      if (el.style[name] !== undefined) {
-        return { end: transEndEventNames[name] }
-      }
-    }
-
-    return false // explicit for ie8 (  ._.)
-  }
-
-  // http://blog.alexmaccaw.com/css-transitions
-  $.fn.emulateTransitionEnd = function (duration) {
-    var called = false
-    var $el = this
-    $(this).one('bsTransitionEnd', function () { called = true })
-    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
-    setTimeout(callback, duration)
-    return this
-  }
-
-  $(function () {
-    $.support.transition = transitionEnd()
-
-    if (!$.support.transition) return
-
-    $.event.special.bsTransitionEnd = {
-      bindType: $.support.transition.end,
-      delegateType: $.support.transition.end,
-      handle: function (e) {
-        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
-      }
-    }
-  })
-
-}(jQuery);
-</script>
-<script>
-/* ========================================================================
- * Bootstrap: collapse.js v3.3.7
- * http://getbootstrap.com/javascript/#collapse
- * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
-
-/* jshint latedef: false */
-
-+function ($) {
-  'use strict';
-
-  // COLLAPSE PUBLIC CLASS DEFINITION
-  // ================================
-
-  var Collapse = function (element, options) {
-    this.$element      = $(element)
-    this.options       = $.extend({}, Collapse.DEFAULTS, options)
-    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
-                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
-    this.transitioning = null
-
-    if (this.options.parent) {
-      this.$parent = this.getParent()
-    } else {
-      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
-    }
-
-    if (this.options.toggle) this.toggle()
-  }
-
-  Collapse.VERSION  = '3.3.7'
-
-  Collapse.TRANSITION_DURATION = 350
-
-  Collapse.DEFAULTS = {
-    toggle: true
-  }
-
-  Collapse.prototype.dimension = function () {
-    var hasWidth = this.$element.hasClass('width')
-    return hasWidth ? 'width' : 'height'
-  }
-
-  Collapse.prototype.show = function () {
-    if (this.transitioning || this.$element.hasClass('in')) return
-
-    var activesData
-    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
-
-    if (actives && actives.length) {
-      activesData = actives.data('bs.collapse')
-      if (activesData && activesData.transitioning) return
-    }
-
-    var startEvent = $.Event('show.bs.collapse')
-    this.$element.trigger(startEvent)
-    if (startEvent.isDefaultPrevented()) return
-
-    if (actives && actives.length) {
-      Plugin.call(actives, 'hide')
-      activesData || actives.data('bs.collapse', null)
-    }
-
-    var dimension = this.dimension()
-
-    this.$element
-      .removeClass('collapse')
-      .addClass('collapsing')[dimension](0)
-      .attr('aria-expanded', true)
-
-    this.$trigger
-      .removeClass('collapsed')
-      .attr('aria-expanded', true)
-
-    this.transitioning = 1
-
-    var complete = function () {
-      this.$element
-        .removeClass('collapsing')
-        .addClass('collapse in')[dimension]('')
-      this.transitioning = 0
-      this.$element
-        .trigger('shown.bs.collapse')
-    }
-
-    if (!$.support.transition) return complete.call(this)
-
-    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
-
-    this.$element
-      .one('bsTransitionEnd', $.proxy(complete, this))
-      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
-  }
-
-  Collapse.prototype.hide = function () {
-    if (this.transitioning || !this.$element.hasClass('in')) return
-
-    var startEvent = $.Event('hide.bs.collapse')
-    this.$element.trigger(startEvent)
-    if (startEvent.isDefaultPrevented()) return
-
-    var dimension = this.dimension()
-
-    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
-
-    this.$element
-      .addClass('collapsing')
-      .removeClass('collapse in')
-      .attr('aria-expanded', false)
-
-    this.$trigger
-      .addClass('collapsed')
-      .attr('aria-expanded', false)
-
-    this.transitioning = 1
-
-    var complete = function () {
-      this.transitioning = 0
-      this.$element
-        .removeClass('collapsing')
-        .addClass('collapse')
-        .trigger('hidden.bs.collapse')
-    }
-
-    if (!$.support.transition) return complete.call(this)
-
-    this.$element
-      [dimension](0)
-      .one('bsTransitionEnd', $.proxy(complete, this))
-      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
-  }
-
-  Collapse.prototype.toggle = function () {
-    this[this.$element.hasClass('in') ? 'hide' : 'show']()
-  }
-
-  Collapse.prototype.getParent = function () {
-    return $(this.options.parent)
-      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
-      .each($.proxy(function (i, element) {
-        var $element = $(element)
-        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
-      }, this))
-      .end()
-  }
-
-  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
-    var isOpen = $element.hasClass('in')
-
-    $element.attr('aria-expanded', isOpen)
-    $trigger
-      .toggleClass('collapsed', !isOpen)
-      .attr('aria-expanded', isOpen)
-  }
-
-  function getTargetFromTrigger($trigger) {
-    var href
-    var target = $trigger.attr('data-target')
-      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
-
-    return $(target)
-  }
-
-
-  // COLLAPSE PLUGIN DEFINITION
-  // ==========================
-
-  function Plugin(option) {
-    return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.collapse')
-      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
-
-      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
-      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
-      if (typeof option == 'string') data[option]()
-    })
-  }
-
-  var old = $.fn.collapse
-
-  $.fn.collapse             = Plugin
-  $.fn.collapse.Constructor = Collapse
-
-
-  // COLLAPSE NO CONFLICT
-  // ====================
-
-  $.fn.collapse.noConflict = function () {
-    $.fn.collapse = old
-    return this
-  }
-
-
-  // COLLAPSE DATA-API
-  // =================
-
-  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
-    var $this   = $(this)
-
-    if (!$this.attr('data-target')) e.preventDefault()
-
-    var $target = getTargetFromTrigger($this)
-    var data    = $target.data('bs.collapse')
-    var option  = data ? 'toggle' : $this.data()
-
-    Plugin.call($target, option)
-  })
-
-}(jQuery);
-</script>
-<script>
-window.initializeCodeFolding = function(show) {
-
-  // handlers for show-all and hide all
-  $("#rmd-show-all-code").click(function() {
-    $('div.r-code-collapse').each(function() {
-      $(this).collapse('show');
-    });
-  });
-  $("#rmd-hide-all-code").click(function() {
-    $('div.r-code-collapse').each(function() {
-      $(this).collapse('hide');
-    });
-  });
-
-  // index for unique code element ids
-  var currentIndex = 1;
-
-  // select all R code blocks
-  var rCodeBlocks = $('pre.sourceCode, pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.js');
-  rCodeBlocks.each(function() {
-
-    // create a collapsable div to wrap the code in
-    var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show)
-      div.addClass('in');
-    var id = 'rcode-643E0F36' + currentIndex++;
-    div.attr('id', id);
-    $(this).before(div);
-    $(this).detach().appendTo(div);
-
-    // add a show code button right above
-    var showCodeText = $('<span>' + (show ? 'Hide' : 'Code') + '</span>');
-    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
-    showCodeButton.append(showCodeText);
-    showCodeButton
-        .attr('data-toggle', 'collapse')
-        .attr('data-target', '#' + id)
-        .attr('aria-expanded', show)
-        .attr('aria-controls', id);
-
-    var buttonRow = $('<div class="row"></div>');
-    var buttonCol = $('<div class="col-md-12"></div>');
-
-    buttonCol.append(showCodeButton);
-    buttonRow.append(buttonCol);
-
-    div.before(buttonRow);
-
-    // update state of button on show/hide
-    div.on('hidden.bs.collapse', function () {
-      showCodeText.text('Code');
-    });
-    div.on('show.bs.collapse', function () {
-      showCodeText.text('Hide');
-    });
-  });
-
-}
-</script>
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-.row { display: flex; }
-.collapse { display: none; }
-.in { display:block }
-</style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "hide");
-});
-</script>
 
 
 <style type="text/css">
@@ -485,14 +138,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
 <li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
 <li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
-<li class="chapter" data-level="1.4" data-path="publishing-r-markdown-reports.html"><a href="publishing-r-markdown-reports.html"><i class="fa fa-check"></i><b>1.4</b> Publishing R Markdown Reports</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
 <li class="chapter" data-level="1.5" data-path="reading-files.html"><a href="reading-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading files</a></li>
 <li class="chapter" data-level="1.6" data-path="saving-files.html"><a href="saving-files.html"><i class="fa fa-check"></i><b>1.6</b> Saving files</a></li>
 <li class="chapter" data-level="1.7" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.7</b> Loops</a></li>
 <li class="chapter" data-level="1.8" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.8</b> Manipulating data</a></li>
-<li class="chapter" data-level="1.9" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.9</b> Plots</a></li>
-<li class="chapter" data-level="1.10" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.10</b> Geospatial data</a></li>
-<li class="chapter" data-level="1.11" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>1.11</b> Census data</a></li>
+<li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
+<li class="chapter" data-level="1.10" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>1.10</b> Census data</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="spatial-joins.html"><a href="spatial-joins.html"><i class="fa fa-check"></i><b>2.1</b> Spatial joins</a></li>
@@ -507,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay: Intro to Urban Data Analysis</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay: Intro to Urban Data Analytics in R</a>
           </h1>
         </div>
 
@@ -517,14 +169,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="r-markdown-files" class="section level2">
 <h2><span class="header-section-number">1.3</span> R Markdown Files</h2>
-<p>Test</p>
-<p>We’ll be making the full use of .Rmd format capabilities, which involves knitting to HTML.</p>
-<p>When you open a new .Rmd file, you’ll notice a template is provided. For the most part though, I tend to just erase that and copy/paste script from existing .Rmd files.</p>
-<p>At the top, between two <code>---</code> lines, is something called YAML (I leave you to Google to your heart’s desire for more insight, and just give you the basic orientation here), which feeds high-level information to the “knitting” operation, which takes your document and does the “HTML web development” for you. For example, it’s where you can select preset table of contents parameters so you never have to bother with designing the HTML. Just know there are many cool parameters you can learn to use up there to make your web page even cooler; otherwise, ignore it.</p>
-<p>The template gives you a setup chunk, which I’m including now. A chunk is created by a pair of three back-ticks, and a bracketed set of parameters. Note that you can quickly create a chunk using <code>Ctrl+Alt+I</code>, one of the most common shortcuts I use.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="r-markdown-files.html#cb1-1"></a><span class="kw">library</span>(knitr)</span>
-<span id="cb1-2"><a href="r-markdown-files.html#cb1-2"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> T, <span class="dt">warning =</span> F, <span class="dt">message =</span> F)</span></code></pre></div>
-<p>The chunk above has 2 lines. It also has <code>setup</code> and <code>warning = F</code> written after <code>r</code>. I’ll explain <code>warning = F</code> soon. The word you put right after <code>r</code> basically just names the chunk. This can help with quick navigation using the drop-down menu on the bottom of this script window; otherwise I usually don’t name my chunks out of laziness. It might be easier to organize using headers in the non-chunk areas using hashtags, as you’ve seen me use already. <code>Ctrl+Shift+O</code> opens a Google Doc style outline on the right tab and can help with navigating your document.</p>
+<p>The two most common types of R code documents are .R or .Rmd files. First, keep in mind that in either case they’re really just text files, but fed into R development environments like RStudio, they end up “doing R things”. A normal .R file is literally just code top to bottom to execute. An .Rmd file intersperses code with space for non-code commentary, which is especially useful for creating web documents just like the one you’re viewing right now. Since we want to teach you how to create such public-facing documents for a wide variety of uses, and because it’s often convenient anyway to intersperse code with explanatory text, we’re going to use .Rmd files as the preferred format. But that means we have a few different formatting details to explain that, from the onset, may look strange.</p>
+<p>You should have a new .Rmd file open that has a standard template. Usually, when I am starting a new .Rmd, I immediately erase this template and start to copy/paste script from other existing .Rmd files, but for now it’s useful to review this “scaffolding” to learn.</p>
+<p>At the top, between two <code>---</code> lines, is something called a YAML header (I leave you to Google to your heart’s desire for more insight, and just give you the basic orientation here), which feeds high-level information to what’s called a “knitting” operation (explained soon), which takes your document and does the “web development” (or conversion to other end formats like PDF) for you. For example, the YAML header is where you can type a preset table of contents parameter so you never have to bother with designing a table of contents in HTML. Just know there are many cool parameters you can learn to use up there to make your web page even cooler, which you can look up when appropriate. Generally, besides many nifty HTML tricks, there are two fundamental things you should always do in the YAML:</p>
+<ul>
+<li>Give your .Rmd file a title, which will render at the top of the web document. This doesn’t have to be the same as the file name you give to your .Rmd file.</li>
+<li>You should specify your date based on when you last edited this code. As an advanced technique, you can type the following: <code>date: "Last updated: September 02, 2020"</code>. This will automatically update the date based on when you “knit”. There are three important concepts here. First, if you are not inside of a “chunk”, which we’ll get to soon, then generally you can’t execute code. But if you do a pair of backticks, and include “r” right after the first backtick, then it’s like you’ve created a “mini chunk” that lets you run one line of code (as if you were typing it directly into the Console). So what you’ve put right into the YAML is the text output of the following code: <code>format(Sys.Date(), '%B %d, %Y')</code>, which you are free to try typing directly into the Console. Now this code itself is a function within a function. <code>Sys.Date()</code> is a standard function in base R (which means you have access to it anytime) which does exactly what you think it does; try it directly in the Console on its own. Nothing is required between the parentheses for certain self-evident functions like this. Finally, <code>format()</code> can do a lot of generally useful formatting things depending on what you feed in as parameters (it’ll do nothing on its own). When <code>format()</code> is given a date object, which is what <code>Sys.Date()</code> produces, as its first parameter, followed by a string in which you specify how you’d like to format the date, then it can convert something like “2020-09-14” into “September 14, 2020”. The exact schema itself is something you have to find guidance on; try Googling “r date format”and typing <code>?format</code> in the Console.</li>
+</ul>
+<p>Now we’ll explain chunks which are a special formatting in .Rmd files to contain code you want to execute. Below I’m copying the first chunk you get in the template. A chunk is created by a pair of three backticks, and a bracketed set of parameters right after the first pair. Note that you can quickly create a chunk using <code>Ctrl+Alt+I</code>, one of the most common shortcuts I use.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="r-markdown-files.html#cb1-1"></a>knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p>Note that on this web page, you don’t see the pair of three backticks, but if you were to view the .Rmd file that created this webpage, you’d see the backticks and bracketed parameters. So one of the nice features of an .Rmd file is that you can publish documents with chunks nicely rendered to display code, and if there are outputs to the code, you can easily choose to display them right below the chunk.</p>
+<p>I’m actually going to go ahead and show a second chunk that has the same effect but two different formatting choices:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="r-markdown-files.html#cb2-1"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb2-2"><a href="r-markdown-files.html#cb2-2"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> T)</span></code></pre></div>
+<p>The first chunk has one line of code while the second has 2 lines.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="r-markdown-files.html#cb3-1"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb3-2"><a href="r-markdown-files.html#cb3-2"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> T, <span class="dt">warning =</span> F, <span class="dt">message =</span> F)</span></code></pre></div>
+<p>It also has <code>setup</code> and <code>warning = F</code> written after <code>r</code>. I’ll explain <code>warning = F</code> soon. The word you put right after <code>r</code> basically just names the chunk. This can help with quick navigation using the drop-down menu on the bottom of this script window; otherwise I usually don’t name my chunks out of laziness. It might be easier to organize using headers in the non-chunk areas using hashtags, as you’ve seen me use already. <code>Ctrl+Shift+O</code> opens a Google Doc style outline on the right tab and can help with navigating your document.</p>
 <p>I assume you already know how to install packages and the importance of <code>library()</code> to load packages. <code>knitr</code> is basically a must for turning .Rmd to HTML. <code>opts_chunk$set()</code> comes from <code>knitr</code>, and it sets global options for how every chunk is displayed in your HTML.</p>
 <ul>
 <li><code>echo = T</code> (you can type <code>T/F</code> or <code>TRUE/FALSE</code>) shows the code in a gray box. Keep in mind you can see how this looks in the web page version.</li>
@@ -534,23 +195,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Note these any of these can otherwise be individually listed after commas in the <code>{r}</code> bracket, affecting only the one chunk. That’s why the chunk above had <code>warning = F</code>, to prevent a warning that might show up when running <code>library(knitr)</code> (just a versioning notice).</li>
 </ul>
 <p>Next you would usually have a “loading libraries” chunk. I usually do libraries and options in one chunk.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="r-markdown-files.html#cb2-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb2-2"><a href="r-markdown-files.html#cb2-2"></a><span class="kw">library</span>(plotly)</span>
-<span id="cb2-3"><a href="r-markdown-files.html#cb2-3"></a><span class="kw">library</span>(sf)</span>
-<span id="cb2-4"><a href="r-markdown-files.html#cb2-4"></a><span class="kw">library</span>(mapview)</span>
-<span id="cb2-5"><a href="r-markdown-files.html#cb2-5"></a><span class="kw">library</span>(leaflet)</span>
-<span id="cb2-6"><a href="r-markdown-files.html#cb2-6"></a><span class="kw">library</span>(tigris)</span>
-<span id="cb2-7"><a href="r-markdown-files.html#cb2-7"></a><span class="kw">library</span>(censusapi)</span>
-<span id="cb2-8"><a href="r-markdown-files.html#cb2-8"></a></span>
-<span id="cb2-9"><a href="r-markdown-files.html#cb2-9"></a><span class="kw">options</span>(</span>
-<span id="cb2-10"><a href="r-markdown-files.html#cb2-10"></a>  <span class="dt">tigris_class =</span> <span class="st">&quot;sf&quot;</span></span>
-<span id="cb2-11"><a href="r-markdown-files.html#cb2-11"></a>)</span>
-<span id="cb2-12"><a href="r-markdown-files.html#cb2-12"></a></span>
-<span id="cb2-13"><a href="r-markdown-files.html#cb2-13"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="r-markdown-files.html#cb4-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb4-2"><a href="r-markdown-files.html#cb4-2"></a><span class="kw">library</span>(plotly)</span>
+<span id="cb4-3"><a href="r-markdown-files.html#cb4-3"></a><span class="kw">library</span>(sf)</span>
+<span id="cb4-4"><a href="r-markdown-files.html#cb4-4"></a><span class="kw">library</span>(mapview)</span>
+<span id="cb4-5"><a href="r-markdown-files.html#cb4-5"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb4-6"><a href="r-markdown-files.html#cb4-6"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb4-7"><a href="r-markdown-files.html#cb4-7"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb4-8"><a href="r-markdown-files.html#cb4-8"></a></span>
+<span id="cb4-9"><a href="r-markdown-files.html#cb4-9"></a><span class="kw">options</span>(</span>
+<span id="cb4-10"><a href="r-markdown-files.html#cb4-10"></a>  <span class="dt">tigris_class =</span> <span class="st">&quot;sf&quot;</span></span>
+<span id="cb4-11"><a href="r-markdown-files.html#cb4-11"></a>)</span>
+<span id="cb4-12"><a href="r-markdown-files.html#cb4-12"></a></span>
+<span id="cb4-13"><a href="r-markdown-files.html#cb4-13"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
 <p>This happens to be the “essential” packages in my tutorial, and we’ll go over each one by one.</p>
 <p>For <code>options()</code>, there are plenty you might end up learning to use, specific to different packages. <code>tigris_class = "sf"</code> just happens to be an important one for <code>tigris</code> functions, which we’ll explain later. I’ll also explain the <code>Sys.setenv()</code> function later in the <code>censusapi</code> section.</p>
 <p>Otherwise, there’s not much else unique to .Rmd files. Most of the action of course happens in the code chunks themselves. The writing that’s happening in non-chunk areas is in “markdown” language, like an easy HTML, and you can find really good cheat sheets online for <strong>bold</strong>, <em>italics</em>, tables, etc. which honestly I just look up when I want to do something specific.</p>
 <p>Lastly, just note there’s a “Knit” button next to the white gear, and that’s what you ultimately click to export HTML. If successful, it’ll put a <code>rbasics.html</code> into your working directory. You are welcome to try it, though you don’t have to push this back to GitHub.</p>
+<p>If you need a deeper explanation of these and many other fundamental concepts we’ll skip over in this course, start <a href="https://r4ds.had.co.nz/r-markdown.html">here</a>, then do more Googling.</p>
 </div>
             </section>
 
@@ -558,7 +220,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="rstudio-interface.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="publishing-r-markdown-reports.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="github.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

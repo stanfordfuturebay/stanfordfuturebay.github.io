@@ -1,13 +1,11 @@
 ---
-title: "Shaping the Future of the Bay: Intro to Urban Data Analysis"
+title: "Shaping the Future of the Bay: Intro to Urban Data Analytics in R"
 author: "Stanford Future Bay Initiative"
-date: "Last updated: `r format(Sys.Date(), '%B %d')`"
+date: "Last updated: `r format(Sys.Date(), '%B %d, %Y')`"
 output: 
   bookdown::gitbook:
     df_print: paged
     split_by: section
-    includes:
-      in_header: header.html
     config:
       toc:
         collapse: none
@@ -40,48 +38,109 @@ editor_options:
 
 # Introduction
 
-Test
+The following is a data analytics curriculum specifically designed for the intro track of [Shaping the Future of the Bay Area](http://bay.stanford.edu/education), the flagship course of the Stanford Future Bay Initiative. Stanford students who enroll in the course will work through this material alongside lectures and discussions, and are expected to complete the assignments at the end of each chapter for a grade. Those students can then continue on to participate in practicum projects that make use of these technical skills.
+
+This curriculum is also designed to be useful to a wider audience. Depending on interest, we may create platforms for the general public to engage with the instructors and each other. If you have any questions or comments, reach out to lead instructor Derek Ouyang at douyang1@stanford.edu. 
+
+If you don’t have prior experience in R, this curriculum is designed to help you learn it from scratch. If you have some prior experience, you will likely be able to skim over anything that looks familiar and focus on new techniques. There are many other useful R educational resources online that we will occasionally refer to, and that may be just as useful if not more useful to help you learn R. The best place to start is [r.stanford.edu](r.stanford.edu).
+
+In this introductory chapter, we will cover the following:
+
+- Downloading all the relevant software that we recommend
+- Navigating the RStudio interface, which is our preferred R development environment
+- Navigating R Markdown files, which is our preferred R file format
+- Pulling and Pushing GitHub repos, and publishing R Markdown reports to create web pages similar to the one you’re on
+- Reading data into your R environment, particularly CSVs to start
+- Saving files in various formats, and saving code progress generally
+- Looping through operations using the classic for loop
+- Exploring and manipulating data in basic ways, particularly with tidyverse functions
+- Plotting data in simple charts using ggplot2
+- Working with geospatial data using sf, tigris, mapview, and leaflet
+- Loading Census data using censusapi
+
+You can navigate through the chapters using the sidebar. 
 
 ## Software Setup
 
 - Download the latest version of R [here](https://cran.r-project.org/).
 - Download RStudio [here](https://www.rstudio.com/products/rstudio/download/).
-- Make sure you're set up fully on Slack. You should be on a main #218z channel and probably on many more soon. Note you can insert code using the "Code block" option. Otherwise, on Slack you can just say "hey my code is updated on the covid19 repo" and others will know how to access your code.
-- (UPDATE: In April we switched to a new server, "P Drive". See new steps [here](https://docs.google.com/document/d/1-zSK-N5H-Zf6bbmv5pFIzCkWIKol8pWb73pSu8Plwrg/edit).) Get connected to our server which stores big files including "restricted files" you won't be allowed to download onto your machine. Click [here](https://docs.google.com/document/d/11heDXJx-B1gPhkF2tkkJtUbEVAf91RvUjov9FegmXUA/edit?folder=1gNhYwPydkd3LaBhXU4qKTCkWs7xShy3z) for instructions. **This tends to need troubleshooting, especially on a Mac, and is very important to get working, so work on this one ASAP and reach out to Neel on Slack for help.**
-- Make sure your GitHub account is working. When you click [here](https://github.com/stanfordfuturebay/covid19) you should be able to see documents. 
-- Download GitHub Desktop [here](https://desktop.github.com/). Follow the online tutorials to clone `stanfordfuturebay/covid19` onto your own machine. That means you should be able to go to a folder on your computer and see files like `rbasics.Rmd`.
+- Create a GitHub account [here](https://github.com/join). When you publish your own code and Markdown reports, you’ll be doing it on your own GitHub account. 
+- Download GitHub Desktop [here](https://desktop.github.com/). 
 
-Once all the above is ready to go, then I'd recommend you open up RStudio, open `rbasics.Rmd`, and then you should be able to follow along in the .Rmd version of what you also see on the webpage. 
+For those enrolled in the Stanford course: Make sure you're set up fully on Slack. The #r-help channel is shared with the entire Stanford community and is the best place to ask for help on eccentric R problems you can’t seem to find a solution to when Googling. For questions specific to this course material, you will be invited to specific channels for each chapter/assignment. Note that in a Slack message you can insert code using the “Code” or "Code block" options, which are always preferable to just pasting code directly into your message. Otherwise, if your code is on GitHub, we’d recommend sharing a URL that links to the direct line of code you’re referring to, like https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/covid19/safegraph_normalization_function.R#L47.
 
 ## RStudio Interface
 
-- Double check your RStudio version under Help > About RStudio, and your R version under Tools > Global Options. You will also always be able to check package versions under Tools > Check for package updates. When you experience errors, we'll want to be able to investigate version compatibility as a source of the error. As of now, I (Derek) am using RStudio Version 1.2.1335 and R Version 3.6.1.
-- Typically the first thing I do is set the working directory for whatever I'm working. That's typically the bottom right window, "Files" tab, navigate to your desired folder (usually the repo you want to ultimately push to), then click the gear button > Set as working directory. 
-- In the script window itself, the white gear wheel has an option to show chunk output "inline" or "in console". By default it's "inline", but I almost always switch to "in console". 
-- Reminder that you can type commands directly into the console. Usually I use this to view data frames, typing `View(whatever)`, view field names quickly using `colnames(whatever)`, map things quickly using `mapview(whatever)`, etc.
-- For running script "inline", you can put your blinking typing cursor on any part of a line and do `Ctrl+Enter` (or the Mac equivalent) and the whole line will run. If you only want to run part of a line (especially %>% pipelines), then you highlight a section before typing `Ctrl+Enter`. `Ctrl+Shift+Enter` will run the entire chunk. I also use `Ctrl+Up/Dn` and `Ctrl+PgUp/PgDn` for fast navigation through the document.
-- Generally keep in mind that most stuff is "designed" to be easy and you often have to do the Googling yourself to seek out those efficiency gains. Don't assume that something can't be done, and so you have to be stuck doing something that seems difficult to you. This is of course very true when it comes to functions and packages too.
-- You can type `?somefunction` in the console to get a quick tutorial in the bottom right window, though this isn't always as useful as Googling.
-- Comment out and uncomment lines by putting your cursor anywhere on the line and typing `Ctrl+Shift+C`.
+*Note: In this section I’ll start to occasionally refer to keyboard shortcuts. As a PC user, I will always show PC shortcuts. Hopefully, for Mac users it will be relatively easy to figure out what the appropriate Mac version is. Apologies in advance for any inconvenience.*
+
+Double check your RStudio version under `Help > About RStudio`, and your R version under `Tools > Global Options`. You will also always be able to check package versions under `Tools > Check for package updates`. When you experience errors, we'll want to be able to investigate version compatibility as a source of the error.
+
+You can update individual/all packages using the Tools option noted previously at any time, but generally I wouldn’t necessarily recommend updating to the absolute latest version just because, since this can sometimes cause past scripts to no longer run. Just beware of this as a way to solve compatibility issues that seem to exist between two users.
+
+RStudio generally has four “windows”:
+- **Source**: Default top left. If you don’t already see this window, go ahead and open up a new .Rmd file at `File > New > R Markdown` and you’ll see some template code sitting in an “Untitled” document in the Source window (we’ll talk about how to read a .Rmd document soon). The Source generally will have multiple tabs of either code documents you’re editing or environment data you’re viewing. You generally spend most of your time working here. 
+- **Console**: Default bottom left. This is where you actually “run” code. You can type lines of code directly into the console and run them, or you can execute lines of code from the Source window which basically “sends them” to the Console. 
+- **Environment**, etc.: Default top right. As you execute code you’ll end up creating “data” (generally done with a line of code that has the form `data_variable_name <- functions`), and any data that’s been created will sit in the “Environment”, and you’ll see individual objects listed here. You’ll be able to refer to objects in the Environment as part of subsequent lines of code. To remove objects, you generally will type `rm(data_variable_name)` into the Console, or you can clear the whole Environment using the little broom icon. You rarely will use the other tabs in this window.
+- **Files**, etc.: Default bottom right. This should basically look like a view into some folder on your computer. You’ll always have a “working directory” where your R code by default “looks for” objects to load from, or export outputs into. So generally you’ll want to view your working directory here. We’ll discuss this more soon. The other tabs in this window are useful, but generally they’ll automatically show up depending on specific code you execute, so we’ll talk about them later.
+
+I personally prefer a different layout than the default. You can adjust layout under `View > Panes > Pane Layout`. I flip the Console and Environment windows. It’s also good to practice right away the shortcuts to temporarily zoom into one of these windows depending on what you’re doing: Try double-tapping `Ctrl+Shift+1`, `Ctrl+Shift+2`, `Ctrl+Shift+8`, or `Ctrl+Shift+9` to see what I mean. 
+
+Typically the first thing I do when beginning to code is set the working directory for whatever I'm working on. In the Files window, navigate to your desired folder (usually the cloned GitHub repo where your code is located; more on that soon), then click the gear button `More > Set as working directory`. If you try this, you’ll see the written version of this step in the Console, but I generally find it easier to do with the user interface (GUI).
+
+Next, in the script window itself, the white gear wheel has an option to show chunk output "inline" or "in Console". By default it's "inline", but I almost always switch to "in Console". This is ultimately up to personal preference, but I like to always have code output show up in one place, the Console (or, if it’s a plot/map, in the File window). 
+
+You can easily try out the Console by typing random math equations and clicking enter. Conversely, note that in line 19 of your standard .Rmd template you should see `summary(cars)`. If you put your cursor anywhere on that line of text and click `Ctrl+Enter`, you should see that the Console essentially copied that one command and executed it. `cars` happens to be a default data frame built into R, and `summary()` tells you some general information about the data frame. You can now also try typing `summary(cars)` directly into the Console, and write a new line of code in line 19 like `1+1` and execute that using `Ctrl+Enter` (make sure you write this between the pair of three backticks -- we’ll explain soon -- and that again your cursor is somewhere on the line you want to execute), to demonstrate to yourself that it’s all one and the same to the Console.
+
+Some of the most common commands I’ll run directly in the console are:
+
+- `View(data_variable_name)` to view data frame that’s in the Environment
+- `colnames(data_variable_name)` to view the field names of the data frame
+- `mapview(data_variable_name)` to quickly view a mappable object (you’ll need to have loaded the relevant library to do this, which we’ll explain later)
+
+Otherwise, I’m generally running code “inline” by putting the blinking typing cursor on any part of a line and doing `Ctrl+Enter`. If you only want to run part of a line (especially `%>%` pipelines, explained later), then you highlight a specific self-contained section before typing `Ctrl+Enter`. `Ctrl+Shift+Enter` will run the entire chunk of code (which is between the pairs of three backticks). I use `Ctrl+Up/Dn` and `Ctrl+PgUp/PgDn` for fast navigation through the document. Comment out and uncomment lines in Source documents by putting your cursor anywhere on the line and typing `Ctrl+Shift+C`.
+
+Note that so far we’ve introduced one “function”, `summary()`. It’s simplest to think of these as “machines” that create some output based on some input(s) you feed it. You put the inputs inside the parentheses. Sometimes a function doesn’t need any inputs (we’ll encounter one soon); sometimes it needs multiple inputs, which are separated by commas. When there are multiple inputs, the function always has a “schema” that guides you in the correct order of inputs, and there’s always a way to explicitly tell the function what input you’re providing to fill what argument. You can generally see this explained if you search “r somefunction” on Google, or by typing `?somefunction` in the Console to get a quick tutorial in Files window (though this isn't always as useful as Googling the same thing). If you try `?summary`, you’ll see a list of arguments, and you’ll notice that `cars` was an input we provided to fill the first default argument, “object”.
+
+Generally keep in mind that most things you want to do in R and RStudio are "designed" to be easy, but the knowledge can’t easily be handed to you on a platter (beyond what we are trying to do here), so you often have to do the Googling yourself to seek out those efficiency gains. Don't assume that something can't be done, leaving you stuck doing something that seems difficult to you; assume somebody has solved the problem somewhere! This is of course also very true when it comes to the code itself.
+
+If you need a deeper explanation of these and many other fundamental concepts we’ll skip over in this course, start [here](https://r4ds.had.co.nz/introduction.html#prerequisites), then do more Googling.
 
 ## R Markdown Files
 
-Test 
+The two most common types of R code documents are .R or .Rmd files. First, keep in mind that in either case they’re really just text files, but fed into R development environments like RStudio, they end up “doing R things”. A normal .R file is literally just code top to bottom to execute. An .Rmd file intersperses code with space for non-code commentary, which is especially useful for creating web documents just like the one you’re viewing right now. Since we want to teach you how to create such public-facing documents for a wide variety of uses, and because it’s often convenient anyway to intersperse code with explanatory text, we’re going to use .Rmd files as the preferred format. But that means we have a few different formatting details to explain that, from the onset, may look strange.
 
-We'll be making the full use of .Rmd format capabilities, which involves knitting to HTML. 
+You should have a new .Rmd file open that has a standard template. Usually, when I am starting a new .Rmd, I immediately erase this template and start to copy/paste script from other existing .Rmd files, but for now it’s useful to review this “scaffolding” to learn.
 
-When you open a new .Rmd file, you'll notice a template is provided. For the most part though, I tend to just erase that and copy/paste script from existing .Rmd files.
+At the top, between two `---` lines, is something called a YAML header (I leave you to Google to your heart's desire for more insight, and just give you the basic orientation here), which feeds high-level information to what’s called a "knitting" operation (explained soon), which takes your document and does the "web development" (or conversion to other end formats like PDF) for you. For example, the YAML header is where you can type a preset table of contents parameter so you never have to bother with designing a table of contents in HTML. Just know there are many cool parameters you can learn to use up there to make your web page even cooler, which you can look up when appropriate. Generally, besides many nifty HTML tricks, there are two fundamental things you should always do in the YAML:
 
-At the top, between two `---` lines, is something called YAML (I leave you to Google to your heart's desire for more insight, and just give you the basic orientation here), which feeds high-level information to the "knitting" operation, which takes your document and does the "HTML web development" for you. For example, it's where you can select preset table of contents parameters so you never have to bother with designing the HTML. Just know there are many cool parameters you can learn to use up there to make your web page even cooler; otherwise, ignore it.
+- Give your .Rmd file a title, which will render at the top of the web document. This doesn’t have to be the same as the file name you give to your .Rmd file.
+- You should specify your date based on when you last edited this code. As an advanced technique, you can type the following: ``date: "Last updated: `r format(Sys.Date(), '%B %d, %Y')`"``. This will automatically update the date based on when you “knit”. There are three important concepts here. First, if you are not inside of a “chunk”, which we’ll get to soon, then generally you can’t execute code. But if you do a pair of backticks, and include “r” right after the first backtick, then it’s like you’ve created a “mini chunk” that lets you run one line of code (as if you were typing it directly into the Console). So what you’ve put right into the YAML is the text output of the following code: `format(Sys.Date(), '%B %d, %Y')`, which you are free to try typing directly into the Console. Now this code itself is a function within a function. `Sys.Date()` is a standard function in base R (which means you have access to it anytime) which does exactly what you think it does; try it directly in the Console on its own. Nothing is required between the parentheses for certain self-evident functions like this. Finally, `format()` can do a lot of generally useful formatting things depending on what you feed in as parameters (it’ll do nothing on its own). When `format()` is given a date object, which is what `Sys.Date()` produces, as its first parameter, followed by a string in which you specify how you’d like to format the date, then it can convert something like “2020-09-14” into “September 14, 2020”. The exact schema itself is something you have to find guidance on; try Googling “r date format”and typing `?format` in the Console.
 
-The template gives you a setup chunk, which I'm including now. A chunk is created by a pair of three back-ticks, and a bracketed set of parameters. Note that you can quickly create a chunk using `Ctrl+Alt+I`, one of the most common shortcuts I use.
+Now we’ll explain chunks which are a special formatting in .Rmd files to contain code you want to execute. Below I'm copying the first chunk you get in the template. A chunk is created by a pair of three backticks, and a bracketed set of parameters right after the first pair. Note that you can quickly create a chunk using `Ctrl+Alt+I`, one of the most common shortcuts I use.
 
-```{r setup, warning = F}
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Note that on this web page, you don’t see the pair of three backticks, but if you were to view the .Rmd file that created this webpage, you’d see the backticks and bracketed parameters. So one of the nice features of an .Rmd file is that you can publish documents with chunks nicely rendered to display code, and if there are outputs to the code, you can easily choose to display them right below the chunk.
+
+I’m actually going to go ahead and show a second chunk that has the same effect but two different formatting choices:
+
+```{r}
+library(knitr)
+opts_chunk$set(echo = T)
+```
+
+The first chunk has one line of code while the second has 2 lines. 
+
+```{r}
 library(knitr)
 opts_chunk$set(echo = T, warning = F, message = F)
 ```
 
-The chunk above has 2 lines. It also has `setup` and `warning = F` written after `r`. I'll explain `warning = F` soon. The word you put right after `r` basically just names the chunk. This can help with quick navigation using the drop-down menu on the bottom of this script window; otherwise I usually don't name my chunks out of laziness. It might be easier to organize using headers in the non-chunk areas using hashtags, as you've seen me use already. `Ctrl+Shift+O` opens a Google Doc style outline on the right tab and can help with navigating your document.
+It also has `setup` and `warning = F` written after `r`. I'll explain `warning = F` soon. The word you put right after `r` basically just names the chunk. This can help with quick navigation using the drop-down menu on the bottom of this script window; otherwise I usually don't name my chunks out of laziness. It might be easier to organize using headers in the non-chunk areas using hashtags, as you've seen me use already. `Ctrl+Shift+O` opens a Google Doc style outline on the right tab and can help with navigating your document.
+
+
 
 I assume you already know how to install packages and the importance of `library()` to load packages. `knitr` is basically a must for turning .Rmd to HTML. `opts_chunk$set()` comes from `knitr`, and it sets global options for how every chunk is displayed in your HTML. 
 
@@ -117,7 +176,9 @@ Otherwise, there's not much else unique to .Rmd files. Most of the action of cou
 
 Lastly, just note there's a "Knit" button next to the white gear, and that's what you ultimately click to export HTML. If successful, it'll put a `rbasics.html` into your working directory. You are welcome to try it, though you don't have to push this back to GitHub.
 
-## Publishing R Markdown Reports
+If you need a deeper explanation of these and many other fundamental concepts we’ll skip over in this course, start [here](https://r4ds.had.co.nz/r-markdown.html), then do more Googling.
+
+## GitHub
 
 I myself know very little about GitHub, and just get by with the “user friendly” version that’s GitHub Desktop. Basically, GitHub is like Google Drive but you have to actively “fetch/pull” to get updates from the cloud downloaded to your machine, and “commit/push” to send your changes to the overwrite what’s in the cloud. We have repos which are like Drive folders with members who can edit. GitHub keeps track of changes and often irritates you by being very very meticulous about it. Best practice is to always pull before you get started on anything, to make sure you’re working off the latest version someone else might have edited, and then push regularly and especially when you’re done working on something, so others can access it. You’re trying to avoid branches that can’t be merged. If you want to play it safe, then you just create your own “something_yourname.Rmd” copies of everything that nobody else would edit, which is probably fine to start with.
 
@@ -126,6 +187,8 @@ GitHub Desktop makes things easy, similar to having a Drive or Dropbox folder sy
 The final step of publishing your HTML involves cloning the stanfordfuturebay.github.io repo, manually copying/moving your HTML file in that repo, and then pushing. It’s as simple as that. This is a special feature repo that specifically plugs into the GitHub Pages tool, and basically that special repo treats its contents like web page contents. whatever your name.html file is named, a minute or so after pushing, you can go to stanfordfuturebay.github.io/name URL like any webpage. Note that when you start working with more complex interactive maps and charts, you might start to have other support files/folders that get generated by the “knitting” function that you have to copy/paste over along with the .html file. And that’s basically all there is to it. Practice this as much as you want to start to create your own URLs (though at some point we’ll start to structure/manage this shared webpage more carefully).
 
 OK, now we’ll finally get into R coding.
+
+http://adv-r.had.co.nz/Style.html
 
 ## Reading files
 
@@ -143,6 +206,7 @@ Test
 
 Test
 
+https://www.gastonsanchez.com/r4strings/character-sets.html
 ## Plots
 
 Test
@@ -166,3 +230,4 @@ Test
 ## Equity analysis
 
 Test
+
