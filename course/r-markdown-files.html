@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R</title>
-  <meta name="description" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R" />
+  <title>1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R" />
+  <meta property="og:title" content="1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="1.3 R Markdown Files | Shaping the Future of the Bay: Intro to Urban Data Analytics in R" />
+  <meta name="twitter:title" content="1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   
   
   
@@ -139,10 +139,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
 <li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
 <li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
-<li class="chapter" data-level="1.5" data-path="reading-files.html"><a href="reading-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading files</a></li>
-<li class="chapter" data-level="1.6" data-path="saving-files.html"><a href="saving-files.html"><i class="fa fa-check"></i><b>1.6</b> Saving files</a></li>
-<li class="chapter" data-level="1.7" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.7</b> Loops</a></li>
-<li class="chapter" data-level="1.8" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.8</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>1.10</b> Census data</a></li>
 </ul></li>
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay: Intro to Urban Data Analytics in R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
           </h1>
         </div>
 
@@ -188,12 +188,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-2"><a href="r-markdown-files.html#cb3-2"></a><span class="bn">library(knitr)</span></span>
 <span id="cb3-3"><a href="r-markdown-files.html#cb3-3"></a><span class="bn">opts_chunk$set(echo = T)</span></span>
 <span id="cb3-4"><a href="r-markdown-files.html#cb3-4"></a><span class="bn">```</span></span></code></pre></div>
-<p>I have to do some extra-special formatting of my own .Rmd file to get the pairs of triple backticks to show on this page, because the whole point of .Rmd files is that it converts that kind of information into backend information to then render web content. But it’s important to show you what the .Rmd formatting looks like, because now I am going to show it to you with one edit:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="r-markdown-files.html#cb4-1"></a><span class="bn">```{r, echo = T}</span></span>
-<span id="cb4-2"><a href="r-markdown-files.html#cb4-2"></a><span class="bn">library(knitr)</span></span>
-<span id="cb4-3"><a href="r-markdown-files.html#cb4-3"></a><span class="bn">opts_chunk$set(echo = T)</span></span>
-<span id="cb4-4"><a href="r-markdown-files.html#cb4-4"></a><span class="bn">```</span></span></code></pre></div>
-<p>For a chunk to be a chunk, you need the pairs of triple backticks and you need the bracket with an “r”. But you can add some parameters right after the “r” which affect that specific chunk. And these include the parameters you can feed into <code>opts_chunk$set()</code>. The difference is that putting these parameters in the brackets affects only the one chunk, while <code>opts_chunk$set()</code> sets defaults for all subsequent chunks. Here are the most common parameters you would likely want to set:</p>
+<p>I have to do some extra-special formatting of my own .Rmd file to get the pairs of triple backticks to show on this page, because the whole point of .Rmd files is that it converts that kind of information into backend information to then render web content. But it’s important to show you what the .Rmd formatting looks like.</p>
+<p>For a chunk to be a chunk, you need the pairs of triple backticks and you need the bracket with an “r”. But you can add some parameters right after the “r” which affect that specific chunk. And these include the parameters you can feed into <code>opts_chunk$set()</code>; for example, you could add <code>, echo = T</code> after the “r” in the chunk above. The difference is that putting these parameters in the brackets affects only the one chunk, while <code>opts_chunk$set()</code> sets defaults for all subsequent chunks. Here are the most common parameters you would likely want to set:</p>
 <ul>
 <li><code>echo = F</code> (in R generally you can type <code>T/F</code> or <code>TRUE/FALSE</code> for boolean logic) shows the code in a gray box when you render into a web page. This is the default case (I’m actually not sure why the template has it the way it is), so consider this parameter only useful if you wanted to set <code>echo = F</code> (say you’re creating a report in which the reader wouldn’t care about the code and only wants to see output graphs and maps, which would still show).</li>
 <li><code>warning = F</code> and <code>message = F</code> prevent a lot of annoying warning messages from showing up in the web page, that you sometimes see in the RStudio console depending on what the code is doing. Generally these parameters are a good idea to set in <code>opts_chunk$set()</code> which applies them to all chunks, so as to clean up your web documents.</li>
@@ -201,20 +197,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>eval = F</code> prevents the code from being evaluated, but the code is still visible on the web page. Sometimes you’ll have some chunk that takes hours to run, and you don’t want to have to run it again when you knit, so you’ll end up saving the output of that long process as a file in your working directory and following up the first chunk with a second smaller chunk that just loads the completed file into your Environment. In this case, you might decide to show the first chunk on a web page but set it as <code>eval=F</code>, then hide the second chunk with <code>include = F</code>, but it is the one that actually retrieves the relevant output to continue using in the rest of your script.</li>
 </ul>
 <p>As you can see, most of these details basically have to do with how the resultant web page looks, and don’t have much to do with the code itself, but it’s useful to understand these parameters now and get into the practice of having something like the following always as your first chunk (feel free to copy and paste this into your own .Rmd file):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="r-markdown-files.html#cb5-1"></a><span class="bn">```{r setup, include = F}</span></span>
-<span id="cb5-2"><a href="r-markdown-files.html#cb5-2"></a><span class="bn">knitr::opts_chunk$set(warning = F, message = F)</span></span>
-<span id="cb5-3"><a href="r-markdown-files.html#cb5-3"></a><span class="bn">```</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="r-markdown-files.html#cb4-1"></a><span class="bn">```{r setup, include = F}</span></span>
+<span id="cb4-2"><a href="r-markdown-files.html#cb4-2"></a><span class="bn">knitr::opts_chunk$set(warning = F, message = F)</span></span>
+<span id="cb4-3"><a href="r-markdown-files.html#cb4-3"></a><span class="bn">```</span></span></code></pre></div>
 <p>Note that the chunk itself won’t display in a web page because of <code>include = F</code>, but it will evaluate, and it specifically sets <code>warning = F</code> and <code>message = F</code> to apply to all future chunks. You can still apply other parameters individually to subsequent chunks as desired. Note also that I went back to using <code>knitr::</code> since there’s basically no other need for <code>knitr</code> package functions in most cases. Lastly, note the label <code>setup</code> written after <code>r</code> but before a comma. The word you put right after <code>r</code> basically just names the chunk. This basically helps with quick navigation using a small drop-down menu you can find on the bottom of the Source window. There’s also value in doing this if you want to add automatically numbered captions to your plots, which won’t be taught in this curriculum. Otherwise I usually don’t name my chunks because I find it easier and more user-friendly to organize my document using hashtag headers in the non-chunk areas, as you can see done in your template. <code>Ctrl+Shift+O</code> opens a Google Doc style outline on the right tab which is useful for navigating your document.</p>
 <p>After that first setup chunk, next you would usually have a “loading libraries” chunk. Mine typically look something like this (note I am no longer forcing the triple backticks portion to show, so you’ll just see the code within the chunk):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="r-markdown-files.html#cb6-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb6-2"><a href="r-markdown-files.html#cb6-2"></a><span class="kw">library</span>(plotly)</span>
-<span id="cb6-3"><a href="r-markdown-files.html#cb6-3"></a><span class="kw">library</span>(sf)</span>
-<span id="cb6-4"><a href="r-markdown-files.html#cb6-4"></a><span class="kw">library</span>(tigris)</span>
-<span id="cb6-5"><a href="r-markdown-files.html#cb6-5"></a><span class="kw">library</span>(mapview)</span>
-<span id="cb6-6"><a href="r-markdown-files.html#cb6-6"></a><span class="kw">library</span>(leaflet)</span>
-<span id="cb6-7"><a href="r-markdown-files.html#cb6-7"></a><span class="kw">library</span>(censusapi)</span>
-<span id="cb6-8"><a href="r-markdown-files.html#cb6-8"></a></span>
-<span id="cb6-9"><a href="r-markdown-files.html#cb6-9"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="r-markdown-files.html#cb5-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb5-2"><a href="r-markdown-files.html#cb5-2"></a><span class="kw">library</span>(plotly)</span>
+<span id="cb5-3"><a href="r-markdown-files.html#cb5-3"></a><span class="kw">library</span>(sf)</span>
+<span id="cb5-4"><a href="r-markdown-files.html#cb5-4"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb5-5"><a href="r-markdown-files.html#cb5-5"></a><span class="kw">library</span>(mapview)</span>
+<span id="cb5-6"><a href="r-markdown-files.html#cb5-6"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb5-7"><a href="r-markdown-files.html#cb5-7"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb5-8"><a href="r-markdown-files.html#cb5-8"></a></span>
+<span id="cb5-9"><a href="r-markdown-files.html#cb5-9"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
 <p>All the <code>library()</code> calls are loading packages that you know you need to run the code in the rest of the script. Generally you’ll have some idea of the essential ones you always use, but as you are working on a novel problem, you may discover a new special package you want to use, and you’d scroll up and add it to this chunk. The list above happens to be the “essential” packages I’ll cover later in this chapter.</p>
 <p>Usually after the <code>library()</code> calls, you would set other kinds of environmental “settings’’ that are relevant to specific code you’ll use later on; setting them here merely provides the benefit of having all these settings in one place, but they could go anywhere as long as they are executed before the relevant code they affect. Here I am calling <code>Sys.setenv()</code> which relates to the <code>censusapi</code> package, which I’ll explain near the end of the chapter. Other common settings you might put in this chunk:</p>
 <ul>
