@@ -1,26 +1,26 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",461,0,NA,NA
-"2","Age Group 10-19",801,0,NA,NA
-"3","Age Group 20-29",1750,0,NA,NA
-"4","Age Group 30-39",1685,1,NA,NA
-"5","Age Group 40-49",1378,2,NA,NA
-"6","Age Group 50-59",1106,11,NA,NA
-"7","Age Group 60-69",788,17,NA,NA
-"8","Age Group 70-79",312,23,NA,NA
+"1","Age Group < 9",467,0,NA,NA
+"2","Age Group 10-19",814,0,NA,NA
+"3","Age Group 20-29",1784,0,NA,NA
+"4","Age Group 30-39",1710,1,NA,NA
+"5","Age Group 40-49",1402,2,NA,NA
+"6","Age Group 50-59",1121,11,NA,NA
+"7","Age Group 60-69",798,17,NA,NA
+"8","Age Group 70-79",318,24,NA,NA
 "9","Age Group 80-89",220,46,NA,NA
-"10","Age Group 90+",114,35,NA,NA
-"11","Age Group Unknown",2,NA,NA,NA
+"10","Age Group 90+",115,35,NA,NA
+"11","Age Group Unknown",1,NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native",3,0,NA,NA
-"13","Race/Ethnicity  Asian",856,29,NA,NA
-"14","Race/Ethnicity  Black",97,4,NA,NA
-"15","Race/Ethnicity  Latino/Hispanic",4312,27,NA,NA
-"16","Race/Ethnicity  Pacific Islander",208,3,NA,NA
-"17","Race/Ethnicity  White",1047,72,NA,NA
-"18","Race/Ethnicity Multirace",54,NA,NA,NA
+"13","Race/Ethnicity  Asian",869,30,NA,NA
+"14","Race/Ethnicity  Black",101,4,NA,NA
+"15","Race/Ethnicity  Latino/Hispanic",4387,27,NA,NA
+"16","Race/Ethnicity  Pacific Islander",212,3,NA,NA
+"17","Race/Ethnicity  White",1057,72,NA,NA
+"18","Race/Ethnicity Multirace",53,NA,NA,NA
 "19","Race/Ethnicity Other",104,0,NA,NA
-"20","Race/Ethnicity Unknown",1936,0,NA,NA
-"21","Sex Female",4314,69,NA,NA
-"22","Sex Male",4301,66,NA,NA
+"20","Race/Ethnicity Unknown",1964,0,NA,NA
+"21","Sex Female",4384,69,NA,NA
+"22","Sex Male",4364,67,NA,NA
 "23","Sex Other",1,NA,NA,NA
 "24","Sex Unknown",1,NA,NA,NA
-"25",NA,NA,NA,"case data up to and including september 4, 2020","death data last updated september 3, 2020."
+"25",NA,NA,NA,"case data up to and including september 7, 2020","death data last updated september 7, 2020."
