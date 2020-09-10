@@ -52,6 +52,20 @@
 <script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
 
 
 <style type="text/css">
@@ -145,6 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>1.10</b> Census data</a></li>
+<li class="chapter" data-level="1.11" data-path="assignment.html"><a href="assignment.html"><i class="fa fa-check"></i><b>1.11</b> Assignment</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="spatial-joins.html"><a href="spatial-joins.html"><i class="fa fa-check"></i><b>2.1</b> Spatial joins</a></li>
@@ -169,9 +184,194 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="manipulating-data" class="section level2">
 <h2><span class="header-section-number">1.7</span> Manipulating data</h2>
-<p>In progress</p>
-<p><a href="http://adv-r.had.co.nz/Style.html" class="uri">http://adv-r.had.co.nz/Style.html</a></p>
-<p><a href="https://www.gastonsanchez.com/r4strings/character-sets.html" class="uri">https://www.gastonsanchez.com/r4strings/character-sets.html</a></p>
+<p>The vast majority of “coding” that happens in R is manipulating data in ways that allow you to extract more insight from the raw information. Usually you are manipulating “data frames”, which, if you are familiar with Excel or Google Sheets, can be thought of as akin to spreadsheets of data. There are hundreds of techniques you can eventually learn to manipulate data in exactly the way that is relevant for a problem, but for now I’ll just highlight the most basic techniques, which generally involve functions in <code>dplyr</code> (which you already have loaded because you did <code>library(tidyverse)</code>).</p>
+<p>We’ve already seen <code>filter()</code>; here’s another example using the PG&amp;E 2019 electricity data we just created:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="manipulating-data.html#cb16-1"></a>pge_filter &lt;-<span class="st"> </span><span class="kw">filter</span>(pge_<span class="dv">19</span>_elec, CUSTOMERCLASS <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Elec- Residential&quot;</span>,<span class="st">&quot;Elec- Commercial&quot;</span>))</span></code></pre></div>
+<p>Here, the <code>==</code> logic has been replaced with <code>%in%</code>, which can be thought of as “membership in”, followed by <code>c()</code> which is the easiest way to quickly create vectors of elements, in this case two “candidate” values for <code>CUSTOMERCLASS</code>. By the way, there are many types of “vectors”, including “lists” which has a technical meaning in R; we’ll encounter important cases where we need to distinguish between these, but for now, if you’re curious to learn more, read <a href="http://adv-r.had.co.nz/Data-structures.html">here</a>. Anyway, the logical expression will be TRUE if <code>CUSTOMERCLASS</code> either contains “Elec- Residential” or “Elec- Commercial”, and therefore only these rows will be preserved in the filter. Performing this operation requires the user having some conceptual notion of why you would want to filter this way, and what the correct naming is; you’d be figuring this out by inspecting <code>pge_19_elec</code>.</p>
+<p>Now, a brief digression to talk about style (with a more thorough treatment <a href="http://adv-r.had.co.nz/Style.html">here</a>). The previous operation was a single line, and R will understand it to be one operation even if it’s not literally written as one line, simply based on the natural structure of the operation. So, one aspect of “style” in programming is to break up long lines of code to make them more readable, while not changing the operation itself. See the modified example below.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="manipulating-data.html#cb17-1"></a>pge_filter &lt;-<span class="st"> </span></span>
+<span id="cb17-2"><a href="manipulating-data.html#cb17-2"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb17-3"><a href="manipulating-data.html#cb17-3"></a>    pge_<span class="dv">19</span>_elec,</span>
+<span id="cb17-4"><a href="manipulating-data.html#cb17-4"></a>    CUSTOMERCLASS <span class="op">%in%</span><span class="st"> </span></span>
+<span id="cb17-5"><a href="manipulating-data.html#cb17-5"></a><span class="st">      </span><span class="kw">c</span>(</span>
+<span id="cb17-6"><a href="manipulating-data.html#cb17-6"></a>        <span class="st">&quot;Elec- Residential&quot;</span>,</span>
+<span id="cb17-7"><a href="manipulating-data.html#cb17-7"></a>        <span class="st">&quot;Elec- Commercial&quot;</span></span>
+<span id="cb17-8"><a href="manipulating-data.html#cb17-8"></a>      )</span>
+<span id="cb17-9"><a href="manipulating-data.html#cb17-9"></a>  )</span></code></pre></div>
+<p>The technique used simply involves clicking <code>Enter</code> at strategic points of the line of code, which automatically will create useful indenting in RStudio as well, so that the different conceptual parts of the operation are easier to visualize. Note that you wouldn’t be able to arbitrarily break anywhere you want; functions need to stay attached to their first open parentheses, and variable names can’t be broken. Otherwise, there is quite a lot of “personal preference” involved here; many would consider the example above to be a bit overdone in indents. But in my opinion, real estate is “free” in a code document in the sense that you can have as many lines as you want, and indenting tends to make code easier to view on a narrow computer window and easier to understand. I’ll start stylizing all my code from here using my own preferences, and will let you experiment and decide on your style.</p>
+<p>Another fundamental function is <code>select()</code>. Typically you would perform <code>select()</code> after reviewing the <code>colnames()</code> of a dataframe and deciding which columns you want to keep, and which you don’t need. There are many ways to customize your <code>select()</code> arguments, many which have only recently been made possible through an update to <code>dplyr</code>, and that you’d learn as you discover relevant use cases. For now, I’ll just show the most common approaches, “selectively keeping” and “selectively removing”.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="manipulating-data.html#cb18-1"></a><span class="kw">colnames</span>(pge_filter)</span></code></pre></div>
+<pre><code>## [1] &quot;ZIPCODE&quot;        &quot;MONTH&quot;          &quot;YEAR&quot;           &quot;CUSTOMERCLASS&quot; 
+## [5] &quot;COMBINED&quot;       &quot;TOTALCUSTOMERS&quot; &quot;TOTALKWH&quot;       &quot;AVERAGEKWH&quot;</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="manipulating-data.html#cb20-1"></a><span class="kw">head</span>(pge_filter)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ZIPCODE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["MONTH"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["YEAR"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["CUSTOMERCLASS"],"name":[4],"type":["chr"],"align":["left"]},{"label":["COMBINED"],"name":[5],"type":["chr"],"align":["left"]},{"label":["TOTALCUSTOMERS"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["TOTALKWH"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["AVERAGEKWH"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"93101","2":"1","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93101","2":"2","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93101","2":"3","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93105","2":"1","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93105","2":"2","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93105","2":"3","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p><code>head()</code> shows only a few rows from the top of a dataframe which can allow for quick inspection. By the way, brackets can be used to view slices of a dataframe using the general convention of <code>dataframe[row,column]</code>. See the results of all the following permutations:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="manipulating-data.html#cb21-1"></a>pge_filter[<span class="dv">1</span>,<span class="dv">1</span>]</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ZIPCODE"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"93101"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="manipulating-data.html#cb22-1"></a>pge_filter[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ZIPCODE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["MONTH"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["YEAR"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["CUSTOMERCLASS"],"name":[4],"type":["chr"],"align":["left"]},{"label":["COMBINED"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"93101","2":"1","3":"2019","4":"Elec- Commercial","5":"Y"},{"1":"93101","2":"2","3":"2019","4":"Elec- Commercial","5":"Y"},{"1":"93101","2":"3","3":"2019","4":"Elec- Commercial","5":"Y"},{"1":"93105","2":"1","3":"2019","4":"Elec- Commercial","5":"Y"},{"1":"93105","2":"2","3":"2019","4":"Elec- Commercial","5":"Y"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="manipulating-data.html#cb23-1"></a>pge_filter[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,<span class="kw">c</span>(<span class="st">&quot;ZIPCODE&quot;</span>,<span class="st">&quot;MONTH&quot;</span>,<span class="st">&quot;YEAR&quot;</span>)]</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ZIPCODE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["MONTH"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["YEAR"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"93101","2":"1","3":"2019"},{"1":"93101","2":"2","3":"2019"},{"1":"93101","2":"3","3":"2019"},{"1":"93105","2":"1","3":"2019"},{"1":"93105","2":"2","3":"2019"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="manipulating-data.html#cb24-1"></a>pge_filter[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, ]</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ZIPCODE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["MONTH"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["YEAR"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["CUSTOMERCLASS"],"name":[4],"type":["chr"],"align":["left"]},{"label":["COMBINED"],"name":[5],"type":["chr"],"align":["left"]},{"label":["TOTALCUSTOMERS"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["TOTALKWH"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["AVERAGEKWH"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"93101","2":"1","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93101","2":"2","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93101","2":"3","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93105","2":"1","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"},{"1":"93105","2":"2","3":"2019","4":"Elec- Commercial","5":"Y","6":"0","7":"0","8":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="manipulating-data.html#cb25-1"></a>pge_filter[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, ]<span class="op">$</span>YEAR</span></code></pre></div>
+<pre><code>## [1] 2019 2019 2019 2019 2019</code></pre>
+<p>Note that using a colon creates a vector of consecutive numbers, and <code>c()</code> again has a similar function but lets you create your own vectors. Also note that in the last two examples, no “column” information is given in the brackets, which will then be interpreted as “all columns”. You could do this on the “row” side as well. Using a <code>$</code> “extracts” one column from a dataframe, thereby leaving just a vector.</p>
+<p>Anyway, we can see that <code>YEAR</code> is not useful if the entire dataframe is from 2019. The following two commands have the same outcome, but in this case, “selectively removing” using a <code>-</code> sign is much simpler.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="manipulating-data.html#cb27-1"></a>pge_select &lt;-</span>
+<span id="cb27-2"><a href="manipulating-data.html#cb27-2"></a><span class="st">  </span><span class="kw">select</span>(</span>
+<span id="cb27-3"><a href="manipulating-data.html#cb27-3"></a>    pge_filter,</span>
+<span id="cb27-4"><a href="manipulating-data.html#cb27-4"></a>    ZIPCODE,</span>
+<span id="cb27-5"><a href="manipulating-data.html#cb27-5"></a>    MONTH,</span>
+<span id="cb27-6"><a href="manipulating-data.html#cb27-6"></a>    CUSTOMERCLASS,</span>
+<span id="cb27-7"><a href="manipulating-data.html#cb27-7"></a>    COMBINED,</span>
+<span id="cb27-8"><a href="manipulating-data.html#cb27-8"></a>    TOTALCUSTOMERS,</span>
+<span id="cb27-9"><a href="manipulating-data.html#cb27-9"></a>    TOTALKWH,</span>
+<span id="cb27-10"><a href="manipulating-data.html#cb27-10"></a>    AVERAGEKWH</span>
+<span id="cb27-11"><a href="manipulating-data.html#cb27-11"></a>  )</span>
+<span id="cb27-12"><a href="manipulating-data.html#cb27-12"></a></span>
+<span id="cb27-13"><a href="manipulating-data.html#cb27-13"></a>pge_select &lt;-</span>
+<span id="cb27-14"><a href="manipulating-data.html#cb27-14"></a><span class="st">  </span><span class="kw">select</span>(</span>
+<span id="cb27-15"><a href="manipulating-data.html#cb27-15"></a>    pge_filter,</span>
+<span id="cb27-16"><a href="manipulating-data.html#cb27-16"></a>    <span class="op">-</span>YEAR</span>
+<span id="cb27-17"><a href="manipulating-data.html#cb27-17"></a>  )</span></code></pre></div>
+<p>There are two other fields that you might consider removing at this stage. <code>COMBINED</code>, according to the original PG&amp;E dataset, lets you know whether the given ZIP code’s results have been combined with a neighboring ZIP code to meet state privacy requirements. If you wanted to quickly see what the distribution of yeses and nos is for this field, you could use <code>table()</code> and the <code>$</code> technique to extract one column vector:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="manipulating-data.html#cb28-1"></a><span class="kw">table</span>(pge_select<span class="op">$</span>COMBINED)</span></code></pre></div>
+<pre><code>## 
+##     N     Y 
+## 10927  9353</code></pre>
+<p>Depending on what analysis you’re conducting, you might consider “combined” rows problematic, but for our purposes, as long as there’s no double-counting, we will ultimately be moving towards aggregated results, so we may simply choose to remove this field. Another unnecessary field might be <code>AVERAGEKWH</code>, since as we start to aggregate results, we’d want to recalculate average kilowatt-hours using aggregated numerators and denominators. The following just shows a <code>select()</code> again, this time using the <code>!</code> in front of the <code>c()</code> to selectively remove that list of candidates.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="manipulating-data.html#cb30-1"></a>pge_select &lt;-</span>
+<span id="cb30-2"><a href="manipulating-data.html#cb30-2"></a><span class="st">  </span><span class="kw">select</span>(</span>
+<span id="cb30-3"><a href="manipulating-data.html#cb30-3"></a>    pge_filter,</span>
+<span id="cb30-4"><a href="manipulating-data.html#cb30-4"></a>    <span class="op">!</span><span class="kw">c</span>(YEAR, COMBINED, AVERAGEKWH)</span>
+<span id="cb30-5"><a href="manipulating-data.html#cb30-5"></a>  )</span></code></pre></div>
+<p><code>group_by()</code> and <code>summarize()</code> are typically used in conjunction with each other to create aggregated results that are similar to what you might be familiar with if you’ve used pivot tables in Excel or Google Sheets before. In <code>group_by()</code> you specify the columns you want to “keep” as discrete categories while collapsing information from other fields. For example, if we didn’t want to retain separate energy data for separate ZIP codes, but we wanted to retain separate energy data for separate months and customer classes, then we’d do:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="manipulating-data.html#cb31-1"></a>pge_group &lt;-</span>
+<span id="cb31-2"><a href="manipulating-data.html#cb31-2"></a><span class="st">  </span><span class="kw">group_by</span>(</span>
+<span id="cb31-3"><a href="manipulating-data.html#cb31-3"></a>    pge_select,</span>
+<span id="cb31-4"><a href="manipulating-data.html#cb31-4"></a>    MONTH,</span>
+<span id="cb31-5"><a href="manipulating-data.html#cb31-5"></a>    CUSTOMERCLASS</span>
+<span id="cb31-6"><a href="manipulating-data.html#cb31-6"></a>  )</span></code></pre></div>
+<p>Nothing will look different about this output, but you can imagine it “knowing” something special about the <code>MONTH</code> and <code>CUSTOMERCLASS</code> fields, which can be leveraged for certain follow-up operations like <code>summarize()</code> and <code>mutate()</code>, which both allow you to create new fields of data (like adding a new column in Excel with formulas referencing existing columns). First we’ll demonstrate <code>summarize()</code> which specifically “collapses” data based on some kind of mathematical operation, like <code>sum()</code>, <code>mean()</code>, <code>min()</code>, etc.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="manipulating-data.html#cb32-1"></a>pge_summarize &lt;-</span>
+<span id="cb32-2"><a href="manipulating-data.html#cb32-2"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
+<span id="cb32-3"><a href="manipulating-data.html#cb32-3"></a>    pge_group,</span>
+<span id="cb32-4"><a href="manipulating-data.html#cb32-4"></a>    <span class="dt">TOTALKWH =</span> </span>
+<span id="cb32-5"><a href="manipulating-data.html#cb32-5"></a>      <span class="kw">sum</span>(</span>
+<span id="cb32-6"><a href="manipulating-data.html#cb32-6"></a>        TOTALKWH, </span>
+<span id="cb32-7"><a href="manipulating-data.html#cb32-7"></a>        <span class="dt">na.rm =</span> T</span>
+<span id="cb32-8"><a href="manipulating-data.html#cb32-8"></a>      )</span>
+<span id="cb32-9"><a href="manipulating-data.html#cb32-9"></a>  )</span></code></pre></div>
+<p><code>summarize()</code> produces an entirely new dataframe that will only by default retain fields that you called out in <code>group_by()</code>, so the additional arguments you provide <code>summarize()</code> are essentially new fields you want to create based on summarizations of original fields. Here, the first <code>TOTALKWH</code> is the creation of a whole new variable, and you typically use <code>=</code> inside of such operations instead of <code>&lt;-</code> since these aren’t “Environment variables”. Note we’re intentionally giving this new variable the same name as what it’s based on, since it isn’t conceptually different, but we could have given this a completely different name. The <code>sum()</code> operation will take all values of <code>TOTALKWH</code> from the original <code>pge_group</code> dataframe that share the same <code>MONTH</code> and <code>CUSTOMERCLASS</code> and add them together. <code>na.rm = T</code> is an additional argument that tells <code>sum()</code> to ignore empty fields (“NAs”) it may encounter, which otherwise would trigger an error. You should be aware of whether NAs exist which might be an important signal of something wrong with the data, but as long as they’re not fundamental problems, you’d generally include <code>na.rm = T</code> in any of these summarization operations.</p>
+<p>You’ll notice that <code>pge_summarize</code> is significantly altered, holding only 24 rows (24 unique combinations of 12 months and 2 customer classes), and holding only one field of actual “observed information”, the total kilowatt-hours for that month and customer class. You could have added additional summarization fields, but first I’ll note that <code>pge_summarize</code>, as is, is what is called “tidy” data, a concept pioneered by the tidyverse. <a href="https://r4ds.had.co.nz/tidy-data.html">This chapter</a> from Hadley’s textbook gives the best explanation (Hadley uses “tibbles” which are slightly different from dataframes but not useful enough for me to recommend in most cases). <code>pivot_longer()</code> and <code>pivot_wider()</code> can be used to convert back and forth between “tidy” data and what we might be more used to from an Excel background, as shown:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="manipulating-data.html#cb33-1"></a>pge_wide &lt;-</span>
+<span id="cb33-2"><a href="manipulating-data.html#cb33-2"></a><span class="st">  </span><span class="kw">pivot_wider</span>(</span>
+<span id="cb33-3"><a href="manipulating-data.html#cb33-3"></a>    pge_summarize,</span>
+<span id="cb33-4"><a href="manipulating-data.html#cb33-4"></a>    <span class="dt">names_from =</span> CUSTOMERCLASS,</span>
+<span id="cb33-5"><a href="manipulating-data.html#cb33-5"></a>    <span class="dt">values_from =</span> TOTALKWH</span>
+<span id="cb33-6"><a href="manipulating-data.html#cb33-6"></a>  )</span>
+<span id="cb33-7"><a href="manipulating-data.html#cb33-7"></a></span>
+<span id="cb33-8"><a href="manipulating-data.html#cb33-8"></a>pge_wide</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["MONTH"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Elec- Commercial"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Elec- Residential"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"2411412566","3":"2405339756"},{"1":"2","2":"2175465676","3":"2236397294"},{"1":"3","2":"2262687638","3":"2050620632"},{"1":"4","2":"2340405445","3":"1788322259"},{"1":"5","2":"2404667002","3":"1815189861"},{"1":"6","2":"2532843133","3":"2418454504"},{"1":"7","2":"2720967851","3":"2726820259"},{"1":"8","2":"2899824037","3":"2876356186"},{"1":"9","2":"2645042957","3":"2285965349"},{"1":"10","2":"2493295489","3":"1818498345"},{"1":"11","2":"2324287717","3":"2075274460"},{"1":"12","2":"2330850760","3":"2545111200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Generally, wider data is easier to look at, but longer, “tidier” data is easier to do a variety of operations on, so you should be familiar with how to go back and forth.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="manipulating-data.html#cb34-1"></a>pge_tidy &lt;-</span>
+<span id="cb34-2"><a href="manipulating-data.html#cb34-2"></a><span class="st">  </span><span class="kw">pivot_longer</span>(</span>
+<span id="cb34-3"><a href="manipulating-data.html#cb34-3"></a>    pge_wide,</span>
+<span id="cb34-4"><a href="manipulating-data.html#cb34-4"></a>    <span class="kw">c</span>(<span class="st">&quot;Elec- Commercial&quot;</span>, <span class="st">&quot;Elec- Residential&quot;</span>),</span>
+<span id="cb34-5"><a href="manipulating-data.html#cb34-5"></a>    <span class="dt">names_to =</span> <span class="st">&quot;CUSTOMERCLASS&quot;</span>,</span>
+<span id="cb34-6"><a href="manipulating-data.html#cb34-6"></a>    <span class="dt">values_to =</span> <span class="st">&quot;TOTALKWH&quot;</span></span>
+<span id="cb34-7"><a href="manipulating-data.html#cb34-7"></a>  )</span></code></pre></div>
+<p><code>pge_tidy</code> is the same as <code>pge_summarize</code>. Note that unlike in <code>select()</code> and other fundamental functions, in <code>pivot_longer()</code> you need to enclose field names in quotation marks. I’m personally not aware of consistent rules behind why a function does or doesn’t require quotations, so consider this the kind of function-specific know-how you’ll develop with experience.</p>
+<p>Now let’s go back to the <code>summarize()</code> step to add <code>TOTALCUSTOMERS</code> as well, and then re-compute <code>AVERAGEKWH</code> after the summarization operation using <code>mutate()</code>.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="manipulating-data.html#cb35-1"></a>pge_summarize &lt;-</span>
+<span id="cb35-2"><a href="manipulating-data.html#cb35-2"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
+<span id="cb35-3"><a href="manipulating-data.html#cb35-3"></a>  pge_group,</span>
+<span id="cb35-4"><a href="manipulating-data.html#cb35-4"></a>  <span class="dt">TOTALKWH =</span> </span>
+<span id="cb35-5"><a href="manipulating-data.html#cb35-5"></a>    <span class="kw">sum</span>(</span>
+<span id="cb35-6"><a href="manipulating-data.html#cb35-6"></a>      TOTALKWH, </span>
+<span id="cb35-7"><a href="manipulating-data.html#cb35-7"></a>      <span class="dt">na.rm =</span> T</span>
+<span id="cb35-8"><a href="manipulating-data.html#cb35-8"></a>    ),</span>
+<span id="cb35-9"><a href="manipulating-data.html#cb35-9"></a>  <span class="dt">TOTALCUSTOMERS =</span></span>
+<span id="cb35-10"><a href="manipulating-data.html#cb35-10"></a>    <span class="kw">sum</span>(</span>
+<span id="cb35-11"><a href="manipulating-data.html#cb35-11"></a>      TOTALCUSTOMERS,</span>
+<span id="cb35-12"><a href="manipulating-data.html#cb35-12"></a>      <span class="dt">na.rm =</span> T</span>
+<span id="cb35-13"><a href="manipulating-data.html#cb35-13"></a>    )</span>
+<span id="cb35-14"><a href="manipulating-data.html#cb35-14"></a>  )</span>
+<span id="cb35-15"><a href="manipulating-data.html#cb35-15"></a></span>
+<span id="cb35-16"><a href="manipulating-data.html#cb35-16"></a>pge_mutate &lt;-</span>
+<span id="cb35-17"><a href="manipulating-data.html#cb35-17"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb35-18"><a href="manipulating-data.html#cb35-18"></a>    pge_summarize,</span>
+<span id="cb35-19"><a href="manipulating-data.html#cb35-19"></a>    <span class="dt">AVERAGEKWH =</span></span>
+<span id="cb35-20"><a href="manipulating-data.html#cb35-20"></a>      TOTALKWH<span class="op">/</span>TOTALCUSTOMERS</span>
+<span id="cb35-21"><a href="manipulating-data.html#cb35-21"></a>  )</span></code></pre></div>
+<p><code>mutate()</code> is the closest thing to, in Excel, creating a new field, typing in a formula, and then “dragging” that formula down the length of the spreadsheet. It’ll likely become the <code>dplyr</code> function you use the most.</p>
+<p>One final, very important technique before we move on. If you haven’t already noticed, the last few chunks have produced lots of individual outputs in the Environment that you might consider “useless” if all you really wanted was the final result, <code>pge_mutate</code>. There was a lot of redundancy in having to constantly refer to the previous interim data object as part of making a new interim data object.</p>
+<p>The “pipe”, <code>%&gt;%</code> is designed to string functions together like an assembly line, where an “object” is passed from function to function in stages of manipulation. It’s worth getting a full explanation directly from Hadley <a href="https://r4ds.had.co.nz/pipes.html">here</a>, but my own paraphrase is that wherever you can conceive of a pipeline, you should built the habit of coding with pipes which will simplify the code for both you and readers. I consider the pipes as fundamentally clarifying the nature of many operations to better resemble our mental model of what’s “happening” to a data object, treating the functions more as “verbs” which sequentially “act” on a single object.</p>
+<p>Reviewing many of the previous chunks, you’ll notice that the first argument in a function is often the “dataset” being acted upon (this is not 100% the case, but we’ll be able to deal with the outlier situations no problem once we encounter such a case). One key thing a pipeline does is it removes the need to specify this first argument, since it’s self-evidently “the object in the pipeline”. So an important conceptual change to how you use functions is that you start to “ignore” the argument that asks for the “data”, which is often the first argument. Besides that, once you see the example below, the rest of the pipeline technique should appear straightforward.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="manipulating-data.html#cb36-1"></a>pge_final &lt;-</span>
+<span id="cb36-2"><a href="manipulating-data.html#cb36-2"></a><span class="st">  </span>pge_<span class="dv">19</span>_elec <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-3"><a href="manipulating-data.html#cb36-3"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb36-4"><a href="manipulating-data.html#cb36-4"></a>    CUSTOMERCLASS <span class="op">%in%</span><span class="st"> </span></span>
+<span id="cb36-5"><a href="manipulating-data.html#cb36-5"></a><span class="st">      </span><span class="kw">c</span>(</span>
+<span id="cb36-6"><a href="manipulating-data.html#cb36-6"></a>        <span class="st">&quot;Elec- Residential&quot;</span>,</span>
+<span id="cb36-7"><a href="manipulating-data.html#cb36-7"></a>        <span class="st">&quot;Elec- Commercial&quot;</span></span>
+<span id="cb36-8"><a href="manipulating-data.html#cb36-8"></a>      )</span>
+<span id="cb36-9"><a href="manipulating-data.html#cb36-9"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-10"><a href="manipulating-data.html#cb36-10"></a><span class="st">  </span><span class="kw">select</span>(</span>
+<span id="cb36-11"><a href="manipulating-data.html#cb36-11"></a>    <span class="op">!</span><span class="kw">c</span>(YEAR, COMBINED, AVERAGEKWH)</span>
+<span id="cb36-12"><a href="manipulating-data.html#cb36-12"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-13"><a href="manipulating-data.html#cb36-13"></a><span class="st">  </span><span class="kw">group_by</span>(MONTH, CUSTOMERCLASS) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-14"><a href="manipulating-data.html#cb36-14"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
+<span id="cb36-15"><a href="manipulating-data.html#cb36-15"></a>    <span class="dt">TOTALKWH =</span> </span>
+<span id="cb36-16"><a href="manipulating-data.html#cb36-16"></a>      <span class="kw">sum</span>(</span>
+<span id="cb36-17"><a href="manipulating-data.html#cb36-17"></a>        TOTALKWH, </span>
+<span id="cb36-18"><a href="manipulating-data.html#cb36-18"></a>        <span class="dt">na.rm =</span> T</span>
+<span id="cb36-19"><a href="manipulating-data.html#cb36-19"></a>      ),</span>
+<span id="cb36-20"><a href="manipulating-data.html#cb36-20"></a>    <span class="dt">TOTALCUSTOMERS =</span></span>
+<span id="cb36-21"><a href="manipulating-data.html#cb36-21"></a>      <span class="kw">sum</span>(</span>
+<span id="cb36-22"><a href="manipulating-data.html#cb36-22"></a>        TOTALCUSTOMERS,</span>
+<span id="cb36-23"><a href="manipulating-data.html#cb36-23"></a>        <span class="dt">na.rm =</span> T</span>
+<span id="cb36-24"><a href="manipulating-data.html#cb36-24"></a>      )</span>
+<span id="cb36-25"><a href="manipulating-data.html#cb36-25"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-26"><a href="manipulating-data.html#cb36-26"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb36-27"><a href="manipulating-data.html#cb36-27"></a>    <span class="dt">AVERAGEKWH =</span></span>
+<span id="cb36-28"><a href="manipulating-data.html#cb36-28"></a>      TOTALKWH<span class="op">/</span>TOTALCUSTOMERS</span>
+<span id="cb36-29"><a href="manipulating-data.html#cb36-29"></a>  )</span>
+<span id="cb36-30"><a href="manipulating-data.html#cb36-30"></a></span>
+<span id="cb36-31"><a href="manipulating-data.html#cb36-31"></a>pge_final</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["MONTH"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["CUSTOMERCLASS"],"name":[2],"type":["chr"],"align":["left"]},{"label":["TOTALKWH"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["TOTALCUSTOMERS"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["AVERAGEKWH"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"Elec- Commercial","3":"2411412566","4":"321633","5":"7497.4041"},{"1":"1","2":"Elec- Residential","3":"2405339756","4":"4499447","5":"534.5856"},{"1":"2","2":"Elec- Commercial","3":"2175465676","4":"321719","5":"6762.0056"},{"1":"2","2":"Elec- Residential","3":"2236397294","4":"4501587","5":"496.8020"},{"1":"3","2":"Elec- Commercial","3":"2262687638","4":"321645","5":"7034.7359"},{"1":"3","2":"Elec- Residential","3":"2050620632","4":"4503685","5":"455.3206"},{"1":"4","2":"Elec- Commercial","3":"2340405445","4":"322175","5":"7264.3919"},{"1":"4","2":"Elec- Residential","3":"1788322259","4":"4511242","5":"396.4146"},{"1":"5","2":"Elec- Commercial","3":"2404667002","4":"322481","5":"7456.7711"},{"1":"5","2":"Elec- Residential","3":"1815189861","4":"4513263","5":"402.1901"},{"1":"6","2":"Elec- Commercial","3":"2532843133","4":"322453","5":"7854.9219"},{"1":"6","2":"Elec- Residential","3":"2418454504","4":"4512536","5":"535.9413"},{"1":"7","2":"Elec- Commercial","3":"2720967851","4":"322662","5":"8432.8736"},{"1":"7","2":"Elec- Residential","3":"2726820259","4":"4515735","5":"603.8486"},{"1":"8","2":"Elec- Commercial","3":"2899824037","4":"322719","5":"8985.6006"},{"1":"8","2":"Elec- Residential","3":"2876356186","4":"4518799","5":"636.5311"},{"1":"9","2":"Elec- Commercial","3":"2645042957","4":"322572","5":"8199.8529"},{"1":"9","2":"Elec- Residential","3":"2285965349","4":"4519015","5":"505.8548"},{"1":"10","2":"Elec- Commercial","3":"2493295489","4":"322795","5":"7724.0834"},{"1":"10","2":"Elec- Residential","3":"1818498345","4":"4522470","5":"402.1029"},{"1":"11","2":"Elec- Commercial","3":"2324287717","4":"322768","5":"7201.1095"},{"1":"11","2":"Elec- Residential","3":"2075274460","4":"4526054","5":"458.5174"},{"1":"12","2":"Elec- Commercial","3":"2330850760","4":"322486","5":"7227.7580"},{"1":"12","2":"Elec- Residential","3":"2545111200","4":"4525430","5":"562.4021"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Notice, at a practical level, how much less text is required when writing this. The pipe itself is very easy with the shortcut <code>Ctrl+Shift+M</code>. As before, the indenting here is my style preference; I like to treat pipes as the “and then” at the end of a verse, like poetry. You can put your cursor anywhere in this pipeline and click <code>Ctrl+Enter</code>, and the whole pipeline will run.</p>
+<p>As great as pipes may appear to be, they do make troubleshooting complicated as you have now strung together many individual operations, and if you hit an error you might not immediately know what caused the error. So in some sense, it’s still a good idea to develop your process function by function, like we originally did, and convert to a pipeline only after you have checked that each individual step works. Of course, the more comfortable you become with coding, the fewer mistakes you make, and the more naturally you can default to writing pipelines. As a middle ground, note that if you select and drag text from the top of a pipeline to any intermediate step right before a new pipe, and <code>Ctrl+Enter</code>, you can thereby run a “partial pipeline”, which would essentially allow you to check intermediate stages for errors (i.e. if you can run from the top to halfway through with no errors, then you know the error isn’t in the first half of your pipeline steps). Overall, the question of “what should be combined into one pipeline” really becomes a conceptual design one, based on what steps you think should be understood to be linked as one.</p>
+<p>From this point on, I will by default code using pipes, as I encourage you to do as well.</p>
 </div>
             </section>
 

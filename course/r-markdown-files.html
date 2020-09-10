@@ -52,6 +52,20 @@
 <script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
 
 
 <style type="text/css">
@@ -145,6 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>1.10</b> Census data</a></li>
+<li class="chapter" data-level="1.11" data-path="assignment.html"><a href="assignment.html"><i class="fa fa-check"></i><b>1.11</b> Assignment</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="spatial-joins.html"><a href="spatial-joins.html"><i class="fa fa-check"></i><b>2.1</b> Spatial joins</a></li>
@@ -182,7 +197,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>I’ll now show a second chunk that has the same effect but a different formatting choice:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="r-markdown-files.html#cb2-1"></a><span class="kw">library</span>(knitr)</span>
 <span id="cb2-2"><a href="r-markdown-files.html#cb2-2"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> T)</span></code></pre></div>
-<p>The first chunk has one line of code while the second has 2 lines. The first example is basically a shortcut of the second which is the more general approach. <code>knitr</code> is what’s called a “package”, and packages contain functions; in this case, <code>opts_chunk()</code> is a function of <code>knitr</code> (note that this function has sub-functions via a $ sign which is rare). If you have used <code>library()</code> to load a package, then you don’t need to put <code>knitr::</code> before the function call (the only situation in which this might be needed is if two loaded packages both have a function of the same name, in which case you need to specify which one you’re using; you’ll see me do this for <code>dplyr::select()</code>). Generally, you’ll load a bunch of functions with <code>library()</code> calls in your first chunk, which I’ll demonstrate soon.</p>
+<p>The first chunk has one line of code while the second has 2 lines. The first example is basically a shortcut of the second which is the more general approach. <code>knitr</code> is what’s called a “package”, and packages contain functions; in this case, <code>opts_chunk()</code> is a function of <code>knitr</code> (note that this function has sub-functions via a $ sign which is rare). If you have used <code>library()</code> to load a package, then you don’t need to put <code>knitr::</code> before the function call (the only situation in which this might be needed is if two loaded packages both have a function of the same name, in which case you need to specify which one you’re using; sometimes I need to do this for <code>dplyr::select()</code>). Generally, you’ll load a bunch of functions with <code>library()</code> calls in your first chunk, which I’ll demonstrate soon.</p>
 <p>In this case, <code>opts_chunk$set()</code> does something generally important for .Rmd files and relates to “knitting”. Its functionality is also something built into the structure of .Rmd files. I’ll now show the same chunk above, but with the full formatting that you would see in the .Rmd file:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="r-markdown-files.html#cb3-1"></a><span class="bn">```{r}</span></span>
 <span id="cb3-2"><a href="r-markdown-files.html#cb3-2"></a><span class="bn">library(knitr)</span></span>
@@ -206,11 +221,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-2"><a href="r-markdown-files.html#cb5-2"></a><span class="kw">library</span>(plotly)</span>
 <span id="cb5-3"><a href="r-markdown-files.html#cb5-3"></a><span class="kw">library</span>(sf)</span>
 <span id="cb5-4"><a href="r-markdown-files.html#cb5-4"></a><span class="kw">library</span>(tigris)</span>
-<span id="cb5-5"><a href="r-markdown-files.html#cb5-5"></a><span class="kw">library</span>(mapview)</span>
-<span id="cb5-6"><a href="r-markdown-files.html#cb5-6"></a><span class="kw">library</span>(leaflet)</span>
-<span id="cb5-7"><a href="r-markdown-files.html#cb5-7"></a><span class="kw">library</span>(censusapi)</span>
-<span id="cb5-8"><a href="r-markdown-files.html#cb5-8"></a></span>
-<span id="cb5-9"><a href="r-markdown-files.html#cb5-9"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
+<span id="cb5-5"><a href="r-markdown-files.html#cb5-5"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb5-6"><a href="r-markdown-files.html#cb5-6"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb5-7"><a href="r-markdown-files.html#cb5-7"></a></span>
+<span id="cb5-8"><a href="r-markdown-files.html#cb5-8"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
 <p>All the <code>library()</code> calls are loading packages that you know you need to run the code in the rest of the script. Generally you’ll have some idea of the essential ones you always use, but as you are working on a novel problem, you may discover a new special package you want to use, and you’d scroll up and add it to this chunk. The list above happens to be the “essential” packages I’ll cover later in this chapter.</p>
 <p>Usually after the <code>library()</code> calls, you would set other kinds of environmental “settings’’ that are relevant to specific code you’ll use later on; setting them here merely provides the benefit of having all these settings in one place, but they could go anywhere as long as they are executed before the relevant code they affect. Here I am calling <code>Sys.setenv()</code> which relates to the <code>censusapi</code> package, which I’ll explain near the end of the chapter. Other common settings you might put in this chunk:</p>
 <ul>

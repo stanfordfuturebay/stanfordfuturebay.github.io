@@ -52,6 +52,20 @@
 <script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
 
 
 <style type="text/css">
@@ -145,6 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>1.10</b> Census data</a></li>
+<li class="chapter" data-level="1.11" data-path="assignment.html"><a href="assignment.html"><i class="fa fa-check"></i><b>1.11</b> Assignment</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="spatial-joins.html"><a href="spatial-joins.html"><i class="fa fa-check"></i><b>2.1</b> Spatial joins</a></li>
@@ -170,12 +185,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</h1>
 <p class="author"><em>Stanford Future Bay Initiative</em></p>
-<p class="date"><em>Last updated: September 08, 2020</em></p>
+<p class="date"><em>Last updated: September 10, 2020</em></p>
 </div>
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p>The following is a data analytics curriculum specifically designed for the intro track of <a href="http://bay.stanford.edu/education">Shaping the Future of the Bay Area</a>, the flagship course of the Stanford Future Bay Initiative. Stanford students who enroll in the course will work through this material alongside lectures and discussions, and are expected to complete the assignments at the end of each chapter for a grade. Those students can then continue on to participate in practicum projects that make use of these technical skills.</p>
-<p>This curriculum is also designed to be useful to a wider audience. Depending on interest, we may create platforms for the general public to engage with the instructors and each other. If you have any questions or comments, reach out to lead instructor Derek Ouyang at <a href="mailto:douyang1@stanford.edu" class="email">douyang1@stanford.edu</a>.</p>
+<p>This curriculum is also designed to be useful to a wider audience (though many datasets and concepts will be most applicable if you are working in the U.S.). Depending on interest, we may create platforms for the general public to engage with the instructors and each other. If you have any questions or comments, reach out to lead instructor Derek Ouyang at <a href="mailto:douyang1@stanford.edu" class="email">douyang1@stanford.edu</a>.</p>
 <p>If you don’t have prior experience in R, this curriculum is designed to help you learn it from scratch. If you have some prior experience, you will likely be able to skim over anything that looks familiar and focus on new techniques. There are many other useful R educational resources online that we will occasionally refer to, and that may be just as useful if not more useful to help you learn R. The best place to start is <a href="r.stanford.edu">r.stanford.edu</a>.</p>
 <p>In this introductory chapter, we will cover the following:</p>
 <ul>
