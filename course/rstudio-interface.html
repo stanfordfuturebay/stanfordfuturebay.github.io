@@ -162,7 +162,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
-<li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
 </ul></li>
 </ul>
 
@@ -200,7 +199,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Some of the most common commands I’d run directly in the console are:</p>
 <ul>
 <li><code>View(data_variable_name)</code> to view data frame that’s in the Environment</li>
-<li><code>colnames(data_variable_name)</code> to view the field names of the data frame</li>
+<li><code>names(data_variable_name)</code> to view the field names of the dataframe</li>
+<li><code>nrow(data_variable_name)</code> to view the number of rows in the dataframe</li>
 <li><code>mapview(data_variable_name)</code> to quickly view a mappable object (you’ll need to have loaded the relevant library to do this, which we’ll explain later)</li>
 </ul>
 <p>Otherwise, I’m generally running code “inline” by putting the blinking typing cursor on any part of a line and doing <code>Ctrl+Enter</code>. If you only want to run part of a line (especially <code>%&gt;%</code> pipelines, explained later), then you highlight a specific self-contained section before typing <code>Ctrl+Enter</code>. <code>Ctrl+Shift+Enter</code> will run the entire chunk of code (which is between the pairs of three backticks).</p>
