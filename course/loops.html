@@ -158,7 +158,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
 <li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
-<li class="chapter" data-level="1.10" data-path="assignment.html"><a href="assignment.html"><i class="fa fa-check"></i><b>1.10</b> Assignment</a></li>
+<li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
@@ -186,34 +186,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">1.6</span> Loops</h2>
 <p>Let’s consider the use of for loops, a foundational technique in programming languages, specifically for reading multiple data files. A for loop is useful when, say, loading in the multiple PG&amp;E datasets, which all have a similar naming structure except for systematic changes in a part of the file name, like Q1 to Q2 to Q3 to Q4.</p>
 <p>For loops are written with the structure <code>for(dummy_variable_name in range_of_real_objects) {code_to_execute}</code>. In the example below, I’ll use this structure to loop through <code>quarter in quarters</code>, where <code>quarters &lt;- 1:4</code>, which is just a vector of the integers 1 through 4, and <code>quarter</code> becomes a variable that holds each integer consecutively as the script within the for loop is executed 4 times. I then paste this changing variable into an otherwise fixed set of text fragments to create a string in the variable <code>filename</code> that represents the full file path to retrieve one of the PG&amp;E CSVs we’ve downloaded into the working directory. Then I <code>read_csv(filename)</code> in a similar way as we’ve practiced before into a variable called <code>temp</code>, for “temporary”. Lastly, I use <code>rbind()</code> to “stack like pancakes” two dataframes (a technical term for the type of table in R that you get by default when reading a CSV) that share the same column names. So by the end of the for loop, four separate CSVs are read into R and then stacked together.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="loops.html#cb14-1"></a>year &lt;-<span class="st"> </span><span class="dv">2019</span></span>
-<span id="cb14-2"><a href="loops.html#cb14-2"></a>quarters &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span></span>
-<span id="cb14-3"><a href="loops.html#cb14-3"></a>type &lt;-<span class="st"> &quot;Electric&quot;</span></span>
-<span id="cb14-4"><a href="loops.html#cb14-4"></a></span>
-<span id="cb14-5"><a href="loops.html#cb14-5"></a>pge_<span class="dv">19</span>_elec &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="loops.html#cb14-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb14-2"><a href="loops.html#cb14-2"></a></span>
+<span id="cb14-3"><a href="loops.html#cb14-3"></a>year &lt;-<span class="st"> </span><span class="dv">2019</span></span>
+<span id="cb14-4"><a href="loops.html#cb14-4"></a>quarters &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span></span>
+<span id="cb14-5"><a href="loops.html#cb14-5"></a>type &lt;-<span class="st"> &quot;Electric&quot;</span></span>
 <span id="cb14-6"><a href="loops.html#cb14-6"></a></span>
-<span id="cb14-7"><a href="loops.html#cb14-7"></a><span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
-<span id="cb14-8"><a href="loops.html#cb14-8"></a>  </span>
-<span id="cb14-9"><a href="loops.html#cb14-9"></a>  filename &lt;-<span class="st"> </span></span>
-<span id="cb14-10"><a href="loops.html#cb14-10"></a><span class="st">    </span><span class="kw">paste0</span>(</span>
-<span id="cb14-11"><a href="loops.html#cb14-11"></a>      <span class="st">&quot;PGE_&quot;</span>,</span>
-<span id="cb14-12"><a href="loops.html#cb14-12"></a>      year,</span>
-<span id="cb14-13"><a href="loops.html#cb14-13"></a>      <span class="st">&quot;_Q&quot;</span>,</span>
-<span id="cb14-14"><a href="loops.html#cb14-14"></a>      quarter,</span>
-<span id="cb14-15"><a href="loops.html#cb14-15"></a>      <span class="st">&quot;_&quot;</span>,</span>
-<span id="cb14-16"><a href="loops.html#cb14-16"></a>      type,</span>
-<span id="cb14-17"><a href="loops.html#cb14-17"></a>      <span class="st">&quot;UsageByZip.csv&quot;</span></span>
-<span id="cb14-18"><a href="loops.html#cb14-18"></a>    )</span>
-<span id="cb14-19"><a href="loops.html#cb14-19"></a></span>
-<span id="cb14-20"><a href="loops.html#cb14-20"></a>  <span class="kw">print</span>(filename)</span>
-<span id="cb14-21"><a href="loops.html#cb14-21"></a>  </span>
-<span id="cb14-22"><a href="loops.html#cb14-22"></a>  temp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(filename)</span>
+<span id="cb14-7"><a href="loops.html#cb14-7"></a>pge_<span class="dv">19</span>_elec &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb14-8"><a href="loops.html#cb14-8"></a></span>
+<span id="cb14-9"><a href="loops.html#cb14-9"></a><span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
+<span id="cb14-10"><a href="loops.html#cb14-10"></a>  </span>
+<span id="cb14-11"><a href="loops.html#cb14-11"></a>  filename &lt;-<span class="st"> </span></span>
+<span id="cb14-12"><a href="loops.html#cb14-12"></a><span class="st">    </span><span class="kw">paste0</span>(</span>
+<span id="cb14-13"><a href="loops.html#cb14-13"></a>      <span class="st">&quot;PGE_&quot;</span>,</span>
+<span id="cb14-14"><a href="loops.html#cb14-14"></a>      year,</span>
+<span id="cb14-15"><a href="loops.html#cb14-15"></a>      <span class="st">&quot;_Q&quot;</span>,</span>
+<span id="cb14-16"><a href="loops.html#cb14-16"></a>      quarter,</span>
+<span id="cb14-17"><a href="loops.html#cb14-17"></a>      <span class="st">&quot;_&quot;</span>,</span>
+<span id="cb14-18"><a href="loops.html#cb14-18"></a>      type,</span>
+<span id="cb14-19"><a href="loops.html#cb14-19"></a>      <span class="st">&quot;UsageByZip.csv&quot;</span></span>
+<span id="cb14-20"><a href="loops.html#cb14-20"></a>    )</span>
+<span id="cb14-21"><a href="loops.html#cb14-21"></a></span>
+<span id="cb14-22"><a href="loops.html#cb14-22"></a>  <span class="kw">print</span>(filename)</span>
 <span id="cb14-23"><a href="loops.html#cb14-23"></a>  </span>
-<span id="cb14-24"><a href="loops.html#cb14-24"></a>  pge_<span class="dv">19</span>_elec &lt;-<span class="st"> </span><span class="kw">rbind</span>(pge_<span class="dv">19</span>_elec,temp)</span>
-<span id="cb14-25"><a href="loops.html#cb14-25"></a>  <span class="co"># Note rbind requires field names to be consistent for every new thing that you add.</span></span>
-<span id="cb14-26"><a href="loops.html#cb14-26"></a></span>
-<span id="cb14-27"><a href="loops.html#cb14-27"></a>  <span class="kw">saveRDS</span>(pge_<span class="dv">19</span>_elec, <span class="st">&quot;pge_19_elec.rds&quot;</span>)</span>
-<span id="cb14-28"><a href="loops.html#cb14-28"></a>}</span></code></pre></div>
+<span id="cb14-24"><a href="loops.html#cb14-24"></a>  temp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(filename)</span>
+<span id="cb14-25"><a href="loops.html#cb14-25"></a>  </span>
+<span id="cb14-26"><a href="loops.html#cb14-26"></a>  pge_<span class="dv">19</span>_elec &lt;-<span class="st"> </span><span class="kw">rbind</span>(pge_<span class="dv">19</span>_elec,temp)</span>
+<span id="cb14-27"><a href="loops.html#cb14-27"></a>  <span class="co"># Note rbind requires field names to be consistent for every new thing that you add.</span></span>
+<span id="cb14-28"><a href="loops.html#cb14-28"></a></span>
+<span id="cb14-29"><a href="loops.html#cb14-29"></a>  <span class="kw">saveRDS</span>(pge_<span class="dv">19</span>_elec, <span class="st">&quot;pge_19_elec.rds&quot;</span>)</span>
+<span id="cb14-30"><a href="loops.html#cb14-30"></a>}</span></code></pre></div>
 <pre><code>## [1] &quot;PGE_2019_Q1_ElectricUsageByZip.csv&quot;
 ## [1] &quot;PGE_2019_Q2_ElectricUsageByZip.csv&quot;
 ## [1] &quot;PGE_2019_Q3_ElectricUsageByZip.csv&quot;

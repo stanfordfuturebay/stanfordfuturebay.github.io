@@ -158,7 +158,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
 <li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
-<li class="chapter" data-level="1.10" data-path="assignment.html"><a href="assignment.html"><i class="fa fa-check"></i><b>1.10</b> Assignment</a></li>
+<li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
@@ -184,6 +184,263 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="equity-analysis" class="section level2">
 <h2><span class="header-section-number">2.2</span> Equity analysis</h2>
+<p>What we mean by “equity analysis” is the visualization and quantification of disproportionate outcomes across population groups of interest. Without diving deeply into the ethics that might motivate such an analysis, I’ll just assume that, with the examples shown in this section, you will agree that these ways of looking at population data are meaningful for understanding some kind of problem we might want to solve in society (however difficult the solutions may actually be).</p>
+<p>The simplest version of this type of analysis involves only ACS summary data as we’ve used in the last chapter, but requires that the specific dataset loaded has an “outcome of interest”, broken into some number of buckets or tiers, and “population groups of interest”, in with which we can count membership in those outcome buckets. For demonstration, we’ll use a well-known example, income vs. race. Income is acting here as the “outcome of interest”, which is to say that if we break up income into different tiers, generally, everyone would agree that it’s a better outcome for a household to be in higher income tiers. Racial groups is acting here as the “population groups of interest”, because if we discover that different racial groups have different outcomes in household income, generally (avoiding a political digression here), many people would consider that social arrangement to at least be less preferable to a world in which there were no differences in income distribution. Put another way, if you buy into the idea that we can’t choose our individual races when we are born into this world and can’t choose what household we grow up in, and the implication that therefore we should set up society so that everybody at least has an equal opportunity to thrive in life, then splitting up a proxy for livelihood like household income by racial groups, and finding disproportionate outcomes, would be a strong signal of systems work to be done. Of course this topic is fraught with political controversy, but for our purposes, we are simply focusing on the objective measures that can be used to support the process of urban governance. Let me further stress that we’re basically going to be doing a specific kind of math on a two-dimensional disaggregation of a population sample, but just applying it to any “X by Y” breakdown of a population doesn’t necessarily yield a “meaningful” result from an ethical perspective; so you’ll need to think carefully about the point you are trying to communicate, and whether it makes sense to conduct this kind of analysis.</p>
+<p>Let’s go ahead and try to find the relevant dataset in the ACS database. A quick search online would point you to a long list of datasets that all appear to provide some combination of income and race information. Here, some amount of experience with the ACS universe is key; I’ll go ahead and point you to the <code>B19001</code> series as the most useful datasets, specifically <code>B19001A</code> through <code>B19001G</code> for the different key racial groups recorded by the Census Bureau (you’ll find it often the case that different racial groups are given their entire own datasets, given the importance of data about race). However, this presents an extra processing step of having to load in data from multiple “datasets” (i.e. different <code>getCensus()</code> calls) and merging them together. No matter what, you are likely to need to do some data wrangling to get your data ready for a structured equity analysis, so this will be a good example to demonstrate, and you might find that your own chosen pairing is easier (or harder) to orchestrate.</p>
+<p>If you don’t already have this ready to go, make sure to have <code>censusapi</code> loaded, the Census API key set, and the <code>acs_vars_2018_5yr</code> data dictionary loaded (from online or from your stored location):</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="equity-analysis.html#cb64-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb64-2"><a href="equity-analysis.html#cb64-2"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb64-3"><a href="equity-analysis.html#cb64-3"></a></span>
+<span id="cb64-4"><a href="equity-analysis.html#cb64-4"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
+<span id="cb64-5"><a href="equity-analysis.html#cb64-5"></a></span>
+<span id="cb64-6"><a href="equity-analysis.html#cb64-6"></a>acs_vars_<span class="dv">2018</span>_5yr &lt;-</span>
+<span id="cb64-7"><a href="equity-analysis.html#cb64-7"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
+<span id="cb64-8"><a href="equity-analysis.html#cb64-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2018/acs/acs5&quot;</span>,</span>
+<span id="cb64-9"><a href="equity-analysis.html#cb64-9"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
+<span id="cb64-10"><a href="equity-analysis.html#cb64-10"></a>  )</span></code></pre></div>
+<p>As a first test, let’s just load <code>B19001A</code>, which is just household income for households let by somebody who is “White alone”.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="equity-analysis.html#cb65-1"></a>bay_income_white &lt;-</span>
+<span id="cb65-2"><a href="equity-analysis.html#cb65-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
+<span id="cb65-3"><a href="equity-analysis.html#cb65-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
+<span id="cb65-4"><a href="equity-analysis.html#cb65-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb65-5"><a href="equity-analysis.html#cb65-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb65-6"><a href="equity-analysis.html#cb65-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
+<span id="cb65-7"><a href="equity-analysis.html#cb65-7"></a>    <span class="dt">vars =</span> <span class="st">&quot;group(B19001A)&quot;</span></span>
+<span id="cb65-8"><a href="equity-analysis.html#cb65-8"></a>  ) <span class="op">%&gt;%</span></span>
+<span id="cb65-9"><a href="equity-analysis.html#cb65-9"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">!</span><span class="kw">c</span>(GEO_ID,state,NAME) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;EA&quot;</span>,<span class="st">&quot;MA&quot;</span>,<span class="st">&quot;M&quot;</span>))) <span class="op">%&gt;%</span></span>
+<span id="cb65-10"><a href="equity-analysis.html#cb65-10"></a><span class="st">  </span><span class="kw">pivot_longer</span>(</span>
+<span id="cb65-11"><a href="equity-analysis.html#cb65-11"></a>    <span class="kw">ends_with</span>(<span class="st">&quot;E&quot;</span>),</span>
+<span id="cb65-12"><a href="equity-analysis.html#cb65-12"></a>    <span class="dt">names_to =</span> <span class="st">&quot;variable&quot;</span>,</span>
+<span id="cb65-13"><a href="equity-analysis.html#cb65-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
+<span id="cb65-14"><a href="equity-analysis.html#cb65-14"></a>  ) <span class="op">%&gt;%</span></span>
+<span id="cb65-15"><a href="equity-analysis.html#cb65-15"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
+<span id="cb65-16"><a href="equity-analysis.html#cb65-16"></a>    acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb65-17"><a href="equity-analysis.html#cb65-17"></a><span class="st">      </span><span class="kw">select</span>(name, label), </span>
+<span id="cb65-18"><a href="equity-analysis.html#cb65-18"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
+<span id="cb65-19"><a href="equity-analysis.html#cb65-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb65-20"><a href="equity-analysis.html#cb65-20"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>variable) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb65-21"><a href="equity-analysis.html#cb65-21"></a><span class="st">  </span><span class="kw">separate</span>(</span>
+<span id="cb65-22"><a href="equity-analysis.html#cb65-22"></a>    label,</span>
+<span id="cb65-23"><a href="equity-analysis.html#cb65-23"></a>    <span class="dt">into =</span> <span class="kw">c</span>(<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="st">&quot;income&quot;</span>),</span>
+<span id="cb65-24"><a href="equity-analysis.html#cb65-24"></a>    <span class="dt">sep =</span> <span class="st">&quot;!!&quot;</span></span>
+<span id="cb65-25"><a href="equity-analysis.html#cb65-25"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb65-26"><a href="equity-analysis.html#cb65-26"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(income))</span></code></pre></div>
+<p>Note that this is very similar to what we’ve done before, but choosing counties as the unit of data, our <code>region =</code> argument can include a list of all 9 Bay Area counties by their FIPS codes, and some of the data manipulation changes because of the different fields of data involved.</p>
+<p>Conceptually, all we need to do to combine all 7 datasets together is to load them individually like this, use <code>mutate()</code> to add a <code>race</code> field and manually enter the appropriate racial group label, and then bind them together. Since we have done a test run, we should be able to quickly set up a <code>map_dfr()</code> loop without experiencing many errors; otherwise, you should always feel comfortable using for loops for simple processes like this.</p>
+<p>Let’s first create a simple lookup table that we can use to help with the looping and supplying the race label to the <code>mutate()</code> step. You can always create a quick new dataframe as such. Keep this in mind as a generalizable technique. The race labels come directly from the ACS questionnaire options.</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="equity-analysis.html#cb66-1"></a>census_race_labels &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb66-2"><a href="equity-analysis.html#cb66-2"></a>  <span class="dt">code =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;G&quot;</span>),</span>
+<span id="cb66-3"><a href="equity-analysis.html#cb66-3"></a>  <span class="dt">label =</span></span>
+<span id="cb66-4"><a href="equity-analysis.html#cb66-4"></a>    <span class="kw">c</span>(</span>
+<span id="cb66-5"><a href="equity-analysis.html#cb66-5"></a>      <span class="st">&quot;White Alone&quot;</span>,</span>
+<span id="cb66-6"><a href="equity-analysis.html#cb66-6"></a>      <span class="st">&quot;Black or African American&quot;</span>,</span>
+<span id="cb66-7"><a href="equity-analysis.html#cb66-7"></a>      <span class="st">&quot;American Indian and Alaska Native Alone&quot;</span>,</span>
+<span id="cb66-8"><a href="equity-analysis.html#cb66-8"></a>      <span class="st">&quot;Asian Alone&quot;</span>,</span>
+<span id="cb66-9"><a href="equity-analysis.html#cb66-9"></a>      <span class="st">&quot;Native Hawaiian and Other Pacific Islander Alone)&quot;</span>,</span>
+<span id="cb66-10"><a href="equity-analysis.html#cb66-10"></a>      <span class="st">&quot;Some Other Race Alone&quot;</span>,</span>
+<span id="cb66-11"><a href="equity-analysis.html#cb66-11"></a>      <span class="st">&quot;Two or More Races&quot;</span></span>
+<span id="cb66-12"><a href="equity-analysis.html#cb66-12"></a>    )</span>
+<span id="cb66-13"><a href="equity-analysis.html#cb66-13"></a>)</span></code></pre></div>
+<p>We’re basically just setting up a relationship between the letter codes and the race labels that we can use in a number of ways. Also note that you could replicate the list of letters using the built-in R object <code>LETTERS</code>, like <code>LETTERS[1:7]</code>. In fact, since the codes are so straightforward, we can simplify the process further, as shown below:</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="equity-analysis.html#cb67-1"></a>census_race_labels &lt;-<span class="st"> </span></span>
+<span id="cb67-2"><a href="equity-analysis.html#cb67-2"></a><span class="st">  </span><span class="kw">c</span>(</span>
+<span id="cb67-3"><a href="equity-analysis.html#cb67-3"></a>    <span class="st">&quot;White Alone&quot;</span>,</span>
+<span id="cb67-4"><a href="equity-analysis.html#cb67-4"></a>    <span class="st">&quot;Black or African American&quot;</span>,</span>
+<span id="cb67-5"><a href="equity-analysis.html#cb67-5"></a>    <span class="st">&quot;American Indian and Alaska Native Alone&quot;</span>,</span>
+<span id="cb67-6"><a href="equity-analysis.html#cb67-6"></a>    <span class="st">&quot;Asian Alone&quot;</span>,</span>
+<span id="cb67-7"><a href="equity-analysis.html#cb67-7"></a>    <span class="st">&quot;Native Hawaiian and Other Pacific Islander Alone)&quot;</span>,</span>
+<span id="cb67-8"><a href="equity-analysis.html#cb67-8"></a>    <span class="st">&quot;Some Other Race Alone&quot;</span>,</span>
+<span id="cb67-9"><a href="equity-analysis.html#cb67-9"></a>    <span class="st">&quot;Two or More Races&quot;</span></span>
+<span id="cb67-10"><a href="equity-analysis.html#cb67-10"></a>  )</span>
+<span id="cb67-11"><a href="equity-analysis.html#cb67-11"></a></span>
+<span id="cb67-12"><a href="equity-analysis.html#cb67-12"></a>bay_income_race &lt;-</span>
+<span id="cb67-13"><a href="equity-analysis.html#cb67-13"></a><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="dv">7</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-14"><a href="equity-analysis.html#cb67-14"></a><span class="st">  </span><span class="kw">map_dfr</span>(<span class="cf">function</span>(x){</span>
+<span id="cb67-15"><a href="equity-analysis.html#cb67-15"></a>    <span class="kw">getCensus</span>(</span>
+<span id="cb67-16"><a href="equity-analysis.html#cb67-16"></a>      <span class="dt">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
+<span id="cb67-17"><a href="equity-analysis.html#cb67-17"></a>      <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb67-18"><a href="equity-analysis.html#cb67-18"></a>      <span class="dt">region =</span> <span class="st">&quot;county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb67-19"><a href="equity-analysis.html#cb67-19"></a>      <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
+<span id="cb67-20"><a href="equity-analysis.html#cb67-20"></a>      <span class="dt">vars =</span> <span class="kw">paste0</span>(<span class="st">&quot;group(B19001&quot;</span>,LETTERS[x],<span class="st">&quot;)&quot;</span>)</span>
+<span id="cb67-21"><a href="equity-analysis.html#cb67-21"></a>    ) <span class="op">%&gt;%</span></span>
+<span id="cb67-22"><a href="equity-analysis.html#cb67-22"></a><span class="st">      </span><span class="kw">select</span>(<span class="op">!</span><span class="kw">c</span>(GEO_ID,state,NAME) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;EA&quot;</span>,<span class="st">&quot;MA&quot;</span>,<span class="st">&quot;M&quot;</span>))) <span class="op">%&gt;%</span></span>
+<span id="cb67-23"><a href="equity-analysis.html#cb67-23"></a><span class="st">      </span><span class="kw">pivot_longer</span>(</span>
+<span id="cb67-24"><a href="equity-analysis.html#cb67-24"></a>        <span class="kw">ends_with</span>(<span class="st">&quot;E&quot;</span>),</span>
+<span id="cb67-25"><a href="equity-analysis.html#cb67-25"></a>        <span class="dt">names_to =</span> <span class="st">&quot;variable&quot;</span>,</span>
+<span id="cb67-26"><a href="equity-analysis.html#cb67-26"></a>        <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
+<span id="cb67-27"><a href="equity-analysis.html#cb67-27"></a>      ) <span class="op">%&gt;%</span></span>
+<span id="cb67-28"><a href="equity-analysis.html#cb67-28"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb67-29"><a href="equity-analysis.html#cb67-29"></a>        acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-30"><a href="equity-analysis.html#cb67-30"></a><span class="st">          </span><span class="kw">select</span>(name, label), </span>
+<span id="cb67-31"><a href="equity-analysis.html#cb67-31"></a>        <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
+<span id="cb67-32"><a href="equity-analysis.html#cb67-32"></a>      ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-33"><a href="equity-analysis.html#cb67-33"></a><span class="st">      </span><span class="kw">select</span>(<span class="op">-</span>variable) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-34"><a href="equity-analysis.html#cb67-34"></a><span class="st">      </span><span class="kw">separate</span>(</span>
+<span id="cb67-35"><a href="equity-analysis.html#cb67-35"></a>        label,</span>
+<span id="cb67-36"><a href="equity-analysis.html#cb67-36"></a>        <span class="dt">into =</span> <span class="kw">c</span>(<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="st">&quot;income&quot;</span>),</span>
+<span id="cb67-37"><a href="equity-analysis.html#cb67-37"></a>        <span class="dt">sep =</span> <span class="st">&quot;!!&quot;</span></span>
+<span id="cb67-38"><a href="equity-analysis.html#cb67-38"></a>      ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-39"><a href="equity-analysis.html#cb67-39"></a><span class="st">      </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(income)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-40"><a href="equity-analysis.html#cb67-40"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">race =</span> census_race_labels[x])</span>
+<span id="cb67-41"><a href="equity-analysis.html#cb67-41"></a>  })</span></code></pre></div>
+<p>Notes:</p>
+<ul>
+<li><code>census_race_labels</code> has changed from a dataframe to just a vector of 7 strings. However, keep in mind the dataframe approach for more generalizable look-up tables.</li>
+<li>We’re just feeding the vector of integers <code>1:7</code> into <code>function(x)</code> because we can easily refer to <code>LETTERS[x]</code> when necessary to get A through G. See how <code>paste0()</code> is used here to construct the appropriate ACS variable code.</li>
+<li>The only other change is the addition of the <code>mutate()</code> at the end, where now we can refer to <code>census_race_labels[x]</code> to get the appropriate race label, as long as we’ve ensured that the order is correct.</li>
+</ul>
+<p>Now we are ready to conduct the equity analysis. Note that the last step was unique to our situation involving race data because it happens to be organized in the ACS database in this specific way, with the A through G codes. For a different initial pairing of “outcome” and “population group”, you might be able to load just one ACS variable code, similar to our test of household income for White alone households, and be immediately at this step. Most importantly, at this point you should have a tidy dataset with a “geography” field (here filled with the 9 counties), a “outcome” field (here filled with the 16 income tiers the ACS provides us), a “population group” field (here filled with our 7 race labels), and a “count” field with the counts of individuals or households in each of these “buckets”.</p>
+<p>The simplest form of equity analysis is simply plotting this data in a way that clearly visualizes disproportionate outcomes across the different population groups. My preference is to show stacked bar charts, both absolute and percentage-based, that show the distribution of the population groups (in this case, race) for the total population of the geographic region (e.g. the whole Bay Area, but you could filter your current dataset to one individual county at a time), followed by bars for each individual outcome tier (in this case income). Let’s get to our desired visualization in a series of attempts, using <code>ggplot</code>.</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="equity-analysis.html#cb68-1"></a>bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-2"><a href="equity-analysis.html#cb68-2"></a><span class="st">  </span><span class="kw">group_by</span>(income, race) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-3"><a href="equity-analysis.html#cb68-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-4"><a href="equity-analysis.html#cb68-4"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb68-5"><a href="equity-analysis.html#cb68-5"></a><span class="st">  </span><span class="kw">geom_bar</span>(</span>
+<span id="cb68-6"><a href="equity-analysis.html#cb68-6"></a>    <span class="kw">aes</span>(</span>
+<span id="cb68-7"><a href="equity-analysis.html#cb68-7"></a>      <span class="dt">x =</span> income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.factor</span>(),</span>
+<span id="cb68-8"><a href="equity-analysis.html#cb68-8"></a>      <span class="dt">y =</span> estimate,</span>
+<span id="cb68-9"><a href="equity-analysis.html#cb68-9"></a>      <span class="dt">fill =</span> race</span>
+<span id="cb68-10"><a href="equity-analysis.html#cb68-10"></a>    ),</span>
+<span id="cb68-11"><a href="equity-analysis.html#cb68-11"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb68-12"><a href="equity-analysis.html#cb68-12"></a>    <span class="dt">position =</span> <span class="st">&quot;stack&quot;</span></span>
+<span id="cb68-13"><a href="equity-analysis.html#cb68-13"></a>  ) <span class="op">+</span></span>
+<span id="cb68-14"><a href="equity-analysis.html#cb68-14"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb68-15"><a href="equity-analysis.html#cb68-15"></a>    <span class="dt">x =</span> <span class="st">&quot;Household income&quot;</span>,</span>
+<span id="cb68-16"><a href="equity-analysis.html#cb68-16"></a>    <span class="dt">y =</span> <span class="st">&quot;Number of households&quot;</span>,</span>
+<span id="cb68-17"><a href="equity-analysis.html#cb68-17"></a>    <span class="dt">title =</span> <span class="st">&quot;Bay Area household income by race&quot;</span>,</span>
+<span id="cb68-18"><a href="equity-analysis.html#cb68-18"></a>    <span class="dt">fill =</span> <span class="st">&quot;Race of householder&quot;</span></span>
+<span id="cb68-19"><a href="equity-analysis.html#cb68-19"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<p>This is sort of a hot mess because the income labels are all jumbled together. The easy solution will be to add <code>+ coord_flip()</code> to the operation (if you didn’t know, you’d find out with a quick Google search).</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="equity-analysis.html#cb69-1"></a>bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-2"><a href="equity-analysis.html#cb69-2"></a><span class="st">  </span><span class="kw">group_by</span>(income, race) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-3"><a href="equity-analysis.html#cb69-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-4"><a href="equity-analysis.html#cb69-4"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb69-5"><a href="equity-analysis.html#cb69-5"></a><span class="st">  </span><span class="kw">geom_bar</span>(</span>
+<span id="cb69-6"><a href="equity-analysis.html#cb69-6"></a>    <span class="kw">aes</span>(</span>
+<span id="cb69-7"><a href="equity-analysis.html#cb69-7"></a>      <span class="dt">x =</span> income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.factor</span>(),</span>
+<span id="cb69-8"><a href="equity-analysis.html#cb69-8"></a>      <span class="dt">y =</span> estimate,</span>
+<span id="cb69-9"><a href="equity-analysis.html#cb69-9"></a>      <span class="dt">fill =</span> race</span>
+<span id="cb69-10"><a href="equity-analysis.html#cb69-10"></a>    ),</span>
+<span id="cb69-11"><a href="equity-analysis.html#cb69-11"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb69-12"><a href="equity-analysis.html#cb69-12"></a>    <span class="dt">position =</span> <span class="st">&quot;stack&quot;</span></span>
+<span id="cb69-13"><a href="equity-analysis.html#cb69-13"></a>  ) <span class="op">+</span></span>
+<span id="cb69-14"><a href="equity-analysis.html#cb69-14"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb69-15"><a href="equity-analysis.html#cb69-15"></a>    <span class="dt">x =</span> <span class="st">&quot;Household income&quot;</span>,</span>
+<span id="cb69-16"><a href="equity-analysis.html#cb69-16"></a>    <span class="dt">y =</span> <span class="st">&quot;Number of households&quot;</span>,</span>
+<span id="cb69-17"><a href="equity-analysis.html#cb69-17"></a>    <span class="dt">title =</span> <span class="st">&quot;Bay Area household income by race&quot;</span>,</span>
+<span id="cb69-18"><a href="equity-analysis.html#cb69-18"></a>    <span class="dt">fill =</span> <span class="st">&quot;Race of householder&quot;</span></span>
+<span id="cb69-19"><a href="equity-analysis.html#cb69-19"></a>  ) <span class="op">+</span></span>
+<span id="cb69-20"><a href="equity-analysis.html#cb69-20"></a><span class="st">  </span><span class="kw">coord_flip</span>()</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
+<p>Now we can also notice a problem with the order of the income tiers. <code>ggplot</code> appears to have ordered the string labels alphabetically, but what we want is the existing order from the ACS data which would be captured in <code>bay_income_race$income[1:16]</code>, which you can try in the Console to confirm. This is similar to the problem we experienced when we plotted PG&amp;E data and needed to convert the “month” data to factors so that they weren’t incorrectly interpreted as integers, but here we need to deal with an automatic misordering problem too. So the appropriate technique is to pipe to <code>factor()</code>, but also specify <code>levels =</code> as an argument, in which you provide a string with all the factor candidates in the order you’d like. I’ll add this fix below as well.</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="equity-analysis.html#cb70-1"></a>bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-2"><a href="equity-analysis.html#cb70-2"></a><span class="st">  </span><span class="kw">group_by</span>(income, race) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-3"><a href="equity-analysis.html#cb70-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-4"><a href="equity-analysis.html#cb70-4"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb70-5"><a href="equity-analysis.html#cb70-5"></a><span class="st">  </span><span class="kw">geom_bar</span>(</span>
+<span id="cb70-6"><a href="equity-analysis.html#cb70-6"></a>    <span class="kw">aes</span>(</span>
+<span id="cb70-7"><a href="equity-analysis.html#cb70-7"></a>      <span class="dt">x =</span> income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">factor</span>(<span class="dt">levels =</span> bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>]),</span>
+<span id="cb70-8"><a href="equity-analysis.html#cb70-8"></a>      <span class="dt">y =</span> estimate,</span>
+<span id="cb70-9"><a href="equity-analysis.html#cb70-9"></a>      <span class="dt">fill =</span> race</span>
+<span id="cb70-10"><a href="equity-analysis.html#cb70-10"></a>    ),</span>
+<span id="cb70-11"><a href="equity-analysis.html#cb70-11"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb70-12"><a href="equity-analysis.html#cb70-12"></a>    <span class="dt">position =</span> <span class="st">&quot;stack&quot;</span></span>
+<span id="cb70-13"><a href="equity-analysis.html#cb70-13"></a>  ) <span class="op">+</span></span>
+<span id="cb70-14"><a href="equity-analysis.html#cb70-14"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb70-15"><a href="equity-analysis.html#cb70-15"></a>    <span class="dt">x =</span> <span class="st">&quot;Household income&quot;</span>,</span>
+<span id="cb70-16"><a href="equity-analysis.html#cb70-16"></a>    <span class="dt">y =</span> <span class="st">&quot;Number of households&quot;</span>,</span>
+<span id="cb70-17"><a href="equity-analysis.html#cb70-17"></a>    <span class="dt">title =</span> <span class="st">&quot;Bay Area household income by race&quot;</span>,</span>
+<span id="cb70-18"><a href="equity-analysis.html#cb70-18"></a>    <span class="dt">fill =</span> <span class="st">&quot;Race of householder&quot;</span></span>
+<span id="cb70-19"><a href="equity-analysis.html#cb70-19"></a>  ) <span class="op">+</span></span>
+<span id="cb70-20"><a href="equity-analysis.html#cb70-20"></a><span class="st">  </span><span class="kw">coord_flip</span>()</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p>This is now looking pretty good, but there may be additional aesthetic preferences. Particularly, while these “absolute” bar heights may helpfully show the relative difference in numbers of households in each of the income tiers, to get at a distributional issue within the tiers, we need to be able to better see the smaller bars, so <code>position = “fill”</code> instead of <code>position = “stack”</code> will address that (make sure to change the axis label accordingly). At the same time, let’s also reverse the order of the income tiers, just because we might prefer to have “Less than $10,000” at the top, and it’s good to know how to do this with <code>rev()</code>. Lastly, let’s move the legend to the bottom so there’s more room to see the bars, using some arguments in <code>theme()</code>.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="equity-analysis.html#cb71-1"></a>bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb71-2"><a href="equity-analysis.html#cb71-2"></a><span class="st">  </span><span class="kw">group_by</span>(income, race) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb71-3"><a href="equity-analysis.html#cb71-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb71-4"><a href="equity-analysis.html#cb71-4"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb71-5"><a href="equity-analysis.html#cb71-5"></a><span class="st">  </span><span class="kw">geom_bar</span>(</span>
+<span id="cb71-6"><a href="equity-analysis.html#cb71-6"></a>    <span class="kw">aes</span>(</span>
+<span id="cb71-7"><a href="equity-analysis.html#cb71-7"></a>      <span class="dt">x =</span> income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">factor</span>(<span class="dt">levels =</span> <span class="kw">rev</span>(bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>])),</span>
+<span id="cb71-8"><a href="equity-analysis.html#cb71-8"></a>      <span class="dt">y =</span> estimate,</span>
+<span id="cb71-9"><a href="equity-analysis.html#cb71-9"></a>      <span class="dt">fill =</span> race</span>
+<span id="cb71-10"><a href="equity-analysis.html#cb71-10"></a>    ),</span>
+<span id="cb71-11"><a href="equity-analysis.html#cb71-11"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb71-12"><a href="equity-analysis.html#cb71-12"></a>    <span class="dt">position =</span> <span class="st">&quot;fill&quot;</span></span>
+<span id="cb71-13"><a href="equity-analysis.html#cb71-13"></a>  ) <span class="op">+</span></span>
+<span id="cb71-14"><a href="equity-analysis.html#cb71-14"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb71-15"><a href="equity-analysis.html#cb71-15"></a>    <span class="dt">x =</span> <span class="st">&quot;Household income&quot;</span>,</span>
+<span id="cb71-16"><a href="equity-analysis.html#cb71-16"></a>    <span class="dt">y =</span> <span class="st">&quot;Proportion of households&quot;</span>,</span>
+<span id="cb71-17"><a href="equity-analysis.html#cb71-17"></a>    <span class="dt">title =</span> <span class="st">&quot;Bay Area household income by race&quot;</span>,</span>
+<span id="cb71-18"><a href="equity-analysis.html#cb71-18"></a>    <span class="dt">fill =</span> <span class="st">&quot;Race of householder&quot;</span></span>
+<span id="cb71-19"><a href="equity-analysis.html#cb71-19"></a>  ) <span class="op">+</span></span>
+<span id="cb71-20"><a href="equity-analysis.html#cb71-20"></a><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></span>
+<span id="cb71-21"><a href="equity-analysis.html#cb71-21"></a><span class="st">  </span><span class="kw">theme</span>(</span>
+<span id="cb71-22"><a href="equity-analysis.html#cb71-22"></a>    <span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb71-23"><a href="equity-analysis.html#cb71-23"></a>    <span class="dt">legend.direction =</span> <span class="st">&quot;vertical&quot;</span></span>
+<span id="cb71-24"><a href="equity-analysis.html#cb71-24"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
+<p>You might consider this “done”, but as I noted earlier, I like to add a bar at the very top representing the “total” population, not broken up into income tiers, so that needs to be manually added to the initial dataset as shown below:</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="equity-analysis.html#cb72-1"></a>bay_race_total &lt;-</span>
+<span id="cb72-2"><a href="equity-analysis.html#cb72-2"></a><span class="st">  </span>bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-3"><a href="equity-analysis.html#cb72-3"></a><span class="st">  </span><span class="kw">group_by</span>(race) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-4"><a href="equity-analysis.html#cb72-4"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-5"><a href="equity-analysis.html#cb72-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">income =</span> <span class="st">&quot;Total&quot;</span>)</span>
+<span id="cb72-6"><a href="equity-analysis.html#cb72-6"></a></span>
+<span id="cb72-7"><a href="equity-analysis.html#cb72-7"></a>bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-8"><a href="equity-analysis.html#cb72-8"></a><span class="st">  </span><span class="kw">group_by</span>(income, race) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-9"><a href="equity-analysis.html#cb72-9"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-10"><a href="equity-analysis.html#cb72-10"></a><span class="st">  </span><span class="kw">rbind</span>(bay_race_total,.) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb72-11"><a href="equity-analysis.html#cb72-11"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb72-12"><a href="equity-analysis.html#cb72-12"></a><span class="st">  </span><span class="kw">geom_bar</span>(</span>
+<span id="cb72-13"><a href="equity-analysis.html#cb72-13"></a>    <span class="kw">aes</span>(</span>
+<span id="cb72-14"><a href="equity-analysis.html#cb72-14"></a>      <span class="dt">x =</span> income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">factor</span>(<span class="dt">levels =</span> <span class="kw">rev</span>(<span class="kw">c</span>(<span class="st">&quot;Total&quot;</span>,bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">16</span>]))),</span>
+<span id="cb72-15"><a href="equity-analysis.html#cb72-15"></a>      <span class="dt">y =</span> estimate,</span>
+<span id="cb72-16"><a href="equity-analysis.html#cb72-16"></a>      <span class="dt">fill =</span> race</span>
+<span id="cb72-17"><a href="equity-analysis.html#cb72-17"></a>    ),</span>
+<span id="cb72-18"><a href="equity-analysis.html#cb72-18"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb72-19"><a href="equity-analysis.html#cb72-19"></a>    <span class="dt">position =</span> <span class="st">&quot;fill&quot;</span></span>
+<span id="cb72-20"><a href="equity-analysis.html#cb72-20"></a>  ) <span class="op">+</span></span>
+<span id="cb72-21"><a href="equity-analysis.html#cb72-21"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb72-22"><a href="equity-analysis.html#cb72-22"></a>    <span class="dt">x =</span> <span class="st">&quot;Household income&quot;</span>,</span>
+<span id="cb72-23"><a href="equity-analysis.html#cb72-23"></a>    <span class="dt">y =</span> <span class="st">&quot;Proportion of households&quot;</span>,</span>
+<span id="cb72-24"><a href="equity-analysis.html#cb72-24"></a>    <span class="dt">title =</span> <span class="st">&quot;Bay Area household income by race&quot;</span>,</span>
+<span id="cb72-25"><a href="equity-analysis.html#cb72-25"></a>    <span class="dt">fill =</span> <span class="st">&quot;Race of householder&quot;</span></span>
+<span id="cb72-26"><a href="equity-analysis.html#cb72-26"></a>  ) <span class="op">+</span></span>
+<span id="cb72-27"><a href="equity-analysis.html#cb72-27"></a><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></span>
+<span id="cb72-28"><a href="equity-analysis.html#cb72-28"></a><span class="st">  </span><span class="kw">theme</span>(</span>
+<span id="cb72-29"><a href="equity-analysis.html#cb72-29"></a>    <span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb72-30"><a href="equity-analysis.html#cb72-30"></a>    <span class="dt">legend.direction =</span> <span class="st">&quot;vertical&quot;</span></span>
+<span id="cb72-31"><a href="equity-analysis.html#cb72-31"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-60-1.png" width="672" /></p>
+<p>Ultimately, all I’ve shown is a specific visual design technique to communicate an underlying equity issue that one might want to address. The specific design choices are, of course, entirely up to you. Besides the charts, generally you might find it useful to communicate specific numbers from the chart in the following way: “The overall population in the Bay Area is 42% non-White, but the subpopulation of households making less than $30,000 (roughly what would be considered extremely low income in the Bay Area) is 49% non-White. If income were “race-blind”, these percentages would be the same, but instead, non-White households appear to be 17% more likely to be extremely low income than we’d expect.”</p>
+<p>The numbers above would be the kinds of specific numbers you pull directly from the data, as shown below, just one example of an infinite number of ways you could manipulate the data to get these numbers:</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="equity-analysis.html#cb73-1"></a>((<span class="kw">sum</span>(bay_race_total<span class="op">$</span>estimate[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>])<span class="op">/</span><span class="kw">sum</span>(bay_race_total<span class="op">$</span>estimate))<span class="op">*</span><span class="dv">100</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>()</span></code></pre></div>
+<pre><code>## [1] 42</code></pre>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="equity-analysis.html#cb75-1"></a>((bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-2"><a href="equity-analysis.html#cb75-2"></a><span class="st">  </span><span class="kw">filter</span>(income <span class="op">%in%</span><span class="st"> </span>bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-3"><a href="equity-analysis.html#cb75-3"></a><span class="st">  </span><span class="kw">filter</span>(race <span class="op">!=</span><span class="st"> &quot;White Alone&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-4"><a href="equity-analysis.html#cb75-4"></a><span class="st">  </span><span class="kw">pull</span>(estimate) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-5"><a href="equity-analysis.html#cb75-5"></a><span class="st">  </span><span class="kw">sum</span>()) <span class="op">/</span></span>
+<span id="cb75-6"><a href="equity-analysis.html#cb75-6"></a><span class="st">  </span>(bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-7"><a href="equity-analysis.html#cb75-7"></a><span class="st">    </span><span class="kw">filter</span>(income <span class="op">%in%</span><span class="st"> </span>bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-8"><a href="equity-analysis.html#cb75-8"></a><span class="st">    </span><span class="kw">pull</span>(estimate) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-9"><a href="equity-analysis.html#cb75-9"></a><span class="st">    </span><span class="kw">sum</span>()) <span class="op">*</span><span class="st"> </span><span class="dv">100</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb75-10"><a href="equity-analysis.html#cb75-10"></a><span class="st">  </span><span class="kw">round</span>()</span></code></pre></div>
+<pre><code>## [1] 49</code></pre>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="equity-analysis.html#cb77-1"></a>((((bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-2"><a href="equity-analysis.html#cb77-2"></a><span class="st">  </span><span class="kw">filter</span>(income <span class="op">%in%</span><span class="st"> </span>bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-3"><a href="equity-analysis.html#cb77-3"></a><span class="st">  </span><span class="kw">filter</span>(race <span class="op">!=</span><span class="st"> &quot;White Alone&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-4"><a href="equity-analysis.html#cb77-4"></a><span class="st">  </span><span class="kw">pull</span>(estimate) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-5"><a href="equity-analysis.html#cb77-5"></a><span class="st">  </span><span class="kw">sum</span>()) <span class="op">/</span></span>
+<span id="cb77-6"><a href="equity-analysis.html#cb77-6"></a><span class="st">  </span>(bay_income_race <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-7"><a href="equity-analysis.html#cb77-7"></a><span class="st">    </span><span class="kw">filter</span>(income <span class="op">%in%</span><span class="st"> </span>bay_income_race<span class="op">$</span>income[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-8"><a href="equity-analysis.html#cb77-8"></a><span class="st">    </span><span class="kw">pull</span>(estimate) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-9"><a href="equity-analysis.html#cb77-9"></a><span class="st">    </span><span class="kw">sum</span>())) <span class="op">/</span><span class="st"> </span>(<span class="kw">sum</span>(bay_race_total<span class="op">$</span>estimate[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>])<span class="op">/</span><span class="kw">sum</span>(bay_race_total<span class="op">$</span>estimate)) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">100</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-10"><a href="equity-analysis.html#cb77-10"></a><span class="st">  </span><span class="kw">round</span>()</span></code></pre></div>
+<pre><code>## [1] 17</code></pre>
+<p>If the above is difficult to parse, consider this a good opportunity to practice using the R techniques to produce the same numbers another way. <code>pull()</code>, by the way, is just a <code>dplyr</code> way of grabbing one field from a dataframe similar to how you’d use the <code>$</code> sign. Also note that the numbers I showed in the quote above were actually directly generated using the same code as inline code, similar to how I introduced the <code>Sys.Date()</code> trick in the YAML introduction.</p>
 </div>
             </section>
 
