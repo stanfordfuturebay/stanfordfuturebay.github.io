@@ -187,21 +187,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.3</span> Migration</h2>
 <p>By way of demonstrating more data wrangling with ACS, let’s consider another classic question in urban systems: To what degree has the increase in income in a place like the Bay Area been a result of true economic mobility, and to what degree has it been the result of higher-income newcomers displacing lower-income residents?</p>
 <p>Two relevant datasets from the ACS are <code>B07010</code>, “GEOGRAPHICAL MOBILITY IN THE PAST YEAR BY INDIVIDUAL INCOME IN THE PAST 12 MONTHS FOR CURRENT RESIDENCE IN THE UNITED STATES”, and <code>B07410</code>, “GEOGRAPHICAL MOBILITY IN THE PAST YEAR BY INDIVIDUAL INCOME IN THE PAST 12 MONTHS FOR RESIDENCE 1 YEAR AGO IN THE UNITED STATES”. The difference is that <code>B07010</code> counts the current population in the given year, a combination of “people who’ve remained” and “people who’ve immigrated in”, while <code>B07410</code> counts “people who’ve remained” and “people who were here a year ago but emigrated somewhere else”. From these two datasets, you can get “inflow” and “outflow”, which make “external net flow”. You’ll also find that subtracting total population last year (obtained by grabbing <code>B07010</code> from the previous year) from total population this year does not equal “external net flow”, so whatever’s left is “internal net flow”, a combination of births and deaths (there may also be untracked migration abroad, which we assume to be negligible compared to the other counts). By the way, these datasets also provide breakdowns by income tiers for every buckets, so “external net flow” in and out of each income tier can be captured, as well as some amount of internal economic mobility across income tiers.</p>
-<p>Let’s first try loading in <code>B07010</code> for 2018. We’ll focus our analysis on San Mateo County, FIPS code <code>081</code>, because the dataset only clearly delineates movement in and out of the county level.</p>
+<p>Let’s first try loading in <code>B07010</code> for 2019. We’ll focus our analysis on San Mateo County, FIPS code <code>081</code>, because the dataset only clearly delineates movement in and out of the county level.</p>
 <div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="migration.html#cb79-1"></a><span class="kw">library</span>(tidyverse)</span>
 <span id="cb79-2"><a href="migration.html#cb79-2"></a><span class="kw">library</span>(censusapi)</span>
 <span id="cb79-3"><a href="migration.html#cb79-3"></a></span>
 <span id="cb79-4"><a href="migration.html#cb79-4"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
 <span id="cb79-5"><a href="migration.html#cb79-5"></a></span>
-<span id="cb79-6"><a href="migration.html#cb79-6"></a>acs_vars_<span class="dv">2018</span>_5yr &lt;-</span>
+<span id="cb79-6"><a href="migration.html#cb79-6"></a>acs_vars_<span class="dv">2019</span>_1yr &lt;-</span>
 <span id="cb79-7"><a href="migration.html#cb79-7"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
-<span id="cb79-8"><a href="migration.html#cb79-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2018/acs/acs5&quot;</span>,</span>
+<span id="cb79-8"><a href="migration.html#cb79-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2019/acs/acs1&quot;</span>,</span>
 <span id="cb79-9"><a href="migration.html#cb79-9"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
 <span id="cb79-10"><a href="migration.html#cb79-10"></a>  )</span></code></pre></div>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="migration.html#cb80-1"></a>smc_mobility_current_<span class="dv">18</span> &lt;-<span class="st"> </span></span>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="migration.html#cb80-1"></a>smc_mobility_current_<span class="dv">19</span> &lt;-<span class="st"> </span></span>
 <span id="cb80-2"><a href="migration.html#cb80-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
 <span id="cb80-3"><a href="migration.html#cb80-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb80-4"><a href="migration.html#cb80-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb80-4"><a href="migration.html#cb80-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
 <span id="cb80-5"><a href="migration.html#cb80-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:081&quot;</span>,</span>
 <span id="cb80-6"><a href="migration.html#cb80-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
 <span id="cb80-7"><a href="migration.html#cb80-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B07010)&quot;</span>)</span>
@@ -213,16 +213,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb80-13"><a href="migration.html#cb80-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
 <span id="cb80-14"><a href="migration.html#cb80-14"></a>  ) <span class="op">%&gt;%</span></span>
 <span id="cb80-15"><a href="migration.html#cb80-15"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb80-16"><a href="migration.html#cb80-16"></a>    acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb80-16"><a href="migration.html#cb80-16"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb80-17"><a href="migration.html#cb80-17"></a><span class="st">      </span><span class="kw">select</span>(name, label), </span>
 <span id="cb80-18"><a href="migration.html#cb80-18"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
 <span id="cb80-19"><a href="migration.html#cb80-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb80-20"><a href="migration.html#cb80-20"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>variable)</span></code></pre></div>
-<p>For any new ACS dataset loaded using <code>censusapi</code>, you’ll want to check the <code>label</code> field (<code>smc_mobility_current_18$label</code> in Console) to understand the nested structure of the data. Remember, if you aren’t careful with how you work with this data, you could easily double-count. This step is always a kind of puzzle that you want to figure out how to solve in the simplest way possible. The following is a solution to this particular puzzle, based on an understanding of which rows are duplicative, and what categorization we ultimately want, where “Same house 1 year ago” and “Moved within the same county” are considered “Here since last year”, while “Moved from different county within same state”, “Moved from different state”, and “Moved from abroad” are considered “Inflow”.</p>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="migration.html#cb81-1"></a>smc_mobility_current_<span class="dv">18</span> &lt;-<span class="st"> </span></span>
+<p>For any new ACS dataset loaded using <code>censusapi</code>, you’ll want to check the <code>label</code> field (<code>smc_mobility_current_19$label</code> in Console) to understand the nested structure of the data. Remember, if you aren’t careful with how you work with this data, you could easily double-count. This step is always a kind of puzzle that you want to figure out how to solve in the simplest way possible. The following is a solution to this particular puzzle, based on an understanding of which rows are duplicative, and what categorization we ultimately want, where “Same house 1 year ago:” and “Moved within the same county:” are considered “Here since last year”, while “Moved from different county within same state:”, “Moved from different state:”, and “Moved from abroad:” are considered “Inflow”.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="migration.html#cb81-1"></a>smc_mobility_current_<span class="dv">19</span> &lt;-<span class="st"> </span></span>
 <span id="cb81-2"><a href="migration.html#cb81-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
 <span id="cb81-3"><a href="migration.html#cb81-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb81-4"><a href="migration.html#cb81-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb81-4"><a href="migration.html#cb81-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
 <span id="cb81-5"><a href="migration.html#cb81-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:081&quot;</span>,</span>
 <span id="cb81-6"><a href="migration.html#cb81-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
 <span id="cb81-7"><a href="migration.html#cb81-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B07010)&quot;</span>)</span>
@@ -234,7 +234,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb81-13"><a href="migration.html#cb81-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
 <span id="cb81-14"><a href="migration.html#cb81-14"></a>  ) <span class="op">%&gt;%</span></span>
 <span id="cb81-15"><a href="migration.html#cb81-15"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb81-16"><a href="migration.html#cb81-16"></a>    acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb81-16"><a href="migration.html#cb81-16"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb81-17"><a href="migration.html#cb81-17"></a><span class="st">      </span><span class="kw">select</span>(name, label), </span>
 <span id="cb81-18"><a href="migration.html#cb81-18"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
 <span id="cb81-19"><a href="migration.html#cb81-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -251,7 +251,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb81-30"><a href="migration.html#cb81-30"></a>      income</span>
 <span id="cb81-31"><a href="migration.html#cb81-31"></a>    ),</span>
 <span id="cb81-32"><a href="migration.html#cb81-32"></a>    <span class="dt">mobility =</span> <span class="kw">ifelse</span>(</span>
-<span id="cb81-33"><a href="migration.html#cb81-33"></a>      mobility <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Same house 1 year ago&quot;</span>, <span class="st">&quot;Moved within same county&quot;</span>),</span>
+<span id="cb81-33"><a href="migration.html#cb81-33"></a>      mobility <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Same house 1 year ago:&quot;</span>, <span class="st">&quot;Moved within same county:&quot;</span>),</span>
 <span id="cb81-34"><a href="migration.html#cb81-34"></a>      <span class="st">&quot;Here since last year&quot;</span>,</span>
 <span id="cb81-35"><a href="migration.html#cb81-35"></a>      <span class="st">&quot;Inflow&quot;</span></span>
 <span id="cb81-36"><a href="migration.html#cb81-36"></a>    )</span>
@@ -260,11 +260,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb81-39"><a href="migration.html#cb81-39"></a><span class="st">  </span><span class="kw">group_by</span>(mobility, income) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb81-40"><a href="migration.html#cb81-40"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate))</span></code></pre></div>
 <p>The resultant tidy dataframe has counts of individuals (which by the way, is the universe of people over the age of 15) by income tier and by “Here since last year” or “Inflow”.</p>
-<p>Next, we repeat these two steps for <code>B07410</code> in 2018:</p>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="migration.html#cb82-1"></a>smc_mobility_lastyear_<span class="dv">18</span> &lt;-<span class="st"> </span></span>
+<p>Next, we repeat these two steps for <code>B07410</code> in 2019:</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="migration.html#cb82-1"></a>smc_mobility_lastyear_<span class="dv">19</span> &lt;-<span class="st"> </span></span>
 <span id="cb82-2"><a href="migration.html#cb82-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
 <span id="cb82-3"><a href="migration.html#cb82-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb82-4"><a href="migration.html#cb82-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb82-4"><a href="migration.html#cb82-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
 <span id="cb82-5"><a href="migration.html#cb82-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:081&quot;</span>,</span>
 <span id="cb82-6"><a href="migration.html#cb82-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
 <span id="cb82-7"><a href="migration.html#cb82-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B07410)&quot;</span>)</span>
@@ -276,16 +276,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb82-13"><a href="migration.html#cb82-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
 <span id="cb82-14"><a href="migration.html#cb82-14"></a>  ) <span class="op">%&gt;%</span></span>
 <span id="cb82-15"><a href="migration.html#cb82-15"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb82-16"><a href="migration.html#cb82-16"></a>    acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb82-16"><a href="migration.html#cb82-16"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb82-17"><a href="migration.html#cb82-17"></a><span class="st">      </span><span class="kw">select</span>(name, label), </span>
 <span id="cb82-18"><a href="migration.html#cb82-18"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
 <span id="cb82-19"><a href="migration.html#cb82-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb82-20"><a href="migration.html#cb82-20"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>variable)</span></code></pre></div>
-<p>You’ll notice there are fewer labels overall. Since people who move abroad between 2017 and 2018 wouldn’t take an ACS survey in 2018, they are “lost”.</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="migration.html#cb83-1"></a>smc_mobility_lastyear_<span class="dv">18</span> &lt;-<span class="st"> </span></span>
+<p>You’ll notice there are fewer labels overall. Since people who move abroad between 2018 and 2019 wouldn’t take an ACS survey in 2019, they are “lost”.</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="migration.html#cb83-1"></a>smc_mobility_lastyear_<span class="dv">19</span> &lt;-<span class="st"> </span></span>
 <span id="cb83-2"><a href="migration.html#cb83-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
 <span id="cb83-3"><a href="migration.html#cb83-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb83-4"><a href="migration.html#cb83-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb83-4"><a href="migration.html#cb83-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
 <span id="cb83-5"><a href="migration.html#cb83-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:081&quot;</span>,</span>
 <span id="cb83-6"><a href="migration.html#cb83-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
 <span id="cb83-7"><a href="migration.html#cb83-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B07410)&quot;</span>)</span>
@@ -297,7 +297,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb83-13"><a href="migration.html#cb83-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
 <span id="cb83-14"><a href="migration.html#cb83-14"></a>  ) <span class="op">%&gt;%</span></span>
 <span id="cb83-15"><a href="migration.html#cb83-15"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb83-16"><a href="migration.html#cb83-16"></a>    acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-16"><a href="migration.html#cb83-16"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb83-17"><a href="migration.html#cb83-17"></a><span class="st">      </span><span class="kw">select</span>(name, label), </span>
 <span id="cb83-18"><a href="migration.html#cb83-18"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
 <span id="cb83-19"><a href="migration.html#cb83-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -314,7 +314,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb83-30"><a href="migration.html#cb83-30"></a>      income</span>
 <span id="cb83-31"><a href="migration.html#cb83-31"></a>    ),</span>
 <span id="cb83-32"><a href="migration.html#cb83-32"></a>    <span class="dt">mobility =</span> <span class="kw">ifelse</span>(</span>
-<span id="cb83-33"><a href="migration.html#cb83-33"></a>      mobility <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Same house&quot;</span>, <span class="st">&quot;Moved within same county&quot;</span>),</span>
+<span id="cb83-33"><a href="migration.html#cb83-33"></a>      mobility <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Same house:&quot;</span>, <span class="st">&quot;Moved within same county:&quot;</span>),</span>
 <span id="cb83-34"><a href="migration.html#cb83-34"></a>      <span class="st">&quot;Here since last year&quot;</span>,</span>
 <span id="cb83-35"><a href="migration.html#cb83-35"></a>      <span class="st">&quot;Outflow&quot;</span></span>
 <span id="cb83-36"><a href="migration.html#cb83-36"></a>    )</span>
@@ -323,11 +323,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb83-39"><a href="migration.html#cb83-39"></a><span class="st">  </span><span class="kw">group_by</span>(mobility, income) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb83-40"><a href="migration.html#cb83-40"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate))</span></code></pre></div>
 <p>By the way, at this point you can compare the two dataframes and verify that “Here since last year” is the same between the two, which you would expect.</p>
-<p>Finally, we need “total population” as recorded in 2017, which we could potentially get from other sources, but we’ll just use <code>B07010</code>, and summarize the information such that we end up with just total population by income tiers.</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="migration.html#cb84-1"></a>smc_mobility_current_<span class="dv">17</span> &lt;-<span class="st"> </span></span>
+<p>Finally, we need “total population” as recorded in 2018, which we could potentially get from other sources, but we’ll just use <code>B07010</code>, and summarize the information such that we end up with just total population by income tiers.</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="migration.html#cb84-1"></a>smc_mobility_current_<span class="dv">18</span> &lt;-<span class="st"> </span></span>
 <span id="cb84-2"><a href="migration.html#cb84-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
 <span id="cb84-3"><a href="migration.html#cb84-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb84-4"><a href="migration.html#cb84-4"></a>    <span class="dt">vintage =</span> <span class="dv">2017</span>,</span>
+<span id="cb84-4"><a href="migration.html#cb84-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
 <span id="cb84-5"><a href="migration.html#cb84-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:081&quot;</span>,</span>
 <span id="cb84-6"><a href="migration.html#cb84-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
 <span id="cb84-7"><a href="migration.html#cb84-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B07010)&quot;</span>)</span>
@@ -339,7 +339,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb84-13"><a href="migration.html#cb84-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
 <span id="cb84-14"><a href="migration.html#cb84-14"></a>  ) <span class="op">%&gt;%</span></span>
 <span id="cb84-15"><a href="migration.html#cb84-15"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb84-16"><a href="migration.html#cb84-16"></a>    acs_vars_<span class="dv">2018</span>_5yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb84-16"><a href="migration.html#cb84-16"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb84-17"><a href="migration.html#cb84-17"></a><span class="st">      </span><span class="kw">select</span>(name, label), </span>
 <span id="cb84-18"><a href="migration.html#cb84-18"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;variable&quot;</span> =<span class="st"> &quot;name&quot;</span>)</span>
 <span id="cb84-19"><a href="migration.html#cb84-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -361,14 +361,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb84-35"><a href="migration.html#cb84-35"></a><span class="st">  </span><span class="kw">group_by</span>(mobility, income) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb84-36"><a href="migration.html#cb84-36"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate))</span></code></pre></div>
 <p>Now, we can bind these dataframes together in a specific way so that we only hold on to counts of “Here last year”, “Here this year”, “Outflow”, and “Inflow”. We’ll also pivot the table to wide format so we can <code>mutate()</code> some new fields for internal and external net flow.</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="migration.html#cb85-1"></a>smc_flows_<span class="dv">18</span> &lt;-</span>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="migration.html#cb85-1"></a>smc_flows_<span class="dv">19</span> &lt;-</span>
 <span id="cb85-2"><a href="migration.html#cb85-2"></a><span class="st">  </span><span class="kw">rbind</span>(</span>
-<span id="cb85-3"><a href="migration.html#cb85-3"></a>    smc_mobility_current_<span class="dv">17</span>,</span>
-<span id="cb85-4"><a href="migration.html#cb85-4"></a>    smc_mobility_lastyear_<span class="dv">18</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-3"><a href="migration.html#cb85-3"></a>    smc_mobility_current_<span class="dv">18</span>,</span>
+<span id="cb85-4"><a href="migration.html#cb85-4"></a>    smc_mobility_lastyear_<span class="dv">19</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb85-5"><a href="migration.html#cb85-5"></a><span class="st">      </span><span class="kw">filter</span>(mobility <span class="op">==</span><span class="st"> &quot;Outflow&quot;</span>),</span>
-<span id="cb85-6"><a href="migration.html#cb85-6"></a>    smc_mobility_current_<span class="dv">18</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-6"><a href="migration.html#cb85-6"></a>    smc_mobility_current_<span class="dv">19</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb85-7"><a href="migration.html#cb85-7"></a><span class="st">      </span><span class="kw">filter</span>(mobility <span class="op">==</span><span class="st"> &quot;Inflow&quot;</span>),</span>
-<span id="cb85-8"><a href="migration.html#cb85-8"></a>    smc_mobility_current_<span class="dv">18</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-8"><a href="migration.html#cb85-8"></a>    smc_mobility_current_<span class="dv">19</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb85-9"><a href="migration.html#cb85-9"></a><span class="st">      </span><span class="kw">group_by</span>(income) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb85-10"><a href="migration.html#cb85-10"></a><span class="st">      </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb85-11"><a href="migration.html#cb85-11"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">mobility =</span> <span class="st">&quot;Here this year&quot;</span>)</span>
@@ -391,10 +391,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb85-28"><a href="migration.html#cb85-28"></a>    Inflow</span>
 <span id="cb85-29"><a href="migration.html#cb85-29"></a>  )</span>
 <span id="cb85-30"><a href="migration.html#cb85-30"></a></span>
-<span id="cb85-31"><a href="migration.html#cb85-31"></a>smc_flows_<span class="dv">18</span></span></code></pre></div>
+<span id="cb85-31"><a href="migration.html#cb85-31"></a>smc_flows_<span class="dv">19</span></span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Income tier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Internal net"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["External net"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Here last year"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Here this year"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Outflow"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Inflow"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"$1 to $9,999 or loss","2":"1389","3":"-2667","4":"69505","5":"68227","6":"6916","7":"4249"},{"1":"$10,000 to $14,999","2":"-2434","3":"95","4":"40862","5":"38523","6":"2528","7":"2623"},{"1":"$15,000 to $24,999","2":"-5631","3":"991","4":"62478","5":"57838","6":"3166","7":"4157"},{"1":"$25,000 to $34,999","2":"-4580","3":"-980","4":"56367","5":"50807","6":"3834","7":"2854"},{"1":"$35,000 to $49,999","2":"-2488","3":"-685","4":"64050","5":"60877","6":"3860","7":"3175"},{"1":"$50,000 to $64,999","2":"1018","3":"1188","4":"51976","5":"54182","6":"2781","7":"3969"},{"1":"$65,000 to $74,999","2":"-268","3":"-339","4":"26563","5":"25956","6":"1670","7":"1331"},{"1":"$75,000 or more","2":"10033","3":"3612","4":"190521","5":"204166","6":"11822","7":"15434"},{"1":"No income","2":"671","3":"754","4":"74930","5":"76355","6":"4595","7":"5349"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Income tier"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Internal net"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["External net"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Here last year"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Here this year"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Outflow"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Inflow"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"$1 to $9,999 or loss","2":"-9815","3":"-2080","4":"68227","5":"56332","6":"6779","7":"4699"},{"1":"$10,000 to $14,999","2":"-5861","3":"1128","4":"38523","5":"33790","6":"1159","7":"2287"},{"1":"$15,000 to $24,999","2":"-2203","3":"-40","4":"57838","5":"55595","6":"2959","7":"2919"},{"1":"$25,000 to $34,999","2":"-2149","3":"-271","4":"50807","5":"48387","6":"3513","7":"3242"},{"1":"$35,000 to $49,999","2":"6886","3":"-718","4":"60877","5":"67045","6":"4726","7":"4008"},{"1":"$50,000 to $64,999","2":"1673","3":"326","4":"54182","5":"56181","6":"2963","7":"3289"},{"1":"$65,000 to $74,999","2":"2084","3":"-11","4":"25956","5":"28029","6":"2019","7":"2008"},{"1":"$75,000 or more","2":"11920","3":"-764","4":"204166","5":"215322","6":"15858","7":"15094"},{"1":"No income","2":"1022","3":"253","4":"76355","5":"77630","6":"5261","7":"5514"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>I’ll leave you to reflect on this result, and what it suggests about the answer to the initial question posed in this section.</p>
