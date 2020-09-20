@@ -50,11 +50,17 @@ try(smc_cases_by_date <- read_csv("https://raw.githubusercontent.com/stanfordfut
 smc_dem_data <- NULL
 try(smc_dem_data <- read_csv("https://raw.githubusercontent.com/stanfordfuturebay/stanfordfuturebay.github.io/master/covid19/smc_covid_dem_data_scraped.csv"))
 
-# SMC hospitalization and deaths data from the github repo from code for america brigades
-many_county_data <- NULL
-try(many_county_data <- fromJSON("https://raw.githubusercontent.com/sfbrigade/stop-covid19-sfbayarea/master/data/data.json"))
-smc_data_cfa <- NULL
-try(smc_data_cfa <- many_county_data[["San Mateo County"]][["cases"]])
+# SMC hospitalization data from the CA Department of Public Health
+many_county_hosp_data <- NULL
+try(many_county_hosp_data <- read_csv("https://data.ca.gov/dataset/529ac907-6ba1-4cb7-9aae-8966fc96aeef/resource/42d33765-20fd-44b8-a978-b083b7542225/download/hospitals_by_county.csv"))
+smc_hosp_by_date <- NULL
+try(smc_hosp_by_date <- many_county_hosp_data %>% filter(county == "San Mateo"))
+
+# SMC deaths data from the NY Times
+us_county_data_nyt <- NULL
+try(us_county_data_nyt <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"))
+smc_deaths_by_date <- NULL
+try(smc_deaths_by_date <- us_county_data_nyt %>% filter(county == "San Mateo"))
 
 # get CA data from CA government
 ca_data <- NULL
@@ -108,15 +114,14 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) &
 }
 
 # DEATHS OVER TIME
-if (!is.null(scc_deaths_by_date) & !is.null(smc_data_cfa) & 
-    (nrow(scc_deaths_by_date) > 0) & (nrow(smc_data_cfa) > 0)) {
+if (!is.null(scc_deaths_by_date) & !is.null(smc_deaths_by_date) & 
+    (nrow(scc_deaths_by_date) > 0) & (nrow(smc_deaths_by_date) > 0)) {
   deaths_by_date <- scc_deaths_by_date %>% 
     dplyr::select(date, total, cumulative) %>% rename(new_deaths_scc = total, total_deaths_scc = cumulative) %>% 
-    full_join(smc_data_cfa %>% 
-                dplyr::select(date, deaths) %>% 
+    full_join(smc_deaths_by_date %>% 
+                dplyr::select(date, deaths) %>%
                 rename(total_deaths_smc = deaths) %>% 
-                mutate(new_deaths_smc = c(NA, diff(total_deaths_smc)), date = as.Date(date)) %>% 
-                filter(total_deaths_smc > 0 | date < as.Date("2020-04-01"))) %>% # last step removes any erroneous entries where the total deaths was reported as zero for the day
+                mutate(new_deaths_smc = c(NA, diff(total_deaths_smc)), date = as.Date(date))) %>%
     # need to add in dates that aren't listed, which we assume have zero deaths
     full_join(data.frame(date = seq(min(scc_deaths_by_date$date), max(scc_deaths_by_date$date), by = "days"))) %>% 
     arrange(date) %>%
@@ -132,7 +137,7 @@ if (!is.null(scc_deaths_by_date) & !is.null(smc_data_cfa) &
   write.csv(deaths_by_date, "covid19/sv_dash_data_processing/sv_deaths_by_date.csv")
 
   # save csv for the update dates
-  deaths_update_date <- c(as.Date(max(scc_deaths_by_date$date)), max(smc_data_cfa$date))
+  deaths_update_date <- c(as.Date(max(scc_deaths_by_date$date)), max(smc_deaths_by_date$date))
   county_name <- c("SCC", "SMC")
   deaths_update_date_df <- data.frame(county_name, deaths_update_date)
   write.csv(deaths_update_date_df, "covid19/sv_dash_data_processing/sv_deaths_update_dates.csv") 
@@ -246,17 +251,15 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
 }
 
 # HOSPITALIZATIONS
-if (!is.null(scc_hosp_by_date) & !is.null(smc_data_cfa) & 
-    (nrow(scc_hosp_by_date) > 0) & (nrow(smc_data_cfa) > 0)) {
+if (!is.null(scc_hosp_by_date) & !is.null(smc_hosp_by_date) & 
+    (nrow(scc_hosp_by_date) > 0) & (nrow(smc_hosp_by_date) > 0)) {
   hosp_by_date <- scc_hosp_by_date %>% 
-    dplyr::select(date, covid_total) %>%  # only using confirmed COVID-19 hospitalizations, not ones under investigation
+    dplyr::select(date, covid_total) %>%  # only using confirmed COVID-19 hospitalizations, not ones under investigation. includes ICU
     rename(hospitalized_scc = covid_total) %>%
     mutate(date = as.Date(date)) %>%
-    full_join(smc_data_cfa %>% 
-                dplyr::select(date, hospitalized_current, hospitalized) %>%
-                # some of the dates have hospitalization numbers listed under "hospitalized_current" and some have them listed under "hospitalized", so need to combine these two into a single column
-                mutate(hospitalized_smc = ifelse(is.na(hospitalized_current), hospitalized, hospitalized_current), date = as.Date(date)) %>%
-                dplyr::select(date, hospitalized_smc) %>%
+    full_join(smc_hosp_by_date %>% 
+                dplyr::select(todays_date, hospitalized_covid_confirmed_patients) %>% # only using confirmed COVID-19 hospitalizations, not ones under investigation. includes ICU
+                rename(date = todays_date, hospitalized_smc = hospitalized_covid_confirmed_patients) %>%
                 filter(!is.na(hospitalized_smc))) %>% # only include relevant dates
     arrange(date) %>%
     mutate(hospitalized_scc = replace_na(hospitalized_scc, 0),
@@ -267,7 +270,7 @@ if (!is.null(scc_hosp_by_date) & !is.null(smc_data_cfa) &
   write.csv(hosp_by_date, "covid19/sv_dash_data_processing/sv_hosp_by_date.csv")
   
   # save csv for the update dates
-  hosp_update_date <- c(as.Date(max(scc_hosp_by_date$date)), max(smc_data_cfa$date))
+  hosp_update_date <- c(as.Date(max(scc_hosp_by_date$date)), max(smc_hosp_by_date$todays_date))
   county_name <- c("SCC", "SMC")
   hosp_update_date_df <- data.frame(county_name, hosp_update_date)
   write.csv(hosp_update_date_df, "covid19/sv_dash_data_processing/sv_hosp_update_dates.csv") 
