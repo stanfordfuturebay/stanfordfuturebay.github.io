@@ -1,24 +1,26 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",541,0,NA,NA
-"2","Age Group 10-19",964,0,NA,NA
-"3","Age Group 20-29",2028,0,NA,NA
-"4","Age Group 30-39",1951,1,NA,NA
-"5","Age Group 40-49",1607,2,NA,NA
-"6","Age Group 50-59",1257,12,NA,NA
-"7","Age Group 60-69",891,22,NA,NA
-"8","Age Group 70-79",354,25,NA,NA
-"9","Age Group 80-89",229,49,NA,NA
-"10","Age Group 90+",128,39,NA,NA
-"11","Race/Ethnicity  American Indian/Alaska Native",5,0,NA,NA
-"12","Race/Ethnicity  Asian",967,35,NA,NA
-"13","Race/Ethnicity  Black",113,6,NA,NA
-"14","Race/Ethnicity  Latino/Hispanic",5114,32,NA,NA
-"15","Race/Ethnicity  Pacific Islander",239,3,NA,NA
-"16","Race/Ethnicity  White",1181,74,NA,NA
-"17","Race/Ethnicity Multirace",66,NA,NA,NA
-"18","Race/Ethnicity Other",115,0,NA,NA
-"19","Race/Ethnicity Unknown",2150,0,NA,NA
-"20","Sex Female",4998,76,NA,NA
-"21","Sex Male",4951,74,NA,NA
-"22","Sex Other",1,NA,NA,NA
-"23",NA,NA,NA,"case data up to and including september 28, 2020","death data last updated september 28, 2020."
+"1","Age Group < 9",545,0,NA,NA
+"2","Age Group 10-19",969,0,NA,NA
+"3","Age Group 20-29",2041,0,NA,NA
+"4","Age Group 30-39",1954,1,NA,NA
+"5","Age Group 40-49",1609,2,NA,NA
+"6","Age Group 50-59",1262,12,NA,NA
+"7","Age Group 60-69",893,22,NA,NA
+"8","Age Group 70-79",355,25,NA,NA
+"9","Age Group 80-89",232,49,NA,NA
+"10","Age Group 90+",129,39,NA,NA
+"11","Age Group Unknown",1,NA,NA,NA
+"12","Race/Ethnicity  American Indian/Alaska Native",5,0,NA,NA
+"13","Race/Ethnicity  Asian",977,35,NA,NA
+"14","Race/Ethnicity  Black",114,6,NA,NA
+"15","Race/Ethnicity  Latino/Hispanic",5155,32,NA,NA
+"16","Race/Ethnicity  Pacific Islander",239,3,NA,NA
+"17","Race/Ethnicity  White",1186,74,NA,NA
+"18","Race/Ethnicity Multirace",65,NA,NA,NA
+"19","Race/Ethnicity Other",115,0,NA,NA
+"20","Race/Ethnicity Unknown",2134,0,NA,NA
+"21","Sex Female",5019,76,NA,NA
+"22","Sex Male",4969,74,NA,NA
+"23","Sex Other",1,NA,NA,NA
+"24","Sex Unknown",1,NA,NA,NA
+"25",NA,NA,NA,"case data up to and including september 29, 2020","death data last updated september 28, 2020."
