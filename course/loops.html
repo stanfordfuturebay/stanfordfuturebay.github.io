@@ -170,6 +170,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
 <li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
 </ul></li>
+<li class="chapter" data-level="3" data-path="statistics.html"><a href="statistics.html"><i class="fa fa-check"></i><b>3</b> Statistics</a><ul>
+<li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
+<li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
+<li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
+<li class="chapter" data-level="3.4" data-path="sampling-bias.html"><a href="sampling-bias.html"><i class="fa fa-check"></i><b>3.4</b> Sampling bias</a></li>
+<li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
+<li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -203,7 +211,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-10"><a href="loops.html#cb14-10"></a>  </span>
 <span id="cb14-11"><a href="loops.html#cb14-11"></a>  filename &lt;-<span class="st"> </span></span>
 <span id="cb14-12"><a href="loops.html#cb14-12"></a><span class="st">    </span><span class="kw">paste0</span>(</span>
-<span id="cb14-13"><a href="loops.html#cb14-13"></a>      <span class="st">&quot;PGE_&quot;</span>,</span>
+<span id="cb14-13"><a href="loops.html#cb14-13"></a>      <span class="st">&quot;pge/PGE_&quot;</span>,</span>
 <span id="cb14-14"><a href="loops.html#cb14-14"></a>      year,</span>
 <span id="cb14-15"><a href="loops.html#cb14-15"></a>      <span class="st">&quot;_Q&quot;</span>,</span>
 <span id="cb14-16"><a href="loops.html#cb14-16"></a>      quarter,</span>
@@ -221,10 +229,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-28"><a href="loops.html#cb14-28"></a></span>
 <span id="cb14-29"><a href="loops.html#cb14-29"></a>  <span class="kw">saveRDS</span>(pge_<span class="dv">19</span>_elec, <span class="st">&quot;pge_19_elec.rds&quot;</span>)</span>
 <span id="cb14-30"><a href="loops.html#cb14-30"></a>}</span></code></pre></div>
-<pre><code>## [1] &quot;PGE_2019_Q1_ElectricUsageByZip.csv&quot;
-## [1] &quot;PGE_2019_Q2_ElectricUsageByZip.csv&quot;
-## [1] &quot;PGE_2019_Q3_ElectricUsageByZip.csv&quot;
-## [1] &quot;PGE_2019_Q4_ElectricUsageByZip.csv&quot;</code></pre>
+<pre><code>## [1] &quot;pge/PGE_2019_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q4_ElectricUsageByZip.csv&quot;</code></pre>
 <p>Additional notes:</p>
 <ul>
 <li>When running a for loop in RStudio, just place your cursor on the line with the <code>for</code> and <code>Ctrl+Enter</code>, which will then run through the entire loop. Starting inside the for loop will only run individual lines. To troubleshoot inside of a for loop, you can always manually set a value for <code>quarter</code>, like <code>quarter &lt;- 1</code>, then start running individual lines within the for loop. Note that before doing this, <code>quarter</code> existed only within the for loop operation and not as a variable in your Environment.</li>
