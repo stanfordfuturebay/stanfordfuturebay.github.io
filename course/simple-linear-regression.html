@@ -170,13 +170,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
 <li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="statistics.html"><a href="statistics.html"><i class="fa fa-check"></i><b>3</b> Statistics</a><ul>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
 <li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
 <li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
 <li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
 <li class="chapter" data-level="3.4" data-path="sampling-bias.html"><a href="sampling-bias.html"><i class="fa fa-check"></i><b>3.4</b> Sampling bias</a></li>
 <li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
 <li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
+<li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
+<li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
 </ul></li>
 </ul>
 
@@ -455,7 +459,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb155-5"><a href="simple-linear-regression.html#cb155-5"></a>      <span class="dt">y =</span> HINCP</span>
 <span id="cb155-6"><a href="simple-linear-regression.html#cb155-6"></a>    )</span>
 <span id="cb155-7"><a href="simple-linear-regression.html#cb155-7"></a>) <span class="op">+</span></span>
-<span id="cb155-8"><a href="simple-linear-regression.html#cb155-8"></a><span class="st">  </span><span class="kw">geom_point</span>()<span class="op">+</span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> F)</span></code></pre></div>
+<span id="cb155-8"><a href="simple-linear-regression.html#cb155-8"></a><span class="st">  </span><span class="kw">geom_point</span>()<span class="op">+</span></span>
+<span id="cb155-9"><a href="simple-linear-regression.html#cb155-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> F)</span></code></pre></div>
 <p><img src="course_files/figure-html/unnamed-chunk-119-1.png" width="672" /></p>
 <p>The points are too smashed together given the <code>y-axis</code> spread for us to see where the center of gravity of each line of data is. Nonetheless, you might recognize that the essence of this analysis is a comparison of the average household income for non-White households (<code>white = 0</code>) vs. “White” households (<code>white = 1</code>), and the regression line simply connects the dots between these two averages to minimize SSR. The specific math here could be worked out in a more straightforward manner, but <code>lm()</code> will be key when expanding to multiple regression.</p>
 <p>The results of <code>lm()</code> will provide us a clearer picture of whether there is a positive or negative relationship between <code>x</code> and <code>y</code>, and whether that relationship is statistically significant. Note the additional argument provided, <code>weights = WGTP</code>, which you can imagine <code>lm()</code> using to make the appropriate number of copies of each row of data to represent the full population.</p>
