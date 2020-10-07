@@ -1,26 +1,26 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
 "1","Age Group < 9",556,0,NA,NA
-"2","Age Group 10-19",1006,0,NA,NA
-"3","Age Group 20-29",2088,0,NA,NA
-"4","Age Group 30-39",2004,1,NA,NA
-"5","Age Group 40-49",1649,2,NA,NA
-"6","Age Group 50-59",1303,13,NA,NA
-"7","Age Group 60-69",915,22,NA,NA
-"8","Age Group 70-79",374,25,NA,NA
+"2","Age Group 10-19",1009,0,NA,NA
+"3","Age Group 20-29",2092,0,NA,NA
+"4","Age Group 30-39",2012,1,NA,NA
+"5","Age Group 40-49",1653,2,NA,NA
+"6","Age Group 50-59",1309,13,NA,NA
+"7","Age Group 60-69",921,23,NA,NA
+"8","Age Group 70-79",377,26,NA,NA
 "9","Age Group 80-89",240,49,NA,NA
 "10","Age Group 90+",139,40,NA,NA
 "11","Age Group Unknown",1,NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native",5,0,NA,NA
-"13","Race/Ethnicity  Asian",1005,35,NA,NA
+"13","Race/Ethnicity  Asian",1007,35,NA,NA
 "14","Race/Ethnicity  Black",120,6,NA,NA
-"15","Race/Ethnicity  Latino/Hispanic",5293,33,NA,NA
+"15","Race/Ethnicity  Latino/Hispanic",5316,35,NA,NA
 "16","Race/Ethnicity  Pacific Islander",239,3,NA,NA
-"17","Race/Ethnicity  White",1224,75,NA,NA
+"17","Race/Ethnicity  White",1232,75,NA,NA
 "18","Race/Ethnicity Multirace",67,NA,NA,NA
 "19","Race/Ethnicity Other",119,0,NA,NA
-"20","Race/Ethnicity Unknown",2203,0,NA,NA
-"21","Sex Female",5177,77,NA,NA
-"22","Sex Male",5095,75,NA,NA
+"20","Race/Ethnicity Unknown",2204,0,NA,NA
+"21","Sex Female",5191,78,NA,NA
+"22","Sex Male",5114,76,NA,NA
 "23","Sex Other",1,NA,NA,NA
-"24","Sex Unknown",2,NA,NA,NA
-"25",NA,NA,NA,"case data up to and including october 4, 2020","death data last updated october 1, 2020."
+"24","Sex Unknown",3,NA,NA,NA
+"25",NA,NA,NA,"case data up to and including october 5, 2020","death data last updated october 5, 2020."
