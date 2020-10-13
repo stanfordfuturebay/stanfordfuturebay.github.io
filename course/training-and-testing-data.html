@@ -32,6 +32,7 @@
   
 <link rel="prev" href="logistic-regression.html"/>
 <link rel="next" href="matching.html"/>
+<script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -71,18 +72,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -102,7 +102,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -150,7 +150,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
 <li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
 <li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
@@ -162,7 +163,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
+<ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
 <li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
 <li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
@@ -170,7 +172,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
 <li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
 <li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
 <li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
@@ -178,12 +181,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
 <li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
 <li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
 <li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
 <li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
 <li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
 </ul></li>
 </ul>
 
@@ -202,27 +210,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="training-and-testing-data" class="section level2">
+<div id="training-and-testing-data" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Training and testing data</h2>
 <p>As an extension of the logistic regression technique, let’s use a logistic model “trained” on a portion of our PUMS data to try to predict the language of some other “testing” portion of our data, and explicitly evaluate how well the model performs in this test, relative to the actual values from the PUMS data. First, let’s use <code>sample()</code> in a similar way to how we used it in Section 3.1 to split our PUMS data. We’ll pick an arbitrary 80% of the PUMS data to use as “training” data and the other 20% to “test” our model.</p>
-<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="training-and-testing-data.html#cb205-1"></a>sample &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
-<span id="cb205-2"><a href="training-and-testing-data.html#cb205-2"></a>  <span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), </span>
-<span id="cb205-3"><a href="training-and-testing-data.html#cb205-3"></a>  <span class="kw">nrow</span>(bay_pums_language), </span>
-<span id="cb205-4"><a href="training-and-testing-data.html#cb205-4"></a>  <span class="dt">replace =</span> T, </span>
-<span id="cb205-5"><a href="training-and-testing-data.html#cb205-5"></a>  <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>)</span>
-<span id="cb205-6"><a href="training-and-testing-data.html#cb205-6"></a>)</span>
-<span id="cb205-7"><a href="training-and-testing-data.html#cb205-7"></a></span>
-<span id="cb205-8"><a href="training-and-testing-data.html#cb205-8"></a>train &lt;-<span class="st"> </span>bay_pums_language[sample, ]</span>
-<span id="cb205-9"><a href="training-and-testing-data.html#cb205-9"></a>test &lt;-<span class="st"> </span>bay_pums_language[<span class="op">!</span>sample, ]</span></code></pre></div>
-<p>Then, we run <code>glm()</code> with <code>train</code>:</p>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="training-and-testing-data.html#cb206-1"></a>logit_model_training &lt;-<span class="st"> </span><span class="kw">glm</span>(</span>
-<span id="cb206-2"><a href="training-and-testing-data.html#cb206-2"></a>  english <span class="op">~</span><span class="st"> </span>AGEP <span class="op">+</span><span class="st"> </span>white <span class="op">+</span><span class="st"> </span>hispanic,</span>
-<span id="cb206-3"><a href="training-and-testing-data.html#cb206-3"></a>  <span class="dt">family =</span> <span class="kw">binomial</span>(),</span>
-<span id="cb206-4"><a href="training-and-testing-data.html#cb206-4"></a>  <span class="dt">data =</span> train,</span>
-<span id="cb206-5"><a href="training-and-testing-data.html#cb206-5"></a>  <span class="dt">weights =</span> PWGTP</span>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="training-and-testing-data.html#cb206-1"></a>sample &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
+<span id="cb206-2"><a href="training-and-testing-data.html#cb206-2"></a>  <span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), </span>
+<span id="cb206-3"><a href="training-and-testing-data.html#cb206-3"></a>  <span class="kw">nrow</span>(bay_pums_language), </span>
+<span id="cb206-4"><a href="training-and-testing-data.html#cb206-4"></a>  <span class="dt">replace =</span> T, </span>
+<span id="cb206-5"><a href="training-and-testing-data.html#cb206-5"></a>  <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>)</span>
 <span id="cb206-6"><a href="training-and-testing-data.html#cb206-6"></a>)</span>
 <span id="cb206-7"><a href="training-and-testing-data.html#cb206-7"></a></span>
-<span id="cb206-8"><a href="training-and-testing-data.html#cb206-8"></a><span class="kw">summary</span>(logit_model_training)</span></code></pre></div>
+<span id="cb206-8"><a href="training-and-testing-data.html#cb206-8"></a>train &lt;-<span class="st"> </span>bay_pums_language[sample, ]</span>
+<span id="cb206-9"><a href="training-and-testing-data.html#cb206-9"></a>test &lt;-<span class="st"> </span>bay_pums_language[<span class="op">!</span>sample, ]</span></code></pre></div>
+<p>Then, we run <code>glm()</code> with <code>train</code>:</p>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="training-and-testing-data.html#cb207-1"></a>logit_model_training &lt;-<span class="st"> </span><span class="kw">glm</span>(</span>
+<span id="cb207-2"><a href="training-and-testing-data.html#cb207-2"></a>  english <span class="op">~</span><span class="st"> </span>AGEP <span class="op">+</span><span class="st"> </span>white <span class="op">+</span><span class="st"> </span>hispanic,</span>
+<span id="cb207-3"><a href="training-and-testing-data.html#cb207-3"></a>  <span class="dt">family =</span> <span class="kw">binomial</span>(),</span>
+<span id="cb207-4"><a href="training-and-testing-data.html#cb207-4"></a>  <span class="dt">data =</span> train,</span>
+<span id="cb207-5"><a href="training-and-testing-data.html#cb207-5"></a>  <span class="dt">weights =</span> PWGTP</span>
+<span id="cb207-6"><a href="training-and-testing-data.html#cb207-6"></a>)</span>
+<span id="cb207-7"><a href="training-and-testing-data.html#cb207-7"></a></span>
+<span id="cb207-8"><a href="training-and-testing-data.html#cb207-8"></a><span class="kw">summary</span>(logit_model_training)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = english ~ AGEP + white + hispanic, family = binomial(), 
@@ -230,45 +238,45 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -25.076   -4.091    2.407    3.700   23.253  
+## -25.081   -4.090    2.407    3.700   23.233  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -9.552e-01  1.931e-03  -494.7   &lt;2e-16 ***
-## AGEP         1.005e-02  4.003e-05   251.0   &lt;2e-16 ***
-## white        1.590e+00  1.781e-03   892.7   &lt;2e-16 ***
-## hispanic    -1.151e+00  4.888e-03  -235.4   &lt;2e-16 ***
+## (Intercept) -9.547e-01  1.933e-03  -493.9   &lt;2e-16 ***
+## AGEP         1.015e-02  4.004e-05   253.4   &lt;2e-16 ***
+## white        1.586e+00  1.782e-03   890.3   &lt;2e-16 ***
+## hispanic    -1.160e+00  4.897e-03  -237.0   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 8462192  on 300632  degrees of freedom
-## Residual deviance: 7419886  on 300629  degrees of freedom
-## AIC: 7419894
+##     Null deviance: 8453515  on 300580  degrees of freedom
+## Residual deviance: 7416056  on 300577  degrees of freedom
+## AIC: 7416064
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="training-and-testing-data.html#cb208-1"></a>test_predicted &lt;-</span>
-<span id="cb208-2"><a href="training-and-testing-data.html#cb208-2"></a><span class="st">  </span><span class="kw">predict</span>(logit_model_training, <span class="dt">newdata =</span> test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="training-and-testing-data.html#cb209-1"></a>test_predicted &lt;-</span>
+<span id="cb209-2"><a href="training-and-testing-data.html#cb209-2"></a><span class="st">  </span><span class="kw">predict</span>(logit_model_training, <span class="dt">newdata =</span> test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
 <p>Finally, as one way of evaluating the performance of this model, we can create a 2x2 matrix using <code>table()</code>. <code>table()</code> is a general function for doing summary statistics, but if we give it the “real” values of <code>english</code> (yes or no) as one vector and give it our predicted probabilities (true or false above 0.5), then <code>table()</code> will give us the counts of each of four possible pair combinations these two vectors.</p>
-<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="training-and-testing-data.html#cb209-1"></a>summary_2x2 &lt;-</span>
-<span id="cb209-2"><a href="training-and-testing-data.html#cb209-2"></a><span class="st">  </span>test <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb209-3"><a href="training-and-testing-data.html#cb209-3"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
-<span id="cb209-4"><a href="training-and-testing-data.html#cb209-4"></a>    <span class="dt">english =</span> <span class="kw">ifelse</span>(</span>
-<span id="cb209-5"><a href="training-and-testing-data.html#cb209-5"></a>      english <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, </span>
-<span id="cb209-6"><a href="training-and-testing-data.html#cb209-6"></a>      <span class="st">&quot;Yes (English)&quot;</span>, </span>
-<span id="cb209-7"><a href="training-and-testing-data.html#cb209-7"></a>      <span class="st">&quot;No (ESL)&quot;</span></span>
-<span id="cb209-8"><a href="training-and-testing-data.html#cb209-8"></a>    )</span>
-<span id="cb209-9"><a href="training-and-testing-data.html#cb209-9"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb209-10"><a href="training-and-testing-data.html#cb209-10"></a><span class="st">  </span><span class="kw">pull</span>(english) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb209-11"><a href="training-and-testing-data.html#cb209-11"></a><span class="st">  </span><span class="kw">table</span>(test_predicted <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>)</span>
-<span id="cb209-12"><a href="training-and-testing-data.html#cb209-12"></a></span>
-<span id="cb209-13"><a href="training-and-testing-data.html#cb209-13"></a>summary_2x2</span></code></pre></div>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="training-and-testing-data.html#cb210-1"></a>summary_2x2 &lt;-</span>
+<span id="cb210-2"><a href="training-and-testing-data.html#cb210-2"></a><span class="st">  </span>test <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb210-3"><a href="training-and-testing-data.html#cb210-3"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb210-4"><a href="training-and-testing-data.html#cb210-4"></a>    <span class="dt">english =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb210-5"><a href="training-and-testing-data.html#cb210-5"></a>      english <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, </span>
+<span id="cb210-6"><a href="training-and-testing-data.html#cb210-6"></a>      <span class="st">&quot;Yes (English)&quot;</span>, </span>
+<span id="cb210-7"><a href="training-and-testing-data.html#cb210-7"></a>      <span class="st">&quot;No (ESL)&quot;</span></span>
+<span id="cb210-8"><a href="training-and-testing-data.html#cb210-8"></a>    )</span>
+<span id="cb210-9"><a href="training-and-testing-data.html#cb210-9"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb210-10"><a href="training-and-testing-data.html#cb210-10"></a><span class="st">  </span><span class="kw">pull</span>(english) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb210-11"><a href="training-and-testing-data.html#cb210-11"></a><span class="st">  </span><span class="kw">table</span>(test_predicted <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>)</span>
+<span id="cb210-12"><a href="training-and-testing-data.html#cb210-12"></a></span>
+<span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
-##   No (ESL)      22902  9041
-##   Yes (English) 12773 30708</code></pre>
+##   No (ESL)      23187  9009
+##   Yes (English) 12855 30425</code></pre>
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>

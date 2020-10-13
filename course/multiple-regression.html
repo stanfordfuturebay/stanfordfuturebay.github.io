@@ -32,6 +32,7 @@
   
 <link rel="prev" href="sampling-bias.html"/>
 <link rel="next" href="assignment-3.html"/>
+<script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -71,18 +72,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -102,7 +102,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -150,7 +150,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
 <li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
 <li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
@@ -162,7 +163,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
+<ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
 <li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
 <li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
@@ -170,7 +172,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
 <li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
 <li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
 <li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
@@ -178,12 +181,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
 <li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
 <li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
 <li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
 <li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
 <li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
 </ul></li>
 </ul>
 
@@ -202,82 +210,82 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="multiple-regression" class="section level2">
+<div id="multiple-regression" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Multiple regression</h2>
 <p>In principle, multiple regression merely adds additional independent variables to the same math we’ve done before, but since this causes the model to no longer be viewable in a two-dimensional scatter plot, it feels more substantively different than it should. If you boil down the difference to additional <code>mx</code> terms in <code>y = mx + b</code>, then this jump in dimensionality should feel much more manageable. Let’s go ahead and expand on the analyses we did of income and race at the CBG level. Let’s add one more independent variable: education attainment (% with higher than a high school degree):</p>
-<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="multiple-regression.html#cb186-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb186-2"><a href="multiple-regression.html#cb186-2"></a><span class="kw">library</span>(censusapi)</span>
-<span id="cb186-3"><a href="multiple-regression.html#cb186-3"></a></span>
-<span id="cb186-4"><a href="multiple-regression.html#cb186-4"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
-<span id="cb186-5"><a href="multiple-regression.html#cb186-5"></a></span>
-<span id="cb186-6"><a href="multiple-regression.html#cb186-6"></a>acs_vars_<span class="dv">2018</span>_5yr &lt;-</span>
-<span id="cb186-7"><a href="multiple-regression.html#cb186-7"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
-<span id="cb186-8"><a href="multiple-regression.html#cb186-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2018/acs/acs5&quot;</span>,</span>
-<span id="cb186-9"><a href="multiple-regression.html#cb186-9"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
-<span id="cb186-10"><a href="multiple-regression.html#cb186-10"></a>  )</span></code></pre></div>
-<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="multiple-regression.html#cb187-1"></a>bay_multiple_tract &lt;-<span class="st"> </span></span>
-<span id="cb187-2"><a href="multiple-regression.html#cb187-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
-<span id="cb187-3"><a href="multiple-regression.html#cb187-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
-<span id="cb187-4"><a href="multiple-regression.html#cb187-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
-<span id="cb187-5"><a href="multiple-regression.html#cb187-5"></a>    <span class="dt">region =</span> <span class="st">&quot;tract:*&quot;</span>,</span>
-<span id="cb187-6"><a href="multiple-regression.html#cb187-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06+county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
-<span id="cb187-7"><a href="multiple-regression.html#cb187-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(</span>
-<span id="cb187-8"><a href="multiple-regression.html#cb187-8"></a>      <span class="st">&quot;B19001A_001E&quot;</span>,</span>
-<span id="cb187-9"><a href="multiple-regression.html#cb187-9"></a>      <span class="st">&quot;B19001_001E&quot;</span>,</span>
-<span id="cb187-10"><a href="multiple-regression.html#cb187-10"></a>      <span class="st">&quot;B19001_014E&quot;</span>,</span>
-<span id="cb187-11"><a href="multiple-regression.html#cb187-11"></a>      <span class="st">&quot;B19001_015E&quot;</span>,</span>
-<span id="cb187-12"><a href="multiple-regression.html#cb187-12"></a>      <span class="st">&quot;B19001_016E&quot;</span>,</span>
-<span id="cb187-13"><a href="multiple-regression.html#cb187-13"></a>      <span class="st">&quot;B19001_017E&quot;</span>,</span>
-<span id="cb187-14"><a href="multiple-regression.html#cb187-14"></a>      <span class="st">&quot;B15003_001E&quot;</span>,</span>
-<span id="cb187-15"><a href="multiple-regression.html#cb187-15"></a>      <span class="st">&quot;B15003_021E&quot;</span>,</span>
-<span id="cb187-16"><a href="multiple-regression.html#cb187-16"></a>      <span class="st">&quot;B15003_022E&quot;</span>,</span>
-<span id="cb187-17"><a href="multiple-regression.html#cb187-17"></a>      <span class="st">&quot;B15003_023E&quot;</span>,</span>
-<span id="cb187-18"><a href="multiple-regression.html#cb187-18"></a>      <span class="st">&quot;B15003_024E&quot;</span>,</span>
-<span id="cb187-19"><a href="multiple-regression.html#cb187-19"></a>      <span class="st">&quot;B15003_025E&quot;</span></span>
-<span id="cb187-20"><a href="multiple-regression.html#cb187-20"></a>    )</span>
-<span id="cb187-21"><a href="multiple-regression.html#cb187-21"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb187-22"><a href="multiple-regression.html#cb187-22"></a><span class="st">  </span><span class="kw">transmute</span>(</span>
-<span id="cb187-23"><a href="multiple-regression.html#cb187-23"></a>    <span class="dt">tract =</span> <span class="kw">paste0</span>(state, county, tract),</span>
-<span id="cb187-24"><a href="multiple-regression.html#cb187-24"></a>    <span class="dt">perc_white =</span> B19001A_001E <span class="op">/</span><span class="st"> </span>B19001_001E,</span>
-<span id="cb187-25"><a href="multiple-regression.html#cb187-25"></a>    <span class="dt">perc_over100k =</span> (B19001_014E <span class="op">+</span><span class="st"> </span>B19001_015E <span class="op">+</span><span class="st"> </span>B19001_016E <span class="op">+</span><span class="st"> </span>B19001_017E) <span class="op">/</span><span class="st"> </span>B19001_001E,</span>
-<span id="cb187-26"><a href="multiple-regression.html#cb187-26"></a>    <span class="dt">perc_collegedegree =</span> (B15003_021E <span class="op">+</span><span class="st"> </span>B15003_022E <span class="op">+</span><span class="st"> </span>B15003_023E <span class="op">+</span><span class="st"> </span>B15003_024E <span class="op">+</span>B15003_025E) <span class="op">/</span><span class="st"> </span>B15003_001E</span>
-<span id="cb187-27"><a href="multiple-regression.html#cb187-27"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb187-28"><a href="multiple-regression.html#cb187-28"></a><span class="st">  </span><span class="kw">filter</span>(</span>
-<span id="cb187-29"><a href="multiple-regression.html#cb187-29"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_white), </span>
-<span id="cb187-30"><a href="multiple-regression.html#cb187-30"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_over100k),</span>
-<span id="cb187-31"><a href="multiple-regression.html#cb187-31"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_collegedegree)</span>
-<span id="cb187-32"><a href="multiple-regression.html#cb187-32"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="multiple-regression.html#cb187-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb187-2"><a href="multiple-regression.html#cb187-2"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb187-3"><a href="multiple-regression.html#cb187-3"></a></span>
+<span id="cb187-4"><a href="multiple-regression.html#cb187-4"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
+<span id="cb187-5"><a href="multiple-regression.html#cb187-5"></a></span>
+<span id="cb187-6"><a href="multiple-regression.html#cb187-6"></a>acs_vars_<span class="dv">2018</span>_5yr &lt;-</span>
+<span id="cb187-7"><a href="multiple-regression.html#cb187-7"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
+<span id="cb187-8"><a href="multiple-regression.html#cb187-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2018/acs/acs5&quot;</span>,</span>
+<span id="cb187-9"><a href="multiple-regression.html#cb187-9"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
+<span id="cb187-10"><a href="multiple-regression.html#cb187-10"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="multiple-regression.html#cb188-1"></a>bay_multiple_tract &lt;-<span class="st"> </span></span>
+<span id="cb188-2"><a href="multiple-regression.html#cb188-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
+<span id="cb188-3"><a href="multiple-regression.html#cb188-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
+<span id="cb188-4"><a href="multiple-regression.html#cb188-4"></a>    <span class="dt">vintage =</span> <span class="dv">2018</span>,</span>
+<span id="cb188-5"><a href="multiple-regression.html#cb188-5"></a>    <span class="dt">region =</span> <span class="st">&quot;tract:*&quot;</span>,</span>
+<span id="cb188-6"><a href="multiple-regression.html#cb188-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06+county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb188-7"><a href="multiple-regression.html#cb188-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(</span>
+<span id="cb188-8"><a href="multiple-regression.html#cb188-8"></a>      <span class="st">&quot;B19001A_001E&quot;</span>,</span>
+<span id="cb188-9"><a href="multiple-regression.html#cb188-9"></a>      <span class="st">&quot;B19001_001E&quot;</span>,</span>
+<span id="cb188-10"><a href="multiple-regression.html#cb188-10"></a>      <span class="st">&quot;B19001_014E&quot;</span>,</span>
+<span id="cb188-11"><a href="multiple-regression.html#cb188-11"></a>      <span class="st">&quot;B19001_015E&quot;</span>,</span>
+<span id="cb188-12"><a href="multiple-regression.html#cb188-12"></a>      <span class="st">&quot;B19001_016E&quot;</span>,</span>
+<span id="cb188-13"><a href="multiple-regression.html#cb188-13"></a>      <span class="st">&quot;B19001_017E&quot;</span>,</span>
+<span id="cb188-14"><a href="multiple-regression.html#cb188-14"></a>      <span class="st">&quot;B15003_001E&quot;</span>,</span>
+<span id="cb188-15"><a href="multiple-regression.html#cb188-15"></a>      <span class="st">&quot;B15003_021E&quot;</span>,</span>
+<span id="cb188-16"><a href="multiple-regression.html#cb188-16"></a>      <span class="st">&quot;B15003_022E&quot;</span>,</span>
+<span id="cb188-17"><a href="multiple-regression.html#cb188-17"></a>      <span class="st">&quot;B15003_023E&quot;</span>,</span>
+<span id="cb188-18"><a href="multiple-regression.html#cb188-18"></a>      <span class="st">&quot;B15003_024E&quot;</span>,</span>
+<span id="cb188-19"><a href="multiple-regression.html#cb188-19"></a>      <span class="st">&quot;B15003_025E&quot;</span></span>
+<span id="cb188-20"><a href="multiple-regression.html#cb188-20"></a>    )</span>
+<span id="cb188-21"><a href="multiple-regression.html#cb188-21"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb188-22"><a href="multiple-regression.html#cb188-22"></a><span class="st">  </span><span class="kw">transmute</span>(</span>
+<span id="cb188-23"><a href="multiple-regression.html#cb188-23"></a>    <span class="dt">tract =</span> <span class="kw">paste0</span>(state, county, tract),</span>
+<span id="cb188-24"><a href="multiple-regression.html#cb188-24"></a>    <span class="dt">perc_white =</span> B19001A_001E <span class="op">/</span><span class="st"> </span>B19001_001E,</span>
+<span id="cb188-25"><a href="multiple-regression.html#cb188-25"></a>    <span class="dt">perc_over100k =</span> (B19001_014E <span class="op">+</span><span class="st"> </span>B19001_015E <span class="op">+</span><span class="st"> </span>B19001_016E <span class="op">+</span><span class="st"> </span>B19001_017E) <span class="op">/</span><span class="st"> </span>B19001_001E,</span>
+<span id="cb188-26"><a href="multiple-regression.html#cb188-26"></a>    <span class="dt">perc_collegedegree =</span> (B15003_021E <span class="op">+</span><span class="st"> </span>B15003_022E <span class="op">+</span><span class="st"> </span>B15003_023E <span class="op">+</span><span class="st"> </span>B15003_024E <span class="op">+</span>B15003_025E) <span class="op">/</span><span class="st"> </span>B15003_001E</span>
+<span id="cb188-27"><a href="multiple-regression.html#cb188-27"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb188-28"><a href="multiple-regression.html#cb188-28"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb188-29"><a href="multiple-regression.html#cb188-29"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_white), </span>
+<span id="cb188-30"><a href="multiple-regression.html#cb188-30"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_over100k),</span>
+<span id="cb188-31"><a href="multiple-regression.html#cb188-31"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_collegedegree)</span>
+<span id="cb188-32"><a href="multiple-regression.html#cb188-32"></a>  )</span></code></pre></div>
 <p>So at this point, the modified question could be: to what degree does information about BOTH race and educational attainment in a neighborhood tell us something about income? This can no longer be viewed on one scatter plot. One useful visualization tool that becomes useful once we are dealing with multiple variables is a correlation plot, which can be done in Excel, and in R is available through a number of packages, like <code>corrplot</code> (install with <code>install.packages("corrplot")</code> if using for the first time):</p>
-<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="multiple-regression.html#cb188-1"></a><span class="kw">library</span>(corrplot)</span>
-<span id="cb188-2"><a href="multiple-regression.html#cb188-2"></a></span>
-<span id="cb188-3"><a href="multiple-regression.html#cb188-3"></a>correlationplot &lt;-<span class="st"> </span>bay_multiple_tract <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb188-4"><a href="multiple-regression.html#cb188-4"></a><span class="st">  </span><span class="kw">select</span>(</span>
-<span id="cb188-5"><a href="multiple-regression.html#cb188-5"></a>    perc_white, </span>
-<span id="cb188-6"><a href="multiple-regression.html#cb188-6"></a>    perc_collegedegree,</span>
-<span id="cb188-7"><a href="multiple-regression.html#cb188-7"></a>    perc_over100k</span>
-<span id="cb188-8"><a href="multiple-regression.html#cb188-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb188-9"><a href="multiple-regression.html#cb188-9"></a><span class="st">  </span><span class="kw">cor</span>()</span>
-<span id="cb188-10"><a href="multiple-regression.html#cb188-10"></a></span>
-<span id="cb188-11"><a href="multiple-regression.html#cb188-11"></a><span class="kw">corrplot</span>(</span>
-<span id="cb188-12"><a href="multiple-regression.html#cb188-12"></a>  correlationplot, </span>
-<span id="cb188-13"><a href="multiple-regression.html#cb188-13"></a>  <span class="dt">method =</span> <span class="st">&quot;number&quot;</span>,</span>
-<span id="cb188-14"><a href="multiple-regression.html#cb188-14"></a>  <span class="dt">type =</span> <span class="st">&quot;upper&quot;</span></span>
-<span id="cb188-15"><a href="multiple-regression.html#cb188-15"></a>)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-141-1.png" width="672" /></p>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="multiple-regression.html#cb189-1"></a><span class="kw">library</span>(corrplot)</span>
+<span id="cb189-2"><a href="multiple-regression.html#cb189-2"></a></span>
+<span id="cb189-3"><a href="multiple-regression.html#cb189-3"></a>correlationplot &lt;-<span class="st"> </span>bay_multiple_tract <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb189-4"><a href="multiple-regression.html#cb189-4"></a><span class="st">  </span><span class="kw">select</span>(</span>
+<span id="cb189-5"><a href="multiple-regression.html#cb189-5"></a>    perc_white, </span>
+<span id="cb189-6"><a href="multiple-regression.html#cb189-6"></a>    perc_collegedegree,</span>
+<span id="cb189-7"><a href="multiple-regression.html#cb189-7"></a>    perc_over100k</span>
+<span id="cb189-8"><a href="multiple-regression.html#cb189-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb189-9"><a href="multiple-regression.html#cb189-9"></a><span class="st">  </span><span class="kw">cor</span>()</span>
+<span id="cb189-10"><a href="multiple-regression.html#cb189-10"></a></span>
+<span id="cb189-11"><a href="multiple-regression.html#cb189-11"></a><span class="kw">corrplot</span>(</span>
+<span id="cb189-12"><a href="multiple-regression.html#cb189-12"></a>  correlationplot, </span>
+<span id="cb189-13"><a href="multiple-regression.html#cb189-13"></a>  <span class="dt">method =</span> <span class="st">&quot;number&quot;</span>,</span>
+<span id="cb189-14"><a href="multiple-regression.html#cb189-14"></a>  <span class="dt">type =</span> <span class="st">&quot;upper&quot;</span></span>
+<span id="cb189-15"><a href="multiple-regression.html#cb189-15"></a>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-143-1.png" width="672" /></p>
 <p>There are many possible parameters to customize the visualization, but what I’ve shown above is the essential information. Note that the numbers are correlation coefficients, which are <code>R-squared</code> without the square, which you’ll recall from earlier this chapter is a measure of the amount of variance one variable shares with the other. The “1” values are self-evident as you are pairing a variable with itself. So the only other numbers are the results of the unique possible pairings. At this scale, we are treating any of these pairs as valid to evaluate, and agnostic about what we might ultimately treat as the “independent” vs. “dependent” variables (which is great to keep in mind as completely arbitrary, since we can make no claims of causality here). All of these numbers are positive, which is to say that increases in any one variable are associated with increases in the others (this was also an arbitrary consequence of the specific variables we designed; if we had switched <code>perc_white</code> with <code>perc_nonwhite</code>, we’d see some negative, red numbers in this plot). The correlation coefficient between <code>perc_white</code> and <code>perc_over100k</code> is 0.3; if we take the square of this, we get 0.09, which matches the <code>R-squared</code> from the first <code>lm()</code> output in Section 3.3. Note that the correlation coefficient between <code>perc_collegedegree</code> and <code>perc_over100k</code> is quite a bit higher, which means we’d expect the scatter plot between these two variables to have a tighter fit around the regression line:</p>
-<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="multiple-regression.html#cb189-1"></a><span class="kw">ggplot</span>(</span>
-<span id="cb189-2"><a href="multiple-regression.html#cb189-2"></a>  <span class="dt">data =</span> bay_multiple_tract,</span>
-<span id="cb189-3"><a href="multiple-regression.html#cb189-3"></a>  <span class="kw">aes</span>(</span>
-<span id="cb189-4"><a href="multiple-regression.html#cb189-4"></a>      <span class="dt">x =</span> perc_collegedegree,</span>
-<span id="cb189-5"><a href="multiple-regression.html#cb189-5"></a>      <span class="dt">y =</span> perc_over100k</span>
-<span id="cb189-6"><a href="multiple-regression.html#cb189-6"></a>    )</span>
-<span id="cb189-7"><a href="multiple-regression.html#cb189-7"></a>) <span class="op">+</span></span>
-<span id="cb189-8"><a href="multiple-regression.html#cb189-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb189-9"><a href="multiple-regression.html#cb189-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-142-1.png" width="672" /></p>
-<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="multiple-regression.html#cb190-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_collegedegree, bay_multiple_tract)</span>
-<span id="cb190-2"><a href="multiple-regression.html#cb190-2"></a></span>
-<span id="cb190-3"><a href="multiple-regression.html#cb190-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="multiple-regression.html#cb190-1"></a><span class="kw">ggplot</span>(</span>
+<span id="cb190-2"><a href="multiple-regression.html#cb190-2"></a>  <span class="dt">data =</span> bay_multiple_tract,</span>
+<span id="cb190-3"><a href="multiple-regression.html#cb190-3"></a>  <span class="kw">aes</span>(</span>
+<span id="cb190-4"><a href="multiple-regression.html#cb190-4"></a>      <span class="dt">x =</span> perc_collegedegree,</span>
+<span id="cb190-5"><a href="multiple-regression.html#cb190-5"></a>      <span class="dt">y =</span> perc_over100k</span>
+<span id="cb190-6"><a href="multiple-regression.html#cb190-6"></a>    )</span>
+<span id="cb190-7"><a href="multiple-regression.html#cb190-7"></a>) <span class="op">+</span></span>
+<span id="cb190-8"><a href="multiple-regression.html#cb190-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb190-9"><a href="multiple-regression.html#cb190-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-144-1.png" width="672" /></p>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="multiple-regression.html#cb191-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_collegedegree, bay_multiple_tract)</span>
+<span id="cb191-2"><a href="multiple-regression.html#cb191-2"></a></span>
+<span id="cb191-3"><a href="multiple-regression.html#cb191-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_over100k ~ perc_collegedegree, data = bay_multiple_tract)
@@ -298,19 +306,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## F-statistic:  2194 on 1 and 1575 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Keep in mind that the slope of the line (what we might call the “effect size”) is a distinct concept from <code>R-squared</code> which is a measure of correlation. These don’t have to do anything with each other. What a high correlation coefficient and <code>R-squared</code> value tell you is that residual errors are low; what a steep slope tells you is that large changes in <code>x</code> are associated with large changes in <code>y</code>. In this case, education seems to have better predictive power (on income) compared to race, and it also predicts larger changes (in income) compared to race.</p>
 <p>For ease of comparison with what follows, I’ll reproduce the scatter plot and <code>lm()</code> output for the original pairing of <code>perc_white</code> and <code>perc_over100k</code> from Section 3.3:</p>
-<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="multiple-regression.html#cb192-1"></a><span class="kw">ggplot</span>(</span>
-<span id="cb192-2"><a href="multiple-regression.html#cb192-2"></a>  <span class="dt">data =</span> bay_multiple_tract,</span>
-<span id="cb192-3"><a href="multiple-regression.html#cb192-3"></a>  <span class="kw">aes</span>(</span>
-<span id="cb192-4"><a href="multiple-regression.html#cb192-4"></a>      <span class="dt">x =</span> perc_white,</span>
-<span id="cb192-5"><a href="multiple-regression.html#cb192-5"></a>      <span class="dt">y =</span> perc_over100k</span>
-<span id="cb192-6"><a href="multiple-regression.html#cb192-6"></a>    )</span>
-<span id="cb192-7"><a href="multiple-regression.html#cb192-7"></a>) <span class="op">+</span></span>
-<span id="cb192-8"><a href="multiple-regression.html#cb192-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb192-9"><a href="multiple-regression.html#cb192-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-144-1.png" width="672" /></p>
-<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="multiple-regression.html#cb193-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_white, bay_multiple_tract)</span>
-<span id="cb193-2"><a href="multiple-regression.html#cb193-2"></a></span>
-<span id="cb193-3"><a href="multiple-regression.html#cb193-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="multiple-regression.html#cb193-1"></a><span class="kw">ggplot</span>(</span>
+<span id="cb193-2"><a href="multiple-regression.html#cb193-2"></a>  <span class="dt">data =</span> bay_multiple_tract,</span>
+<span id="cb193-3"><a href="multiple-regression.html#cb193-3"></a>  <span class="kw">aes</span>(</span>
+<span id="cb193-4"><a href="multiple-regression.html#cb193-4"></a>      <span class="dt">x =</span> perc_white,</span>
+<span id="cb193-5"><a href="multiple-regression.html#cb193-5"></a>      <span class="dt">y =</span> perc_over100k</span>
+<span id="cb193-6"><a href="multiple-regression.html#cb193-6"></a>    )</span>
+<span id="cb193-7"><a href="multiple-regression.html#cb193-7"></a>) <span class="op">+</span></span>
+<span id="cb193-8"><a href="multiple-regression.html#cb193-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb193-9"><a href="multiple-regression.html#cb193-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-146-1.png" width="672" /></p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="multiple-regression.html#cb194-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_white, bay_multiple_tract)</span>
+<span id="cb194-2"><a href="multiple-regression.html#cb194-2"></a></span>
+<span id="cb194-3"><a href="multiple-regression.html#cb194-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_over100k ~ perc_white, data = bay_multiple_tract)
@@ -330,9 +338,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Multiple R-squared:  0.09276,    Adjusted R-squared:  0.09218 
 ## F-statistic:   161 on 1 and 1575 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Now let’s see the results of <code>lm()</code> with both race and education used as independent variables. All this entails is linking the two variables together with <code>+</code> on the right side of <code>~</code>:</p>
-<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="multiple-regression.html#cb195-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_white <span class="op">+</span><span class="st"> </span>perc_collegedegree, bay_multiple_tract)</span>
-<span id="cb195-2"><a href="multiple-regression.html#cb195-2"></a></span>
-<span id="cb195-3"><a href="multiple-regression.html#cb195-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="multiple-regression.html#cb196-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_white <span class="op">+</span><span class="st"> </span>perc_collegedegree, bay_multiple_tract)</span>
+<span id="cb196-2"><a href="multiple-regression.html#cb196-2"></a></span>
+<span id="cb196-3"><a href="multiple-regression.html#cb196-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_over100k ~ perc_white + perc_collegedegree, 
