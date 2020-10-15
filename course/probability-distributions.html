@@ -195,6 +195,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
 <li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
 <li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
+<li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
 </ul></li>
 </ul>
 
@@ -229,7 +230,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb116-4"><a href="probability-distributions.html#cb116-4"></a></span>
 <span id="cb116-5"><a href="probability-distributions.html#cb116-5"></a>time</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.43    0.00    0.42</code></pre>
+##    0.74    0.02    0.80</code></pre>
 <div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="probability-distributions.html#cb118-1"></a><span class="kw">hist</span>(sample)</span></code></pre></div>
 <p><img src="course_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
 <p>Notice that <code>proc.time()</code> has three named numeric values. <code>user</code> and <code>system</code> are more “machine-speak” and refer to different kinds of raw compute time that have accrued since you started your R session, while <code>elapsed</code> is what we would understand as seconds of experienced time. So when we run <code>proc.time()</code> at two different instances and get the difference, it’s the difference in <code>elapsed</code> that likely matters to us, and <code>time[3]</code> would give you that specific value. You can always use this technique to check how long any stretch of code takes; just make sure to run the code in its entirety, either the full chunk or by selecting all lines including <code>start</code> and <code>time</code> and hitting <code>Ctrl+Enter</code>.</p>
