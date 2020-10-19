@@ -35,13 +35,14 @@ if (length(webElem) != 0) {
     tests %>% 
     rename(text = ".") %>% 
     separate(text, c("date","test_text"), sep = "\\.") %>% 
-    separate(test_text, c(NA,"type",NA,"tests")) %>% 
+    separate(test_text, c(NA,"type",NA,"tests"), sep = " ") %>% 
     mutate(
       date = 
         substr(date,23,nchar(.)) %>% 
         as.Date("%A, %B %d, %Y"),
       tests = 
         tests %>% 
+        str_remove(",") %>%
         as.numeric()
     ) %>% 
     spread(
