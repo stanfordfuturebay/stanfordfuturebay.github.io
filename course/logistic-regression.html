@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.1 Logistic regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="4.1 Logistic regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.1 Logistic regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.1 Logistic regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  
+  
+  
+
+<meta name="author" content="Stanford Future Bay Initiative" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="statistics-part-2.html"/>
+<link rel="next" href="training-and-testing-data.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.3/leaflet-providers-plugin.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
+<li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
+<li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
+<li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
+<li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
+<li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
+<li class="chapter" data-level="2.4" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>2.4</b> Microdata</a></li>
+<li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
+<li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
+<li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
+<li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
+<li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
+<li class="chapter" data-level="3.4" data-path="sampling-bias.html"><a href="sampling-bias.html"><i class="fa fa-check"></i><b>3.4</b> Sampling bias</a></li>
+<li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
+<li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
+<li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
+<li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
+<li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
+<li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
+<li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a><ul>
+<li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
+<li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
+<li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
+<li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
+<li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
+<li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="logistic-regression" class="section level2">
+<h2><span class="header-section-number">4.1</span> Logistic regression</h2>
+<p>So far, while we’ve explored binary options in our independent variables of regression, such as White vs. non-White for individuals, we have not considered how to construct a regression analysis if the outcome (dependent) variable is a binary outcome, like an individual getting a college degree or not. In this case, we can frame that binary outcome as a percent likelihood (between 0 and 1) of the outcome happening; that essentially turns our binary outcome back into a continuous variable. However, we cannot use simple linear regression as we used in the previous chapter, because the nature of the outcomes here is quite different. Instead of the relationship between <code>x</code> and <code>y</code> being best represented by a straight line (with the residuals being normally distributed), our possible outcomes here are often represented by an <a href="https://en.wikipedia.org/wiki/Logistic_regression#Definition_of_the_logistic_function">S-shaped curve</a> that is constrained to 0 and 1 as minimum and maximum likelihoods, with some direction of <code>x</code> (or multiple <code>x</code> values) leading to an increasingly likely outcome, and vice versa (you could design your own Galton Board -style experiment to convince yourself that this curve is a good approximation of real-world phenomena). This curve seems to be a completely different model of <code>x</code> and <code>y</code> relationships from what we’ve dealt with before, but manipulating the <code>y</code> axis into a “logit” (log odds, as explained in the link above) turns the S-curve back into a linear relationship between <code>x</code> and <code>y</code>, which we can use our previous regression method to evaluate. Again, all of this still depends on the assumption that such a logit model is an appropriate representation for our observed data, which involves a similar type of pre-analysis inspection and experience as simple linear regression requires. But a logit (or logistic) regression is a powerful and generalizable technique for using linear combinations of one or more independent variables to (non-causally) predict a categorical outcome. The simplest version, which we’ll cover in this section, involves a binary outcome that can be coded as having 0 to 1 likelihood of occurring, but logistic regression can be expanded to predict from a set of multiple outcomes.</p>
+<p>For our example, let’s use individual-level PUMS data, specifically information about age, race, and ethnicity, to predict primary language spoken (English or other). The processing steps involved should be familiar to you from previous chapters.</p>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="logistic-regression.html#cb198-1"></a><span class="kw">library</span>(tidycensus)</span>
+<span id="cb198-2"><a href="logistic-regression.html#cb198-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb198-3"><a href="logistic-regression.html#cb198-3"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb198-4"><a href="logistic-regression.html#cb198-4"></a><span class="kw">library</span>(sf)</span>
+<span id="cb198-5"><a href="logistic-regression.html#cb198-5"></a></span>
+<span id="cb198-6"><a href="logistic-regression.html#cb198-6"></a><span class="kw">census_api_key</span>(<span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
+<span id="cb198-7"><a href="logistic-regression.html#cb198-7"></a></span>
+<span id="cb198-8"><a href="logistic-regression.html#cb198-8"></a>pums_vars_<span class="dv">2018</span> &lt;-<span class="st"> </span></span>
+<span id="cb198-9"><a href="logistic-regression.html#cb198-9"></a><span class="st">  </span>pums_variables <span class="op">%&gt;%</span></span>
+<span id="cb198-10"><a href="logistic-regression.html#cb198-10"></a><span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2018</span>, survey <span class="op">==</span><span class="st"> &quot;acs5&quot;</span>)</span>
+<span id="cb198-11"><a href="logistic-regression.html#cb198-11"></a></span>
+<span id="cb198-12"><a href="logistic-regression.html#cb198-12"></a>ca_pums &lt;-<span class="st"> </span><span class="kw">get_pums</span>(</span>
+<span id="cb198-13"><a href="logistic-regression.html#cb198-13"></a>  <span class="dt">variables =</span> <span class="kw">c</span>(</span>
+<span id="cb198-14"><a href="logistic-regression.html#cb198-14"></a>    <span class="st">&quot;PUMA&quot;</span>,</span>
+<span id="cb198-15"><a href="logistic-regression.html#cb198-15"></a>    <span class="st">&quot;AGEP&quot;</span>,</span>
+<span id="cb198-16"><a href="logistic-regression.html#cb198-16"></a>    <span class="st">&quot;RAC1P&quot;</span>,</span>
+<span id="cb198-17"><a href="logistic-regression.html#cb198-17"></a>    <span class="st">&quot;HISP&quot;</span>,</span>
+<span id="cb198-18"><a href="logistic-regression.html#cb198-18"></a>    <span class="st">&quot;LANX&quot;</span></span>
+<span id="cb198-19"><a href="logistic-regression.html#cb198-19"></a>  ),</span>
+<span id="cb198-20"><a href="logistic-regression.html#cb198-20"></a>  <span class="dt">state =</span> <span class="st">&quot;CA&quot;</span>,</span>
+<span id="cb198-21"><a href="logistic-regression.html#cb198-21"></a>  <span class="dt">survey =</span> <span class="st">&quot;acs5&quot;</span>,</span>
+<span id="cb198-22"><a href="logistic-regression.html#cb198-22"></a>  <span class="dt">recode =</span> T</span>
+<span id="cb198-23"><a href="logistic-regression.html#cb198-23"></a>)</span>
+<span id="cb198-24"><a href="logistic-regression.html#cb198-24"></a></span>
+<span id="cb198-25"><a href="logistic-regression.html#cb198-25"></a>ca_pumas &lt;-</span>
+<span id="cb198-26"><a href="logistic-regression.html#cb198-26"></a><span class="st">  </span><span class="kw">pumas</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">cb =</span> T, <span class="dt">progress_bar =</span> F)</span>
+<span id="cb198-27"><a href="logistic-regression.html#cb198-27"></a></span>
+<span id="cb198-28"><a href="logistic-regression.html#cb198-28"></a>bay_county_names &lt;-</span>
+<span id="cb198-29"><a href="logistic-regression.html#cb198-29"></a><span class="st">  </span><span class="kw">c</span>(</span>
+<span id="cb198-30"><a href="logistic-regression.html#cb198-30"></a>    <span class="st">&quot;Alameda&quot;</span>,</span>
+<span id="cb198-31"><a href="logistic-regression.html#cb198-31"></a>    <span class="st">&quot;Contra Costa&quot;</span>,</span>
+<span id="cb198-32"><a href="logistic-regression.html#cb198-32"></a>    <span class="st">&quot;Marin&quot;</span>,</span>
+<span id="cb198-33"><a href="logistic-regression.html#cb198-33"></a>    <span class="st">&quot;Napa&quot;</span>,</span>
+<span id="cb198-34"><a href="logistic-regression.html#cb198-34"></a>    <span class="st">&quot;San Francisco&quot;</span>,</span>
+<span id="cb198-35"><a href="logistic-regression.html#cb198-35"></a>    <span class="st">&quot;San Mateo&quot;</span>,</span>
+<span id="cb198-36"><a href="logistic-regression.html#cb198-36"></a>    <span class="st">&quot;Santa Clara&quot;</span>,</span>
+<span id="cb198-37"><a href="logistic-regression.html#cb198-37"></a>    <span class="st">&quot;Solano&quot;</span>,</span>
+<span id="cb198-38"><a href="logistic-regression.html#cb198-38"></a>    <span class="st">&quot;Sonoma&quot;</span></span>
+<span id="cb198-39"><a href="logistic-regression.html#cb198-39"></a>  )</span>
+<span id="cb198-40"><a href="logistic-regression.html#cb198-40"></a></span>
+<span id="cb198-41"><a href="logistic-regression.html#cb198-41"></a>bay_counties &lt;-</span>
+<span id="cb198-42"><a href="logistic-regression.html#cb198-42"></a><span class="st">  </span><span class="kw">counties</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">cb =</span> T, <span class="dt">progress_bar =</span> F) <span class="op">%&gt;%</span></span>
+<span id="cb198-43"><a href="logistic-regression.html#cb198-43"></a><span class="st">  </span><span class="kw">filter</span>(NAME <span class="op">%in%</span><span class="st"> </span>bay_county_names)</span>
+<span id="cb198-44"><a href="logistic-regression.html#cb198-44"></a></span>
+<span id="cb198-45"><a href="logistic-regression.html#cb198-45"></a>bay_pumas &lt;-</span>
+<span id="cb198-46"><a href="logistic-regression.html#cb198-46"></a><span class="st">  </span>ca_pumas <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-47"><a href="logistic-regression.html#cb198-47"></a><span class="st">  </span><span class="kw">st_centroid</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-48"><a href="logistic-regression.html#cb198-48"></a><span class="st">  </span>.[bay_counties, ] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-49"><a href="logistic-regression.html#cb198-49"></a><span class="st">  </span><span class="kw">st_set_geometry</span>(<span class="ot">NULL</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-50"><a href="logistic-regression.html#cb198-50"></a><span class="st">  </span><span class="kw">left_join</span>(ca_pumas <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(GEOID10)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-51"><a href="logistic-regression.html#cb198-51"></a><span class="st">  </span><span class="kw">st_as_sf</span>()</span>
+<span id="cb198-52"><a href="logistic-regression.html#cb198-52"></a></span>
+<span id="cb198-53"><a href="logistic-regression.html#cb198-53"></a>bay_pums &lt;-</span>
+<span id="cb198-54"><a href="logistic-regression.html#cb198-54"></a><span class="st">  </span>ca_pums <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-55"><a href="logistic-regression.html#cb198-55"></a><span class="st">  </span><span class="kw">filter</span>(PUMA <span class="op">%in%</span><span class="st"> </span>bay_pumas<span class="op">$</span>PUMACE10)</span></code></pre></div>
+<p>We’ll use <code>AGEP</code>, age, as a continuous variable, but for race and ethnicity, we’ll code <code>white</code> and <code>hispanic</code> as binary 0 or 1 variables. We’ll do the same for the dependent variable whose probability we’d like to predict, <code>english</code>, though you should consider this 0 to 1 coding to be used quite distinctly in the logistic regression as it will be treated as “odds” and converted to a log value.</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="logistic-regression.html#cb199-1"></a>bay_pums_language &lt;-</span>
+<span id="cb199-2"><a href="logistic-regression.html#cb199-2"></a><span class="st">  </span>bay_pums <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb199-3"><a href="logistic-regression.html#cb199-3"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb199-4"><a href="logistic-regression.html#cb199-4"></a>    <span class="dt">white =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb199-5"><a href="logistic-regression.html#cb199-5"></a>      RAC1P_label <span class="op">==</span><span class="st"> &quot;White alone&quot;</span>,</span>
+<span id="cb199-6"><a href="logistic-regression.html#cb199-6"></a>      <span class="dv">1</span>,</span>
+<span id="cb199-7"><a href="logistic-regression.html#cb199-7"></a>      <span class="dv">0</span></span>
+<span id="cb199-8"><a href="logistic-regression.html#cb199-8"></a>    ),</span>
+<span id="cb199-9"><a href="logistic-regression.html#cb199-9"></a>    <span class="dt">HISP_label =</span> HISP_label <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.character</span>(),</span>
+<span id="cb199-10"><a href="logistic-regression.html#cb199-10"></a>    <span class="dt">hispanic =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb199-11"><a href="logistic-regression.html#cb199-11"></a>      <span class="kw">is.na</span>(HISP_label),</span>
+<span id="cb199-12"><a href="logistic-regression.html#cb199-12"></a>      <span class="dv">0</span>,</span>
+<span id="cb199-13"><a href="logistic-regression.html#cb199-13"></a>      <span class="dv">1</span></span>
+<span id="cb199-14"><a href="logistic-regression.html#cb199-14"></a>    ),</span>
+<span id="cb199-15"><a href="logistic-regression.html#cb199-15"></a>    <span class="dt">english =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb199-16"><a href="logistic-regression.html#cb199-16"></a>      LANX_label <span class="op">==</span><span class="st"> &quot;No, speaks only English&quot;</span>,</span>
+<span id="cb199-17"><a href="logistic-regression.html#cb199-17"></a>      <span class="dv">1</span>,</span>
+<span id="cb199-18"><a href="logistic-regression.html#cb199-18"></a>      <span class="dv">0</span></span>
+<span id="cb199-19"><a href="logistic-regression.html#cb199-19"></a>    )</span>
+<span id="cb199-20"><a href="logistic-regression.html#cb199-20"></a>  )</span></code></pre></div>
+<p>Now, instead of <code>lm()</code>, we will use a more generalized function called <code>glm()</code> which can be used to do the simple linear regression from the last chapter, but can also receive different arguments under <code>family=</code> which change the “type” of regression to be performed (i.e. what kind of error distribution to expect in the data). Here, we’ll indicate <code>family = binomial()</code> to let the function know that the function should be interpreted like a logit function.</p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="logistic-regression.html#cb200-1"></a>logit_model &lt;-<span class="st"> </span><span class="kw">glm</span>(</span>
+<span id="cb200-2"><a href="logistic-regression.html#cb200-2"></a>  english <span class="op">~</span><span class="st"> </span>AGEP <span class="op">+</span><span class="st"> </span>white <span class="op">+</span><span class="st"> </span>hispanic,</span>
+<span id="cb200-3"><a href="logistic-regression.html#cb200-3"></a>  <span class="dt">family =</span> <span class="kw">binomial</span>(),</span>
+<span id="cb200-4"><a href="logistic-regression.html#cb200-4"></a>  <span class="dt">data =</span> bay_pums_language,</span>
+<span id="cb200-5"><a href="logistic-regression.html#cb200-5"></a>  <span class="dt">weights =</span> PWGTP</span>
+<span id="cb200-6"><a href="logistic-regression.html#cb200-6"></a>)</span>
+<span id="cb200-7"><a href="logistic-regression.html#cb200-7"></a></span>
+<span id="cb200-8"><a href="logistic-regression.html#cb200-8"></a><span class="kw">summary</span>(logit_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = english ~ AGEP + white + hispanic, family = binomial(), 
+##     data = bay_pums_language, weights = PWGTP)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -25.067   -4.091    2.410    3.703   23.245  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -9.551e-01  1.726e-03  -553.2   &lt;2e-16 ***
+## AGEP         1.010e-02  3.579e-05   282.1   &lt;2e-16 ***
+## white        1.587e+00  1.592e-03   996.7   &lt;2e-16 ***
+## hispanic    -1.145e+00  4.372e-03  -261.8   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 10585108  on 376056  degrees of freedom
+## Residual deviance:  9286183  on 376053  degrees of freedom
+## AIC: 9286191
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p>Note that because of <code>family = binomial()</code>, <code>glm()</code> interprets the dependent and independent variables in the appropriate way for logistic regression. If you wanted to use <code>glm()</code> for simple linear regression (“ordinary least squares”), you could specify <code>family = gaussian()</code>. The interpretation of the <code>glm()</code> is not immediately intuitive because the <code>y</code> value is the “log odds” of speaking English. If we take the <code>exp()</code> of all regression coefficients, the <code>y</code> value becomes “odds”.</p>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="logistic-regression.html#cb202-1"></a><span class="kw">exp</span>(<span class="kw">coef</span>(logit_model))</span></code></pre></div>
+<pre><code>## (Intercept)        AGEP       white    hispanic 
+##   0.3847781   1.0101468   4.8876598   0.3183645</code></pre>
+<p><code>Odds</code> divided by <code>1 + odds</code> yields probability of occurring, as most are more likely to intuitively understand. At face value, the negative and positive signs in the <code>glm()</code> indicate:</p>
+<ul>
+<li>As age increases, holding other variables constant, probability of speaking English increases</li>
+<li>If the individual is white, holding other variables constant, probability of speaking English increases</li>
+<li>If the individual is Hispanic, holding other variables constant, probability of speaking English decreases</li>
+</ul>
+<p>The exact probabilities can be computed, or predicted for specific combinations of independent variables using <code>predict()</code> with the extra argument <code>type = “response”</code> to convert the result into probability of occurrence:</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="logistic-regression.html#cb204-1"></a><span class="kw">predict</span>(logit_model, <span class="kw">data.frame</span>(<span class="dt">AGEP =</span> <span class="dv">40</span>, <span class="dt">white =</span> <span class="dv">1</span>, <span class="dt">hispanic =</span> <span class="dv">0</span>), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<pre><code>##         1 
+## 0.7379715</code></pre>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="statistics-part-2.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="training-and-testing-data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "none",
+"scroll_highlight": true
+},
+"toolbar": {
+"position": "fixed"
+},
+"search": false,
+"info": false
+});
+});
+</script>
+
+</body>
+
+</html>
