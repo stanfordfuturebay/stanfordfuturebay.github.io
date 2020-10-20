@@ -194,6 +194,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
 <li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
+<li class="chapter" data-level="6.2" data-path="parcel-data.html"><a href="parcel-data.html"><i class="fa fa-check"></i><b>6.2</b> Parcel data</a></li>
+<li class="chapter" data-level="6.3" data-path="assignment-6.html"><a href="assignment-6.html"><i class="fa fa-check"></i><b>6.3</b> Assignment 6</a></li>
 </ul></li>
 </ul>
 
@@ -240,22 +242,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -25.058   -4.087    2.412    3.704   23.263  
+## -25.042   -4.096    2.410    3.710   23.243  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -9.565e-01  1.931e-03  -495.4   &lt;2e-16 ***
-## AGEP         1.004e-02  4.002e-05   250.9   &lt;2e-16 ***
-## white        1.589e+00  1.780e-03   892.6   &lt;2e-16 ***
-## hispanic    -1.131e+00  4.859e-03  -232.7   &lt;2e-16 ***
+## (Intercept) -9.558e-01  1.929e-03  -495.5   &lt;2e-16 ***
+## AGEP         1.014e-02  3.997e-05   253.6   &lt;2e-16 ***
+## white        1.582e+00  1.778e-03   889.7   &lt;2e-16 ***
+## hispanic    -1.161e+00  4.894e-03  -237.3   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 8467110  on 300736  degrees of freedom
-## Residual deviance: 7427203  on 300733  degrees of freedom
-## AIC: 7427211
+##     Null deviance: 8478253  on 300943  degrees of freedom
+## Residual deviance: 7440076  on 300940  degrees of freedom
+## AIC: 7440084
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
@@ -277,8 +279,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
-##   No (ESL)      22751  9107
-##   Yes (English) 12793 30669</code></pre>
+##   No (ESL)      22968  8829
+##   Yes (English) 12901 30415</code></pre>
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>
