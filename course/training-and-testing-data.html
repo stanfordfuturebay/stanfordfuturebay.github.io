@@ -189,14 +189,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
 <li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
 </ul></li>
+<<<<<<< Updated upstream
 <li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a>
 <ul>
+=======
+<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a><ul>
+>>>>>>> Stashed changes
 <li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
 <li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
 <li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
 <li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
 <li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
 </ul></li>
+<<<<<<< Updated upstream
+=======
+<li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
+<li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
+</ul></li>
+>>>>>>> Stashed changes
 </ul>
 
       </nav>
@@ -242,6 +252,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
+<<<<<<< Updated upstream
 ## -25.048   -4.088    2.411    3.704   23.260  
 ## 
 ## Coefficients:
@@ -250,14 +261,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## AGEP         1.003e-02  4.003e-05   250.5   &lt;2e-16 ***
 ## white        1.587e+00  1.780e-03   891.6   &lt;2e-16 ***
 ## hispanic    -1.158e+00  4.879e-03  -237.3   &lt;2e-16 ***
+=======
+## -25.090   -4.083    2.406    3.698   21.349  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -9.610e-01  1.934e-03  -497.0   &lt;2e-16 ***
+## AGEP         1.012e-02  4.006e-05   252.7   &lt;2e-16 ***
+## white        1.595e+00  1.782e-03   894.8   &lt;2e-16 ***
+## hispanic    -1.146e+00  4.893e-03  -234.3   &lt;2e-16 ***
+>>>>>>> Stashed changes
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
+<<<<<<< Updated upstream
 ##     Null deviance: 8467821  on 300680  degrees of freedom
 ## Residual deviance: 7428144  on 300677  degrees of freedom
 ## AIC: 7428152
+=======
+##     Null deviance: 8459480  on 300536  degrees of freedom
+## Residual deviance: 7413156  on 300533  degrees of freedom
+## AIC: 7413164
+>>>>>>> Stashed changes
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
@@ -279,8 +306,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
+<<<<<<< Updated upstream
 ##   No (ESL)      22804  8948
 ##   Yes (English) 12957 30667</code></pre>
+=======
+##   No (ESL)      22886  9148
+##   Yes (English) 12900 30586</code></pre>
+>>>>>>> Stashed changes
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>
