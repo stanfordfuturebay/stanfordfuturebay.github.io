@@ -32,7 +32,6 @@
   
 <link rel="prev" href="logistic-regression.html"/>
 <link rel="next" href="matching.html"/>
-<script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -72,17 +71,18 @@
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -102,7 +102,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -150,8 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
-<ul>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
 <li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
 <li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
 <li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
@@ -163,8 +162,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
-<ul>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
 <li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
 <li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
@@ -172,8 +170,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
 <li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a>
-<ul>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
 <li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
 <li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
 <li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
@@ -181,32 +178,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
 <li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a>
-<ul>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
 <li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
 <li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
 <li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
 <li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
 <li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
 </ul></li>
-<<<<<<< Updated upstream
-<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a>
-<ul>
-=======
 <li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a><ul>
->>>>>>> Stashed changes
 <li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
 <li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
 <li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
 <li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
 <li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
 </ul></li>
-<<<<<<< Updated upstream
-=======
 <li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
 <li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
 </ul></li>
->>>>>>> Stashed changes
 </ul>
 
       </nav>
@@ -224,7 +212,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="training-and-testing-data" class="section level2" number="4.2">
+<div id="training-and-testing-data" class="section level2">
 <h2><span class="header-section-number">4.2</span> Training and testing data</h2>
 <p>As an extension of the logistic regression technique, let’s use a logistic model “trained” on a portion of our PUMS data to try to predict the language of some other “testing” portion of our data, and explicitly evaluate how well the model performs in this test, relative to the actual values from the PUMS data. First, let’s use <code>sample()</code> in a similar way to how we used it in Section 3.1 to split our PUMS data. We’ll pick an arbitrary 80% of the PUMS data to use as “training” data and the other 20% to “test” our model.</p>
 <div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="training-and-testing-data.html#cb206-1"></a>sample &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
@@ -252,39 +240,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-<<<<<<< Updated upstream
-## -25.048   -4.088    2.411    3.704   23.260  
+## -25.058   -4.087    2.412    3.704   23.263  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -9.557e-01  1.929e-03  -495.3   &lt;2e-16 ***
-## AGEP         1.003e-02  4.003e-05   250.5   &lt;2e-16 ***
-## white        1.587e+00  1.780e-03   891.6   &lt;2e-16 ***
-## hispanic    -1.158e+00  4.879e-03  -237.3   &lt;2e-16 ***
-=======
-## -25.090   -4.083    2.406    3.698   21.349  
-## 
-## Coefficients:
-##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -9.610e-01  1.934e-03  -497.0   &lt;2e-16 ***
-## AGEP         1.012e-02  4.006e-05   252.7   &lt;2e-16 ***
-## white        1.595e+00  1.782e-03   894.8   &lt;2e-16 ***
-## hispanic    -1.146e+00  4.893e-03  -234.3   &lt;2e-16 ***
->>>>>>> Stashed changes
+## (Intercept) -9.565e-01  1.931e-03  -495.4   &lt;2e-16 ***
+## AGEP         1.004e-02  4.002e-05   250.9   &lt;2e-16 ***
+## white        1.589e+00  1.780e-03   892.6   &lt;2e-16 ***
+## hispanic    -1.131e+00  4.859e-03  -232.7   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-<<<<<<< Updated upstream
-##     Null deviance: 8467821  on 300680  degrees of freedom
-## Residual deviance: 7428144  on 300677  degrees of freedom
-## AIC: 7428152
-=======
-##     Null deviance: 8459480  on 300536  degrees of freedom
-## Residual deviance: 7413156  on 300533  degrees of freedom
-## AIC: 7413164
->>>>>>> Stashed changes
+##     Null deviance: 8467110  on 300736  degrees of freedom
+## Residual deviance: 7427203  on 300733  degrees of freedom
+## AIC: 7427211
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
@@ -306,13 +277,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
-<<<<<<< Updated upstream
-##   No (ESL)      22804  8948
-##   Yes (English) 12957 30667</code></pre>
-=======
-##   No (ESL)      22886  9148
-##   Yes (English) 12900 30586</code></pre>
->>>>>>> Stashed changes
+##   No (ESL)      22751  9107
+##   Yes (English) 12793 30669</code></pre>
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>

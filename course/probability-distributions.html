@@ -32,7 +32,6 @@
   
 <link rel="prev" href="statistics-part-1.html"/>
 <link rel="next" href="monte-carlo-simulations.html"/>
-<script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -72,17 +71,18 @@
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -102,7 +102,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -150,8 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
-<ul>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
 <li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
 <li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
 <li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
@@ -163,8 +162,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
 <li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
-<ul>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
 <li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
 <li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
 <li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
@@ -172,8 +170,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
 <li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a>
-<ul>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
 <li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
 <li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
 <li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
@@ -181,32 +178,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
 <li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a>
-<ul>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
 <li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
 <li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
 <li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
 <li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
 <li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
 </ul></li>
-<<<<<<< Updated upstream
-<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a>
-<ul>
-=======
 <li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a><ul>
->>>>>>> Stashed changes
 <li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
 <li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
 <li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
 <li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
 <li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
 </ul></li>
-<<<<<<< Updated upstream
-=======
 <li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
 <li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
 </ul></li>
->>>>>>> Stashed changes
 </ul>
 
       </nav>
@@ -224,7 +212,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="probability-distributions" class="section level2" number="3.1">
+<div id="probability-distributions" class="section level2">
 <h2><span class="header-section-number">3.1</span> Probability distributions</h2>
 <p>Let’s first play with a basic random number generator function in R to create the kinds of probability distributions we might expect in urban phenomena. If you provide <code>runif()</code> (which standards for “uniform”, by the way) a single number as an argument, that will be the number of random numbers generated between, by default, 0 and 1. Let’s pair this with <code>hist()</code> which makes a simple histogram; a histogram is doable with <code>ggplot()</code> too, but <code>hist()</code> is built into base R and is easier to quickly deploy.</p>
 <div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="probability-distributions.html#cb115-1"></a><span class="kw">library</span>(tidyverse)</span>
@@ -240,11 +228,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb116-4"><a href="probability-distributions.html#cb116-4"></a></span>
 <span id="cb116-5"><a href="probability-distributions.html#cb116-5"></a>time</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-<<<<<<< Updated upstream
-##    0.74    0.02    0.80</code></pre>
-=======
-##    0.24    0.03    0.28</code></pre>
->>>>>>> Stashed changes
+##    0.30    0.02    0.32</code></pre>
 <div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="probability-distributions.html#cb118-1"></a><span class="kw">hist</span>(sample)</span></code></pre></div>
 <p><img src="course_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
 <p>Notice that <code>proc.time()</code> has three named numeric values. <code>user</code> and <code>system</code> are more “machine-speak” and refer to different kinds of raw compute time that have accrued since you started your R session, while <code>elapsed</code> is what we would understand as seconds of experienced time. So when we run <code>proc.time()</code> at two different instances and get the difference, it’s the difference in <code>elapsed</code> that likely matters to us, and <code>time[3]</code> would give you that specific value. You can always use this technique to check how long any stretch of code takes; just make sure to run the code in its entirety, either the full chunk or by selecting all lines including <code>start</code> and <code>time</code> and hitting <code>Ctrl+Enter</code>.</p>
