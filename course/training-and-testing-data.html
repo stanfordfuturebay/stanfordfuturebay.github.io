@@ -196,7 +196,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
 <li class="chapter" data-level="6.2" data-path="parcel-data.html"><a href="parcel-data.html"><i class="fa fa-check"></i><b>6.2</b> Parcel data</a></li>
 <li class="chapter" data-level="6.3" data-path="census-to-parcel-disaggregation.html"><a href="census-to-parcel-disaggregation.html"><i class="fa fa-check"></i><b>6.3</b> Census-to-parcel disaggregation</a></li>
-<li class="chapter" data-level="6.4" data-path="assignment-6.html"><a href="assignment-6.html"><i class="fa fa-check"></i><b>6.4</b> Assignment 6</a></li>
+<li class="chapter" data-level="6.4" data-path="parcel-and-building-geometries.html"><a href="parcel-and-building-geometries.html"><i class="fa fa-check"></i><b>6.4</b> Parcel and building geometries</a></li>
+<li class="chapter" data-level="6.5" data-path="address-geocoding-and-matching.html"><a href="address-geocoding-and-matching.html"><i class="fa fa-check"></i><b>6.5</b> Address geocoding and matching</a></li>
+<li class="chapter" data-level="6.6" data-path="assignment-6.html"><a href="assignment-6.html"><i class="fa fa-check"></i><b>6.6</b> Assignment 6</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="sustainability.html"><a href="sustainability.html"><i class="fa fa-check"></i><b>7</b> Sustainability</a><ul>
+<li class="chapter" data-level="7.1" data-path="vehicle-emissions.html"><a href="vehicle-emissions.html"><i class="fa fa-check"></i><b>7.1</b> Vehicle emissions</a></li>
+<li class="chapter" data-level="7.2" data-path="assignment-7.html"><a href="assignment-7.html"><i class="fa fa-check"></i><b>7.2</b> Assignment 7</a></li>
 </ul></li>
 </ul>
 
@@ -243,22 +249,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -21.196   -4.087    2.404    3.690   21.432  
+## -25.032   -4.091    2.407    3.708   21.293  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -9.523e-01  1.930e-03  -493.5   &lt;2e-16 ***
-## AGEP         9.988e-03  4.005e-05   249.4   &lt;2e-16 ***
-## white        1.597e+00  1.782e-03   896.5   &lt;2e-16 ***
-## hispanic    -1.140e+00  4.896e-03  -232.9   &lt;2e-16 ***
+## (Intercept) -9.683e-01  1.931e-03  -501.5   &lt;2e-16 ***
+## AGEP         1.033e-02  3.999e-05   258.2   &lt;2e-16 ***
+## white        1.585e+00  1.779e-03   891.0   &lt;2e-16 ***
+## hispanic    -1.131e+00  4.872e-03  -232.1   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 8470318  on 300887  degrees of freedom
-## Residual deviance: 7422392  on 300884  degrees of freedom
-## AIC: 7422400
+##     Null deviance: 8473039  on 300987  degrees of freedom
+## Residual deviance: 7433110  on 300984  degrees of freedom
+## AIC: 7433118
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
@@ -280,8 +286,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
-##   No (ESL)      22941  9233
-##   Yes (English) 12796 30199</code></pre>
+##   No (ESL)      22577  9010
+##   Yes (English) 12833 30649</code></pre>
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>
