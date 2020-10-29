@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7.2 Building emissions | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="7.2 Building emissions | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7.2 Building emissions | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7.2 Building emissions | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  
+  
+  
+
+<meta name="author" content="Stanford Future Bay Initiative" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="vehicle-emissions.html"/>
+<link rel="next" href="assignment-7.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.3/leaflet-providers-plugin.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
+<li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
+<li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
+<li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
+<li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
+<li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
+<li class="chapter" data-level="2.4" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>2.4</b> Microdata</a></li>
+<li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
+<li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
+<li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
+<li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
+<li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
+<li class="chapter" data-level="3.4" data-path="sampling-bias.html"><a href="sampling-bias.html"><i class="fa fa-check"></i><b>3.4</b> Sampling bias</a></li>
+<li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
+<li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
+<li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
+<li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
+<li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
+<li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
+<li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a><ul>
+<li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
+<li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
+<li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
+<li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
+<li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
+<li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
+<li class="chapter" data-level="6.2" data-path="parcel-data.html"><a href="parcel-data.html"><i class="fa fa-check"></i><b>6.2</b> Parcel data</a></li>
+<li class="chapter" data-level="6.3" data-path="census-to-parcel-disaggregation.html"><a href="census-to-parcel-disaggregation.html"><i class="fa fa-check"></i><b>6.3</b> Census-to-parcel disaggregation</a></li>
+<li class="chapter" data-level="6.4" data-path="parcel-and-building-geometries.html"><a href="parcel-and-building-geometries.html"><i class="fa fa-check"></i><b>6.4</b> Parcel and building geometries</a></li>
+<li class="chapter" data-level="6.5" data-path="address-geocoding-and-matching.html"><a href="address-geocoding-and-matching.html"><i class="fa fa-check"></i><b>6.5</b> Address geocoding and matching</a></li>
+<li class="chapter" data-level="6.6" data-path="assignment-6.html"><a href="assignment-6.html"><i class="fa fa-check"></i><b>6.6</b> Assignment 6</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="sustainability.html"><a href="sustainability.html"><i class="fa fa-check"></i><b>7</b> Sustainability</a><ul>
+<li class="chapter" data-level="7.1" data-path="vehicle-emissions.html"><a href="vehicle-emissions.html"><i class="fa fa-check"></i><b>7.1</b> Vehicle emissions</a></li>
+<li class="chapter" data-level="7.2" data-path="building-emissions.html"><a href="building-emissions.html"><i class="fa fa-check"></i><b>7.2</b> Building emissions</a></li>
+<li class="chapter" data-level="7.3" data-path="assignment-7.html"><a href="assignment-7.html"><i class="fa fa-check"></i><b>7.3</b> Assignment 7</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="building-emissions" class="section level2">
+<h2><span class="header-section-number">7.2</span> Building emissions</h2>
+<p>We have already introduced energy data in Chapter 1 and parcel data in Section 6.2. In the absence of direct building-level energy data, aggregated energy data can still be used to estimate GHG emissions from building energy use for large regions, and can be combined with aggregated parcel data to gain insights about energy efficiency.</p>
+<p>Let’s start by reading 2019 PG&amp;E electricity and gas data. We can use the same technique as we used in Section 1.6, but this time make use of an additional nested for loop to loop through both “Electric” and “Gas” files from the PG&amp;E site. We need to deal with differences in the field names of each kind of CSV, where electricity data is provided as <code>TOTALKWH</code> (kilowatt-hours) while gas data is provided as <code>TOTALTHM</code> (therms). To deal with these different units, and since we ultimately want to get to GHG emissions in units of metric tonnes of carbon equivalent, we can convert both fields to <code>TOTALTCO2E</code> within the loop before binding the different quarterly files together.</p>
+<p>Converting from electricity or gas units to CO2 equivalent depends on some knowledge of the actual technological operations involved. Starting with electricity, which can have highly variable emissions depending on the generation sources, we can use PG&amp;E’s voluntary emissions reporting which can be viewed at their <a href="https://www.pgecorp.com/corp_responsibility/reports/2020/en02_climate_change.html">Corporate Sustainability page</a> under “Benchmarking Greenhouse Gas Emissions for Delivered Electricity”. Plotting the table information yields the following:</p>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="building-emissions.html#cb338-1"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb338-2"><a href="building-emissions.html#cb338-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb338-3"><a href="building-emissions.html#cb338-3"></a><span class="kw">library</span>(sf)</span>
+<span id="cb338-4"><a href="building-emissions.html#cb338-4"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb338-5"><a href="building-emissions.html#cb338-5"></a><span class="kw">library</span>(mapboxapi)</span></code></pre></div>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="building-emissions.html#cb339-1"></a>pge_elec_emissions_factor &lt;-</span>
+<span id="cb339-2"><a href="building-emissions.html#cb339-2"></a><span class="st">  </span><span class="kw">data.frame</span>(</span>
+<span id="cb339-3"><a href="building-emissions.html#cb339-3"></a>    <span class="dt">year =</span> <span class="kw">c</span>(<span class="dv">2013</span><span class="op">:</span><span class="dv">2018</span>),</span>
+<span id="cb339-4"><a href="building-emissions.html#cb339-4"></a>    <span class="dt">factor =</span> <span class="kw">c</span>(<span class="dv">427</span>,<span class="dv">435</span>,<span class="dv">405</span>,<span class="dv">294</span>,<span class="dv">210</span>,<span class="dv">206</span>)</span>
+<span id="cb339-5"><a href="building-emissions.html#cb339-5"></a>  )</span>
+<span id="cb339-6"><a href="building-emissions.html#cb339-6"></a></span>
+<span id="cb339-7"><a href="building-emissions.html#cb339-7"></a>pge_elec_emissions_factor <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb339-8"><a href="building-emissions.html#cb339-8"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb339-9"><a href="building-emissions.html#cb339-9"></a><span class="st">  </span><span class="kw">geom_line</span>(</span>
+<span id="cb339-10"><a href="building-emissions.html#cb339-10"></a>    <span class="kw">aes</span>(</span>
+<span id="cb339-11"><a href="building-emissions.html#cb339-11"></a>      <span class="dt">x =</span> year,</span>
+<span id="cb339-12"><a href="building-emissions.html#cb339-12"></a>      <span class="dt">y =</span> factor</span>
+<span id="cb339-13"><a href="building-emissions.html#cb339-13"></a>    )</span>
+<span id="cb339-14"><a href="building-emissions.html#cb339-14"></a>  ) <span class="op">+</span></span>
+<span id="cb339-15"><a href="building-emissions.html#cb339-15"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb339-16"><a href="building-emissions.html#cb339-16"></a>    <span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>,</span>
+<span id="cb339-17"><a href="building-emissions.html#cb339-17"></a>    <span class="dt">y =</span> <span class="st">&quot;Pounds of CO2 per MHh&quot;</span>,</span>
+<span id="cb339-18"><a href="building-emissions.html#cb339-18"></a>    <span class="dt">title =</span> <span class="st">&quot;PG&amp;E electricity emissions rate&quot;</span></span>
+<span id="cb339-19"><a href="building-emissions.html#cb339-19"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-281-1.png" width="672" /></p>
+<p>To work with 2019 PG&amp;E data, we could assume that the emissions factor has continued to steadily decline in 2019 at the same pace as it declined between 2017 and 2018, which was not much. With these factors, we can convert kWh to MWh to pounds of CO2, and from there, to metric tonnes (1 pound = 0.000453592 metric tonnes, according to Google).</p>
+<p>Keep in mind that in the Bay Area, many community choice aggregators, such as <a href="https://www.cleanpowersf.org/energysources">CleanPowerSF</a> in San Francisco, provide an alternative electricity generation option for consumers with increased renewable energy content, potentially up to zero carbon emissions (PG&amp;E is still responsible for delivery through its wires and infrastructure). This demonstration will assume that the PG&amp;E data shows full electricity consumption including CCA-generated electricity, and accounts for that portion of electricity usage having a lower carbon footprint.</p>
+<p>For natural gas, since the composition of PG&amp;E’s natural gas does not change significantly over time, we’ll use just one emissions factor from the <a href="https://www.eia.gov/environment/emissions/co2_vol_mass.php">U.S. Energy Information Administration</a>, which is 117 pounds of CO2 per million BTU. So we can convert therms to MBTUs to pounds of CO2, and from there, to metric tonnes; the conversion ends up being 0.00531 metric tonnes per therm.</p>
+<p>One last note before we process the PG&amp;E data: it turns out that there is an error in 2017 Q4 data downloaded from the website, where Q4 accidentally includes September 2017, which should only be part of Q3. This is the kind of data issue that one should always be on the lookout for when working with new datasets. We’ll remove that double-counted September 2017 data manually.</p>
+<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="building-emissions.html#cb340-1"></a>pge_elec_emissions_factor &lt;-</span>
+<span id="cb340-2"><a href="building-emissions.html#cb340-2"></a><span class="st">  </span><span class="kw">data.frame</span>(</span>
+<span id="cb340-3"><a href="building-emissions.html#cb340-3"></a>    <span class="dt">year =</span> <span class="kw">c</span>(<span class="dv">2013</span><span class="op">:</span><span class="dv">2019</span>),</span>
+<span id="cb340-4"><a href="building-emissions.html#cb340-4"></a>    <span class="dt">factor =</span> <span class="kw">c</span>(<span class="dv">427</span>,<span class="dv">435</span>,<span class="dv">405</span>,<span class="dv">294</span>,<span class="dv">210</span>,<span class="dv">206</span>, <span class="dv">204</span>)</span>
+<span id="cb340-5"><a href="building-emissions.html#cb340-5"></a>  )</span>
+<span id="cb340-6"><a href="building-emissions.html#cb340-6"></a></span>
+<span id="cb340-7"><a href="building-emissions.html#cb340-7"></a>pge_data &lt;-<span class="st"> </span></span>
+<span id="cb340-8"><a href="building-emissions.html#cb340-8"></a><span class="st">  </span><span class="dv">2013</span><span class="op">:</span><span class="dv">2019</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-9"><a href="building-emissions.html#cb340-9"></a><span class="st">  </span><span class="kw">map_dfr</span>(<span class="cf">function</span>(yr){</span>
+<span id="cb340-10"><a href="building-emissions.html#cb340-10"></a>    </span>
+<span id="cb340-11"><a href="building-emissions.html#cb340-11"></a>    factor &lt;-<span class="st"> </span></span>
+<span id="cb340-12"><a href="building-emissions.html#cb340-12"></a><span class="st">      </span>pge_elec_emissions_factor <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-13"><a href="building-emissions.html#cb340-13"></a><span class="st">      </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span>yr) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-14"><a href="building-emissions.html#cb340-14"></a><span class="st">      </span><span class="kw">pull</span>(factor)</span>
+<span id="cb340-15"><a href="building-emissions.html#cb340-15"></a>    </span>
+<span id="cb340-16"><a href="building-emissions.html#cb340-16"></a>    <span class="dv">1</span><span class="op">:</span><span class="dv">4</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-17"><a href="building-emissions.html#cb340-17"></a><span class="st">      </span><span class="kw">map_dfr</span>(<span class="cf">function</span>(quarter){</span>
+<span id="cb340-18"><a href="building-emissions.html#cb340-18"></a>        </span>
+<span id="cb340-19"><a href="building-emissions.html#cb340-19"></a>        <span class="kw">c</span>(<span class="st">&quot;Electric&quot;</span>,<span class="st">&quot;Gas&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-20"><a href="building-emissions.html#cb340-20"></a><span class="st">          </span><span class="kw">map_dfr</span>(<span class="cf">function</span>(type){</span>
+<span id="cb340-21"><a href="building-emissions.html#cb340-21"></a>            </span>
+<span id="cb340-22"><a href="building-emissions.html#cb340-22"></a>            filename &lt;-<span class="st"> </span></span>
+<span id="cb340-23"><a href="building-emissions.html#cb340-23"></a><span class="st">              </span><span class="kw">paste0</span>(</span>
+<span id="cb340-24"><a href="building-emissions.html#cb340-24"></a>                <span class="st">&quot;pge/PGE_&quot;</span>,</span>
+<span id="cb340-25"><a href="building-emissions.html#cb340-25"></a>                yr,</span>
+<span id="cb340-26"><a href="building-emissions.html#cb340-26"></a>                <span class="st">&quot;_Q&quot;</span>,</span>
+<span id="cb340-27"><a href="building-emissions.html#cb340-27"></a>                quarter,</span>
+<span id="cb340-28"><a href="building-emissions.html#cb340-28"></a>                <span class="st">&quot;_&quot;</span>,</span>
+<span id="cb340-29"><a href="building-emissions.html#cb340-29"></a>                type,</span>
+<span id="cb340-30"><a href="building-emissions.html#cb340-30"></a>                <span class="st">&quot;UsageByZip.csv&quot;</span></span>
+<span id="cb340-31"><a href="building-emissions.html#cb340-31"></a>              )</span>
+<span id="cb340-32"><a href="building-emissions.html#cb340-32"></a>            </span>
+<span id="cb340-33"><a href="building-emissions.html#cb340-33"></a>            <span class="kw">print</span>(filename)</span>
+<span id="cb340-34"><a href="building-emissions.html#cb340-34"></a>            </span>
+<span id="cb340-35"><a href="building-emissions.html#cb340-35"></a>            temp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(filename)</span>
+<span id="cb340-36"><a href="building-emissions.html#cb340-36"></a>            </span>
+<span id="cb340-37"><a href="building-emissions.html#cb340-37"></a>            <span class="cf">if</span>(yr <span class="op">==</span><span class="st"> </span><span class="dv">2017</span> <span class="op">&amp;</span><span class="st"> </span>quarter <span class="op">==</span><span class="st"> </span><span class="dv">4</span>) {</span>
+<span id="cb340-38"><a href="building-emissions.html#cb340-38"></a>              temp &lt;-<span class="st"> </span></span>
+<span id="cb340-39"><a href="building-emissions.html#cb340-39"></a><span class="st">                </span>temp <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-40"><a href="building-emissions.html#cb340-40"></a><span class="st">                </span><span class="kw">filter</span>(MONTH <span class="op">!=</span><span class="st"> </span><span class="dv">9</span>)</span>
+<span id="cb340-41"><a href="building-emissions.html#cb340-41"></a>            }</span>
+<span id="cb340-42"><a href="building-emissions.html#cb340-42"></a>            </span>
+<span id="cb340-43"><a href="building-emissions.html#cb340-43"></a>            temp &lt;-</span>
+<span id="cb340-44"><a href="building-emissions.html#cb340-44"></a><span class="st">              </span>temp <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-45"><a href="building-emissions.html#cb340-45"></a><span class="st">              </span><span class="kw">rename_all</span>(toupper) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-46"><a href="building-emissions.html#cb340-46"></a><span class="st">              </span><span class="kw">mutate</span>(</span>
+<span id="cb340-47"><a href="building-emissions.html#cb340-47"></a>                <span class="dt">TOTALKBTU =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb340-48"><a href="building-emissions.html#cb340-48"></a>                  <span class="kw">substr</span>(CUSTOMERCLASS,<span class="dv">1</span>,<span class="dv">1</span>) <span class="op">==</span><span class="st"> &quot;E&quot;</span>,</span>
+<span id="cb340-49"><a href="building-emissions.html#cb340-49"></a>                  TOTALKWH <span class="op">*</span><span class="st"> </span><span class="fl">3.412</span>,</span>
+<span id="cb340-50"><a href="building-emissions.html#cb340-50"></a>                  TOTALTHM <span class="op">*</span><span class="st"> </span><span class="fl">99.976</span></span>
+<span id="cb340-51"><a href="building-emissions.html#cb340-51"></a>                ),</span>
+<span id="cb340-52"><a href="building-emissions.html#cb340-52"></a>                <span class="dt">TOTALTCO2E =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb340-53"><a href="building-emissions.html#cb340-53"></a>                  <span class="kw">substr</span>(CUSTOMERCLASS,<span class="dv">1</span>,<span class="dv">1</span>) <span class="op">==</span><span class="st"> &quot;E&quot;</span>,</span>
+<span id="cb340-54"><a href="building-emissions.html#cb340-54"></a>                  TOTALKWH<span class="op">/</span><span class="dv">1000</span> <span class="op">*</span><span class="st"> </span>factor <span class="op">*</span><span class="st"> </span><span class="fl">0.000453592</span>,</span>
+<span id="cb340-55"><a href="building-emissions.html#cb340-55"></a>                  TOTALTHM <span class="op">*</span><span class="st"> </span><span class="fl">0.00531</span></span>
+<span id="cb340-56"><a href="building-emissions.html#cb340-56"></a>                )</span>
+<span id="cb340-57"><a href="building-emissions.html#cb340-57"></a>              ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb340-58"><a href="building-emissions.html#cb340-58"></a><span class="st">              </span><span class="kw">select</span>(</span>
+<span id="cb340-59"><a href="building-emissions.html#cb340-59"></a>                ZIPCODE,</span>
+<span id="cb340-60"><a href="building-emissions.html#cb340-60"></a>                YEAR,</span>
+<span id="cb340-61"><a href="building-emissions.html#cb340-61"></a>                MONTH,</span>
+<span id="cb340-62"><a href="building-emissions.html#cb340-62"></a>                CUSTOMERCLASS,</span>
+<span id="cb340-63"><a href="building-emissions.html#cb340-63"></a>                TOTALKBTU,</span>
+<span id="cb340-64"><a href="building-emissions.html#cb340-64"></a>                TOTALTCO2E,</span>
+<span id="cb340-65"><a href="building-emissions.html#cb340-65"></a>                TOTALCUSTOMERS</span>
+<span id="cb340-66"><a href="building-emissions.html#cb340-66"></a>              )</span>
+<span id="cb340-67"><a href="building-emissions.html#cb340-67"></a>            </span>
+<span id="cb340-68"><a href="building-emissions.html#cb340-68"></a>          })</span>
+<span id="cb340-69"><a href="building-emissions.html#cb340-69"></a>        </span>
+<span id="cb340-70"><a href="building-emissions.html#cb340-70"></a>      })</span>
+<span id="cb340-71"><a href="building-emissions.html#cb340-71"></a>    </span>
+<span id="cb340-72"><a href="building-emissions.html#cb340-72"></a>  })</span></code></pre></div>
+<pre><code>## [1] &quot;pge/PGE_2013_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2013_Q4_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2014_Q4_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2015_Q4_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2016_Q4_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2017_Q4_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2018_Q4_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q1_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q1_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q2_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q2_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q3_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q3_GasUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q4_ElectricUsageByZip.csv&quot;
+## [1] &quot;pge/PGE_2019_Q4_GasUsageByZip.csv&quot;</code></pre>
+<p>Now, let’s filter to just ZIP codes in San Francisco, filter to just residential and commercial electricity (given that industrial sources will tend to be masked in the public PG&amp;E data due to the CPUC 15-15 rule) and plot the change in KBTU and TCO2E over the years.</p>
+<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="building-emissions.html#cb342-1"></a>us_zips &lt;-<span class="st"> </span></span>
+<span id="cb342-2"><a href="building-emissions.html#cb342-2"></a><span class="st">  </span><span class="kw">zctas</span>(<span class="dt">cb =</span> T, <span class="dt">progress_bar =</span> F)</span>
+<span id="cb342-3"><a href="building-emissions.html#cb342-3"></a></span>
+<span id="cb342-4"><a href="building-emissions.html#cb342-4"></a>sf_zips &lt;-<span class="st"> </span></span>
+<span id="cb342-5"><a href="building-emissions.html#cb342-5"></a><span class="st">  </span>us_zips <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb342-6"><a href="building-emissions.html#cb342-6"></a><span class="st">  </span><span class="kw">st_centroid</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb342-7"><a href="building-emissions.html#cb342-7"></a><span class="st">  </span>.[<span class="kw">counties</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">cb =</span> T, <span class="dt">progress_bar =</span> F) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(NAME <span class="op">==</span><span class="st"> &quot;San Francisco&quot;</span>), ] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb342-8"><a href="building-emissions.html#cb342-8"></a><span class="st">  </span><span class="kw">st_set_geometry</span>(<span class="ot">NULL</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb342-9"><a href="building-emissions.html#cb342-9"></a><span class="st">  </span><span class="kw">left_join</span>(us_zips <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(GEOID10)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb342-10"><a href="building-emissions.html#cb342-10"></a><span class="st">  </span><span class="kw">st_as_sf</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="building-emissions.html#cb343-1"></a>sf_pge_data &lt;-</span>
+<span id="cb343-2"><a href="building-emissions.html#cb343-2"></a><span class="st">  </span>pge_data <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-3"><a href="building-emissions.html#cb343-3"></a><span class="st">  </span><span class="kw">filter</span>(ZIPCODE <span class="op">%in%</span><span class="st"> </span>sf_zips<span class="op">$</span>ZCTA5CE10) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-4"><a href="building-emissions.html#cb343-4"></a><span class="st">  </span><span class="kw">filter</span>(CUSTOMERCLASS <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(</span>
+<span id="cb343-5"><a href="building-emissions.html#cb343-5"></a>    <span class="st">&quot;Elec- Commercial&quot;</span>,</span>
+<span id="cb343-6"><a href="building-emissions.html#cb343-6"></a>    <span class="st">&quot;Elec- Residential&quot;</span>,</span>
+<span id="cb343-7"><a href="building-emissions.html#cb343-7"></a>    <span class="st">&quot;Gas- Commercial&quot;</span>,</span>
+<span id="cb343-8"><a href="building-emissions.html#cb343-8"></a>    <span class="st">&quot;Gas- Residential&quot;</span></span>
+<span id="cb343-9"><a href="building-emissions.html#cb343-9"></a>  )) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-10"><a href="building-emissions.html#cb343-10"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb343-11"><a href="building-emissions.html#cb343-11"></a>    <span class="dt">ENERGYTYPE =</span> <span class="kw">substr</span>(CUSTOMERCLASS,<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb343-12"><a href="building-emissions.html#cb343-12"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-13"><a href="building-emissions.html#cb343-13"></a><span class="st">  </span><span class="kw">group_by</span>(ZIPCODE, ENERGYTYPE, YEAR) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-14"><a href="building-emissions.html#cb343-14"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
+<span id="cb343-15"><a href="building-emissions.html#cb343-15"></a>    <span class="dt">TOTALKBTU =</span> <span class="kw">sum</span>(TOTALKBTU, <span class="dt">na.rm=</span>T),</span>
+<span id="cb343-16"><a href="building-emissions.html#cb343-16"></a>    <span class="dt">TOTALTCO2E =</span> <span class="kw">sum</span>(TOTALTCO2E, <span class="dt">na.rm=</span>T), </span>
+<span id="cb343-17"><a href="building-emissions.html#cb343-17"></a>    <span class="dt">TOTALCUSTOMERS =</span> <span class="kw">mean</span>(TOTALCUSTOMERS, <span class="dt">na.rm=</span>T)</span>
+<span id="cb343-18"><a href="building-emissions.html#cb343-18"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-19"><a href="building-emissions.html#cb343-19"></a><span class="st">  </span><span class="kw">group_by</span>(ENERGYTYPE, YEAR) <span class="op">%&gt;%</span></span>
+<span id="cb343-20"><a href="building-emissions.html#cb343-20"></a><span class="st">  </span><span class="kw">summarize_at</span>(</span>
+<span id="cb343-21"><a href="building-emissions.html#cb343-21"></a>    <span class="kw">vars</span>(TOTALKBTU,TOTALTCO2E,TOTALCUSTOMERS),</span>
+<span id="cb343-22"><a href="building-emissions.html#cb343-22"></a>    sum,</span>
+<span id="cb343-23"><a href="building-emissions.html#cb343-23"></a>    <span class="dt">na.rm=</span>T</span>
+<span id="cb343-24"><a href="building-emissions.html#cb343-24"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb343-25"><a href="building-emissions.html#cb343-25"></a><span class="st">  </span><span class="kw">ungroup</span>()</span>
+<span id="cb343-26"><a href="building-emissions.html#cb343-26"></a></span>
+<span id="cb343-27"><a href="building-emissions.html#cb343-27"></a><span class="kw">ggplot</span>(</span>
+<span id="cb343-28"><a href="building-emissions.html#cb343-28"></a>  sf_pge_data, </span>
+<span id="cb343-29"><a href="building-emissions.html#cb343-29"></a>  <span class="kw">aes</span>(</span>
+<span id="cb343-30"><a href="building-emissions.html#cb343-30"></a>    <span class="dt">x =</span> <span class="kw">as.factor</span>(YEAR), </span>
+<span id="cb343-31"><a href="building-emissions.html#cb343-31"></a>    <span class="dt">y =</span> TOTALKBTU<span class="op">/</span><span class="dv">1000000</span></span>
+<span id="cb343-32"><a href="building-emissions.html#cb343-32"></a>  )</span>
+<span id="cb343-33"><a href="building-emissions.html#cb343-33"></a>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb343-34"><a href="building-emissions.html#cb343-34"></a><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="kw">aes</span>(<span class="dt">fill =</span> ENERGYTYPE), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb343-35"><a href="building-emissions.html#cb343-35"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;GBTU&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;SF Annual Energy Usage, 2013 to 2019&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb343-36"><a href="building-emissions.html#cb343-36"></a><span class="st">  </span><span class="kw">scale_fill_discrete</span>(<span class="dt">name=</span><span class="st">&quot;Energy Type&quot;</span>,<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Electricity&quot;</span>,<span class="st">&quot;Gas&quot;</span>))</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-285-1.png" width="672" /></p>
+<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="building-emissions.html#cb344-1"></a><span class="kw">ggplot</span>(</span>
+<span id="cb344-2"><a href="building-emissions.html#cb344-2"></a>  sf_pge_data, </span>
+<span id="cb344-3"><a href="building-emissions.html#cb344-3"></a>  <span class="kw">aes</span>(</span>
+<span id="cb344-4"><a href="building-emissions.html#cb344-4"></a>    <span class="dt">x =</span> <span class="kw">as.factor</span>(YEAR), </span>
+<span id="cb344-5"><a href="building-emissions.html#cb344-5"></a>    <span class="dt">y =</span> TOTALTCO2E</span>
+<span id="cb344-6"><a href="building-emissions.html#cb344-6"></a>  )</span>
+<span id="cb344-7"><a href="building-emissions.html#cb344-7"></a>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb344-8"><a href="building-emissions.html#cb344-8"></a><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="kw">aes</span>(<span class="dt">fill =</span> ENERGYTYPE), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb344-9"><a href="building-emissions.html#cb344-9"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;tCO2e&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;SF Annual Energy Usage, 2013 to 2019&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb344-10"><a href="building-emissions.html#cb344-10"></a><span class="st">  </span><span class="kw">scale_fill_discrete</span>(<span class="dt">name=</span><span class="st">&quot;Energy Type&quot;</span>,<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Electricity&quot;</span>,<span class="st">&quot;Gas&quot;</span>))</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-286-1.png" width="672" /></p>
+<p>The sharp divergence in carbon footprint between gas and electricity use, given the increasing renewable content in electricity generation, is a key reason why cities are pushing for building electrification as a key GHG mitigation approach.</p>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="vehicle-emissions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="assignment-7.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "none",
+"scroll_highlight": true
+},
+"toolbar": {
+"position": "fixed"
+},
+"search": false,
+"info": false
+});
+});
+</script>
+
+</body>
+
+</html>
