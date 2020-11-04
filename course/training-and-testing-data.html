@@ -253,22 +253,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -25.088   -4.090    2.406    3.699   23.223  
+## -25.073   -4.087    2.408    3.702   23.284  
 ## 
 ## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -0.952235   0.001929  -493.6   &lt;2e-16 ***
-## AGEP         0.010105   0.000040   252.6   &lt;2e-16 ***
-## white        1.586520   0.001780   891.3   &lt;2e-16 ***
-## hispanic    -1.154126   0.004897  -235.7   &lt;2e-16 ***
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -9.631e-01  1.931e-03  -498.8   &lt;2e-16 ***
+## AGEP         1.019e-02  4.001e-05   254.8   &lt;2e-16 ***
+## white        1.591e+00  1.781e-03   893.5   &lt;2e-16 ***
+## hispanic    -1.143e+00  4.917e-03  -232.4   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 8469454  on 300920  degrees of freedom
-## Residual deviance: 7429322  on 300917  degrees of freedom
-## AIC: 7429330
+##     Null deviance: 8463573  on 300556  degrees of freedom
+## Residual deviance: 7419321  on 300553  degrees of freedom
+## AIC: 7419329
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
@@ -290,8 +290,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
-##   No (ESL)      22956  9121
-##   Yes (English) 12712 30347</code></pre>
+##   No (ESL)      22986  9125
+##   Yes (English) 12962 30427</code></pre>
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>
