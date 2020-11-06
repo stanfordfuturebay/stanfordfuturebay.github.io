@@ -210,6 +210,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8" data-path="hazards.html"><a href="hazards.html"><i class="fa fa-check"></i><b>8</b> Hazards</a><ul>
 <li class="chapter" data-level="8.1" data-path="hazard-data.html"><a href="hazard-data.html"><i class="fa fa-check"></i><b>8.1</b> Hazard data</a></li>
 <li class="chapter" data-level="8.2" data-path="exposure-data.html"><a href="exposure-data.html"><i class="fa fa-check"></i><b>8.2</b> Exposure data</a></li>
+<li class="chapter" data-level="8.3" data-path="vulnerability-data.html"><a href="vulnerability-data.html"><i class="fa fa-check"></i><b>8.3</b> Vulnerability data</a></li>
+<li class="chapter" data-level="8.4" data-path="risk-estimation.html"><a href="risk-estimation.html"><i class="fa fa-check"></i><b>8.4</b> Risk estimation</a></li>
+<li class="chapter" data-level="8.5" data-path="assignment-8.html"><a href="assignment-8.html"><i class="fa fa-check"></i><b>8.5</b> Assignment 8</a></li>
 </ul></li>
 </ul>
 
@@ -256,22 +259,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -25.022   -4.099    2.417    3.714   23.230  
+## -23.855   -4.099    2.412    3.702   21.266  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -9.537e-01  1.928e-03  -494.8   &lt;2e-16 ***
-## AGEP         1.012e-02  3.992e-05   253.6   &lt;2e-16 ***
-## white        1.578e+00  1.778e-03   887.2   &lt;2e-16 ***
-## hispanic    -1.131e+00  4.893e-03  -231.2   &lt;2e-16 ***
+## (Intercept) -9.496e-01  1.929e-03  -492.3   &lt;2e-16 ***
+## AGEP         1.005e-02  4.003e-05   251.1   &lt;2e-16 ***
+## white        1.581e+00  1.779e-03   888.7   &lt;2e-16 ***
+## hispanic    -1.138e+00  4.895e-03  -232.5   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 8466488  on 300592  degrees of freedom
-## Residual deviance: 7436530  on 300589  degrees of freedom
-## AIC: 7436538
+##     Null deviance: 8467358  on 301017  degrees of freedom
+## Residual deviance: 7435769  on 301014  degrees of freedom
+## AIC: 7435777
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
@@ -293,8 +296,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb210-13"><a href="training-and-testing-data.html#cb210-13"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE  TRUE
-##   No (ESL)      23236  8934
-##   Yes (English) 12731 30563</code></pre>
+##   No (ESL)      22888  8957
+##   Yes (English) 12720 30474</code></pre>
 <p>This 2x2 matrix can be read as follows:</p>
 <ul>
 <li>The bottom-right cell is the number of test records which were truly English speakers, and our model correctly predicted this using just the variables of age, White/non-White, and Hispanic/non-Hispanic.</li>
