@@ -251,13 +251,13 @@ output$map <- renderLeaflet({
     addMapboxTiles(
       style_id = "satellite-streets-v11",
       username = "mapbox",
-      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
+      access_token = "YOUR-KEY-HERE",
       group = "Satellite Basemap"
     ) %>% 
     addMapboxTiles(
       style_id = "streets-v11",
       username = "mapbox",
-      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
+      access_token = "YOUR-KEY-HERE",
       group = "Default Basemap"
     ) %>% 
     addMapPane("blocks", 420) %>% 
