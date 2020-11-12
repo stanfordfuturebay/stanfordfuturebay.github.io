@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>6 Land Use | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
-  <meta name="description" content="6 Land Use | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <title>9.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="9.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="6 Land Use | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:title" content="9.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="6 Land Use | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="twitter:title" content="9.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="assignment-5.html"/>
-<link rel="next" href="housing-data.html"/>
+<link rel="prev" href="web-applications.html"/>
+<link rel="next" href="assignment-9.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -235,24 +235,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="land-use" class="section level1">
-<h1><span class="header-section-number">6</span> Land Use</h1>
-<p>In this chapter, we will cover a variety of datasets and techniques that are useful for modeling and understanding urban land use. These include:</p>
-<ul>
-<li>Housing data</li>
-<li>Zoning and property data</li>
-<li>Census-to-parcel disaggregation</li>
-<li>Parcel and building geometries</li>
-<li>Address geocoding and matching</li>
-</ul>
+<div id="dashboards" class="section level2">
+<h2><span class="header-section-number">9.1</span> Dashboards</h2>
+<p><a href="https://shiny.rstudio.com/">Shiny</a> is fundamentally a way to create web documents that can receive inputs from a user that can trigger further R code and dynamically change what’s shown on the screen. In some sense, you’ve already experienced interactivity in individual widgets, like <code>leaflet</code> maps that let you zoom in and out, or <code>plotly</code> plots that change their look when you hover over them. But consider those self-contained widgets of interactivity, whereas Shiny completely opens up the box to allow customizable inputs and outputs across your entire document (imagine some action on the map affecting a visual on a nearby chart, which would be impossible with just <code>leaflet</code> and <code>plotly</code> alone).</p>
+<p>For our purposes, we’ll demonstrate not the most raw form of Shiny, which you can pick up on your own by following <a href="https://shiny.rstudio.com/tutorial/">online tutorials</a>, but instead a package called <code>flexdashboard</code> which provides an extra user-friendly layer on top of Shiny. It has its own detailed <a href="https://rmarkdown.rstudio.com/flexdashboard/index.html">tutorial</a>, but we’ll walk through the basics to take an analysis from this curriculum and publish it as a web app.</p>
+<p>Unlike standard Shiny documents which are written as .R files, <code>flexdashboard</code> documents are built using .Rmd files, which we’re most familiar with. In Section 1.3, we described the YAML header, between two <code>---</code> lines. For <code>flexdashboard</code>, instead of <code>output: html_document</code>, you’ll want to set <code>output: flexdashboard::flex_dashboard</code> (you can remove the standard <code>author</code>, <code>date</code>, and <code>editor options</code>). Once you’ve made these changes and save, then the next time you open this .Rmd document, you’ll notice that the “Knit” button is replaced with a “Run Document” button, which will let you preview your dashboard locally in a pop-up window.</p>
+<p><code>flexdashboard</code> standardizes certain design decisions to make your job easier. First, there’s a top navigation bar you can add buttons to by adding “level 1 markdown” headers like (<code>==================</code>) as shown <a href="https://rmarkdown.rstudio.com/flexdashboard/using.html#multiple_pages">here</a>. Whatever you write in place of “Page 1” will be the name of the button on the top navigation bar. As for each individual page, then you generally design a layout of panes on a grid of columns and rows using “level 2 markdown” headers like (<code>------------------</code>) and <code>###</code> headers as you’re familiar with; these options, implemented column-wise or row-wise, are shown <a href="https://rmarkdown.rstudio.com/flexdashboard/using.html#layout">here</a>. Having set up the layout for your panes across one or more pages, and in a grid structure on each page, then the code chunks themselves create the actual outputs in each pane.</p>
+<p>Generally, you would want to do as much pre-processing as possible in separate “processing” .Rmd scripts, so that all you’re doing in the dashboard is displaying outputs like <code>leaflet</code> maps and <code>plotly</code> charts (and, in more sophisticated dashboards, whatever interactive processing you would like to user to be able to trigger). Just like you usually have a first chunk where you load your libraries, you can start with a “global” chunk just below your YAML header, where you load libraries as well as <code>readRDS()</code> any files you’ve pre-processed. In the curly brackets that are always at the top of the chunk, after the three backticks, after the <code>r</code>, write <code>global, include = F</code>. In our demonstration, we’ll include the following within our “global” chunk, bringing back outputs we had from Chapter 7:</p>
+<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="dashboards.html#cb419-1"></a><span class="kw">library</span>(flexdashboard)</span>
+<span id="cb419-2"><a href="dashboards.html#cb419-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb419-3"><a href="dashboards.html#cb419-3"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb419-4"><a href="dashboards.html#cb419-4"></a><span class="kw">library</span>(plotly)</span>
+<span id="cb419-5"><a href="dashboards.html#cb419-5"></a><span class="kw">library</span>(raster)</span>
+<span id="cb419-6"><a href="dashboards.html#cb419-6"></a></span>
+<span id="cb419-7"><a href="dashboards.html#cb419-7"></a>epa_plot &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;epa_plot.rds&quot;</span>)</span>
+<span id="cb419-8"><a href="dashboards.html#cb419-8"></a></span>
+<span id="cb419-9"><a href="dashboards.html#cb419-9"></a>epa_bldg_aal_by_year_map &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;epa_bldg_aal_by_year_map.rds&quot;</span>)</span>
+<span id="cb419-10"><a href="dashboards.html#cb419-10"></a></span>
+<span id="cb419-11"><a href="dashboards.html#cb419-11"></a>flood_max &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;SLR100_RP100_epa_flood.tif&quot;</span>)</span></code></pre></div>
+<p>Then, to have this show side-by-side, we simply have to create two Column headers and include one chunk within each. Our <code>epa_plot</code> object is already a <code>plotly</code> object ready to go, so the chunk can simply include <code>epa_plot</code>, while <code>epa_bldg_aal_by_year_map</code> and <code>flood_max</code> can be fed into a <code>leaflet</code> pipeline. Outside of chunks, you can still write text commentary, which in a <code>flexdashboard</code> will show up as rendered text in the appropriate locations.</p>
+<p>The full code for this simple dashboard can be seen <a href="https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/course/dashboard_demo.Rmd">here</a>, with all the formatting that we’ve just explained. Since this is a dashboard with no actual Shiny interactivity, it is effectively knit just like the knitted HTML documents you’ve created before, and can be published on your personal GitHub page the same way. Our demo can be seen <a href="https://stanfordfuturebay.github.io/course/dashboard_demo">here</a>.</p>
+<p>Going from this simplest of dashboards to one that has Shiny interactivity involves advanced coding techniques that are beyond the scope of this course, but if you’ve gotten this far, you should be able to review the detailed <a href="https://rmarkdown.rstudio.com/flexdashboard/shiny.html">online tutorials</a> and develop the necessary understanding on your own. Importantly, publishing an interactive dashboard requires publishing with a services like <a href="https://www.shinyapps.io/">shinyapps.io</a>, with which you can sign up for a free account and publish a set number of personal dashboards. As an example of what a Shiny interactive dashboard looks like, see this <a href="https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/course/svi_processing.Rmd">processing script</a>, this <a href="https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/course/svi_dashboard.Rmd">dashboard script</a>, and the <a href="https://stanfordfuturebay.shinyapps.io/santaclara_svi/">published link</a>. Notice how there are drop down options on the left sidebar that affect what’s shown on the scatter plot, and notice how selecting rows of the data table affect the map.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="assignment-5.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="housing-data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="web-applications.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="assignment-9.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
