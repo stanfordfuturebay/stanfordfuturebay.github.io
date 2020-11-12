@@ -1,0 +1,113 @@
+---
+title: "Dashboard Demo"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+---
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(leaflet)
+library(plotly)
+library(raster)
+
+epa_plot <- readRDS("epa_plot.rds")
+
+epa_bldg_aal_by_year_map <- readRDS("epa_bldg_aal_by_year_map.rds")
+
+flood_max <- raster("SLR100_RP100_epa_flood.tif")
+
+flood_pal <- colorNumeric(
+  palette = "Blues",
+  domain = values(flood_max),
+  na.color = "transparent"
+)
+
+aal_pal <- colorNumeric(
+  palette = "Reds",
+  domain = c(0,epa_bldg_aal_by_year_map$`2050`)
+)
+```
+
+Column
+-------------------------------------
+
+Here is a chart showing the progression of damage based on increasing flood depths for buildings in East Palo Alto. Move the animation slider to progress through 100-year storm events over different amounts of base sea level rise. Information about how this plot was generated can be found [here](https://stanfordfuturebay.github.io/course/vulnerability-data.html).
+
+### Vulnerability data
+
+```{r}
+epa_plot
+```
+
+Column
+-------------------------------------
+
+Here is a map showing estimated average annualized loss (AAL, in dollars) for buildings in East Palo Alto, as a result of coastal flood damage. Click on the layer options to switch between AAL in 2020, AAL in 2050, and the change in AAL from 2020 to 2050. Information about how this map was generated can be found [here](https://stanfordfuturebay.github.io/course/risk-estimation.html).
+
+### Risk estimation
+
+```{r}
+epa_bldg_aal_by_year_map %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addRasterImage(
+    flood_max,
+    colors = flood_pal,
+    opacity = 0.75,
+    group = "100-cm SLR, 100-yr flood"
+  ) %>% 
+  addPolygons(
+    fillColor = ~aal_pal(`2020`),
+    color = "gray",
+    fillOpacity = 1,
+    opacity = 1,
+    weight = 0.25,
+    highlightOptions = highlightOptions(
+      color = "white",
+      weight = 2
+    ),
+    label = ~paste0("$",prettyNum(signif(`2020`,2),",")," average annualized loss in 2020"),
+    group = "2020"
+  ) %>% 
+  addPolygons(
+    fillColor = ~aal_pal(`2050`),
+    color = "gray",
+    fillOpacity = 1,
+    opacity = 1,
+    weight = 0.25,
+    highlightOptions = highlightOptions(
+      color = "white",
+      weight = 2
+    ),
+    label = ~paste0("$",prettyNum(signif(`2050`,2),",")," average annualized loss in 2050"),
+    group = "2050"
+  ) %>% 
+  addPolygons(
+    fillColor = ~aal_pal(change),
+    color = "gray",
+    fillOpacity = 1,
+    opacity = 1,
+    weight = 0.25,
+    highlightOptions = highlightOptions(
+      color = "white",
+      weight = 2
+    ),
+    label = ~paste0("$",prettyNum(signif(change,2),",")," change in average annualized loss from 2020 to 2050"),
+    group = "Change"
+  ) %>% 
+  addLegend(
+    pal = aal_pal,
+    values = ~`2050`,
+    title = "AAL"
+  ) %>% 
+  addLayersControl(
+    baseGroups = c("2020","2050","Change"),
+    overlayGroups = "100-cm SLR, 100-yr flood",
+    options = layersControlOptions(collapsed = FALSE),
+    position = "bottomright"
+  ) %>% 
+  showGroup("2050")
+```
