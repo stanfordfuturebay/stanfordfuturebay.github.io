@@ -1,0 +1,632 @@
+---
+title: "Generic City Dashboard"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+<style>
+.datatables{
+    overflow: auto;
+}
+</style>
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(leaflet)
+library(plotly)
+library(sf)
+library(DT)
+library(shinydashboard)
+library(colorRamps)
+library(mapboxapi)
+
+load("city.rda")
+
+variables <- data.frame(
+  code = c(
+    "SVI",
+    "EP_POV",
+    "EP_UNEMP",
+    "EP_PCI",
+    "EP_NOHSDP",
+    "EP_AGE65",
+    "EP_AGE17",
+    "EP_DISABL",
+    "EP_SNGPNT",
+    "EP_MINRTY",
+    "EP_LIMENG",
+    "EP_MUNIT",
+    "EP_MOBILE",
+    "EP_CROWD",
+    "EP_NOVEH",
+    "EP_GROUPQ",
+    "EP_MEDICARE",
+    "EP_MEDICAID",
+    "EP_DIRECTINS",
+    "EP_EMPLOYINS",
+    "EP_UNINSUR",
+    "EP_HHINC25",
+    "EP_SNAP",
+    "EP_RENTBURDEN30",
+    "EP_RENTBURDEN50",
+    "EP_OWNBURDEN30",
+    "EP_OWNBURDEN50",
+    "EP_WELFARE", 
+    "EP_NOBROADBAND",
+    "evictions", 
+    "eviction-filings"
+  ),
+  label = c(
+    "Social Vulnerability Index",
+    "% Below Poverty",
+    "% Unemployed",
+    "$ Per Capita Income",
+    "% No High School Diploma",
+    "% Aged 65 or Older",
+    "% Aged 17 or Younger",
+    "% Civilian with a Disability",
+    "% Single-Parent Households",
+    "% Minority",
+    "% Speaks English 'Less than Well'",
+    "% Multi-Unit Structures",
+    "% Mobile Homes",
+    "% Crowding",
+    "% No Vehicle",
+    "% Group Quarters",
+    "% Medicare insurance",
+    "% Medicaid insurance",
+    "% Direct Purchase insurance",
+    "% Employer insurance",
+    "% No Health Insurance",
+    "% Households Earning < $25,000",
+    "% Receiving SNAP",
+    "% Renters Paying 30%+ Income on Rent",
+    "% Renters Paying 50%+ Income on Rent",
+    "% Owners Paying 30%+ Income on Housing",
+    "% Owners Paying 50%+ Income on Housing",
+    "% Public Assistance",
+    "% No Broadband",
+    "Evictions",
+    "Eviction Filings"
+  ),
+  short = c(
+    "SVI",
+    "% Poverty",
+    "% Unemployed",
+    "$ Income",
+    "% No Diploma",
+    "% Elderly",
+    "% Youth",
+    "% Disability",
+    "% Single Parent",
+    "% Minority",
+    "% Limited English",
+    "% Multi Family",
+    "% Mobile Home",
+    "% Crowding",
+    "% No Vehicle",
+    "% Group Quarters",
+    "% Medicare",
+    "% Medicaid",
+    "% Direct Insurance",
+    "% Employer Insurance",
+    "% Uninsured",
+    "% Low Income",
+    "% On SNAP",
+    "% Rent Burden 30%",
+    "% Rent Burden 50%",
+    "% Owner Burden 30%",
+    "% Owner Burden 50%",
+    "% Assistance",
+    "% No Broadband",
+    "Evictions",
+    "Eviction Filings"
+  )
+)
+
+cbg_Ids <- cbgs$GEOID
+
+colors <- primary.colors(nrow(variables)+1, 5, no.white = T) %>% .[-1]
+
+pal_list <- 
+  1:nrow(variables) %>%
+  map(function(x){
+    tryCatch(
+      colorNumeric(
+        palette = colorRamp(c("#FFFFFF", colors[x]), interpolate = "spline"),
+        domain = data %>% 
+          filter(
+            year %in% c(2016,2018),
+            Names == variables[x,1]
+          ) %>% 
+          pull(Values)
+      ),
+      error = function(e) NULL
+    )
+  })
+```
+
+Home
+===================================== 
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+**Correlation Plot (Tab 1)** - Each dot is a block group. Keep in mind that correlation is not causation. Select two variables to plot by:
+
+```{r}
+selectInput(
+  "V1", 
+  label = "X-axis variable", 
+  choices = variables$label, 
+  selected = variables$label[1]
+)
+
+selectInput(
+  "V2", 
+  label = "Y-axis variable", 
+  choices = variables$label, 
+  selected = variables$label[31]
+)
+```
+
+**Longitudinal Plot (Tab 2)** - The primary longitudinal data available is on evictions. Census data can only be plotted as the change from 2009-2013 summary data to 2014-2018 summary data. The average line is shown in orange, and individual block groups can be added in blue
+
+```{r}
+selectInput(
+  "V3", 
+  label = "Longitudinal variable", 
+  choices = variables$label, 
+  selected = variables$label[31]
+)
+```
+
+**Map** - Block groups shown in color. City boundary in black.
+
+```{r}
+selectInput(
+  "V4", 
+  label = "Variable to view on map", 
+  choices = variables$label, 
+  selected = variables$label[1]
+)
+```
+
+**Table** - Click on column headers to sort. Click on rows to highlight block group on the longitudinal plot (tab 2) and map.
+
+**About the data** - Most data is from the American Communities Survey 2009-2013 or 2014-2018 5-year Detailed Tables (shown by default in plots, map, and table):
+
+- Social Vulnerability Index: Calculated using the CDC's [methodology](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/pdf/SVI2018Documentation-H.pdf) and the next 15 variables
+- % Below Poverty: B17010, POVERTY STATUS IN THE PAST 12 MONTHS OF FAMILIES BY FAMILY TYPE BY PRESENCE OF RELATED CHILDREN UNDER 18 YEARS BY AGE OF RELATED CHILDREN
+- % Unemployed: B23025, EMPLOYMENT STATUS FOR THE POPULATION 16 YEARS AND OVER
+- \$ Per Capita Income: B19301, PER CAPITA INCOME IN THE PAST 12 MONTHS (IN 2018 INFLATION-ADJUSTED DOLLARS)
+- % No High School Diploma: B15003, EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
+- % Aged 65 or Older: B01001, SEX BY AGE
+- % Aged 17 or Younger: B01001, SEX BY AGE
+- % Civilian with a Disability: C21007, AGE BY VETERAN STATUS BY POVERTY STATUS IN THE PAST 12 MONTHS BY DISABILITY STATUS FOR THE CIVILIAN POPULATION 18 YEARS AND OVER
+- % Single-Parent Households: B11003, FAMILY TYPE BY PRESENCE AND AGE OF OWN CHILDREN UNDER 18 YEARS
+- % Minority: B03002, HISPANIC OR LATINO ORIGIN BY RACE
+- % Speaks English 'Less than Well': B16004, AGE BY LANGUAGE SPOKEN AT HOME BY ABILITY TO SPEAK ENGLISH FOR THE POPULATION 5 YEARS AND OVER
+- % Multi-Unit Structures: B25024, UNITS IN STRUCTURE
+- % Mobile Homes: B25024, UNITS IN STRUCTURE
+- % Crowding: B25014, TENURE BY OCCUPANTS PER ROOM
+- % No Vehicle: B25044, TENURE BY VEHICLES AVAILABLE
+- % Group Quarters: B09019, HOUSEHOLD TYPE (INCLUDING LIVING ALONE) BY RELATIONSHIP
+- % Medicare/Medicaid/Direct Purchase/Employer/No health insurance: B27010, TYPES OF HEALTH INSURANCE COVERAGE BY AGE (Medicare includes Medicare only, Employer + Medicare, Medicare + Medicaid; Medicaid includes Medicaid only, Medicare + Medicaid; Direct Purchase includes Direct Purchase only, Employer + Direct Purchase, Direct Purchase + Medicare; Employer includes Employer only, Employer + Direct Purchase, Employer + Medicare)
+- % Households Earning < \$25,000: B19001, HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2018 INFLATION-ADJUSTED DOLLARS)
+- % Receiving SNAP: B22010, RECEIPT OF FOOD STAMPS/SNAP IN THE PAST 12 MONTHS BY DISABILITY STATUS FOR HOUSEHOLDS
+- % Renters Paying 30%+ or 50%+ Income on Rent: B25070, GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS
+- % Owners Paying 30%+ or 50%+ Income on Housing: B25070, GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS
+- % Public Assistance: B19057, PUBLIC ASSISTANCE INCOME IN THE PAST 12 MONTHS FOR HOUSEHOLDS
+- % No Broadband: B28008, PRESENCE OF A COMPUTER AND TYPE OF INTERNET SUBSCRIPTION IN HOUSEHOLD (only available for 2014-2018)
+
+Evictions and Eviction Filings 2000-2016 data is from [The Eviction Lab at Princeton University](https://data-downloads.evictionlab.org/). 2016 data is shown by default on plots, map, and table.
+
+Row {data-height=600}
+-----------------------------------------------------------------------
+
+### {.no-padding data-width=400}
+
+<style>
+.nav-tabs-custom {
+  margin-top:-1px;
+  margin-left:-1px;
+  margin-right:-1px;
+}
+</style>
+
+```{r}
+tabBox(
+  width = "100%",
+  height = "100vh",
+  tabPanel(
+    "Correlation", 
+    plotlyOutput("scatterplot", height = "52vh"),
+    style = "width:100%; height:52vh"
+  ),
+  tabPanel(
+    "Longitudinal",
+    plotlyOutput("timeplot", height = "52vh"),
+    style = "width:100%; height:52vh"
+  )
+)
+```
+
+```{r, context="server"}
+output$scatterplot <- renderPlotly({
+  
+  scatter_data <-
+    data %>% 
+    filter(
+      year %in% c(2016,2018),
+      Names %in% c(
+        variables$code[match(input$V1, variables$label)],
+        variables$code[match(input$V2, variables$label)]
+      )
+    ) %>% 
+    select(-year) %>% 
+    pivot_wider(
+      names_from = Names,
+      values_from = Values
+    ) %>% 
+    mutate(
+      V1 = UQ(sym(variables$code[match(input$V1, variables$label)])),
+      V2 = UQ(sym(variables$code[match(input$V2, variables$label)]))
+    ) %>% 
+    filter(!is.na(V1), !is.na(V2)) %>% 
+    mutate(
+      trendline = fitted(lm(V2 ~ V1))
+    )
+  
+  model <- summary(lm(V2 ~ V1, data = scatter_data))
+  effect <- model$coefficients[2] %>% round(1)
+  r2 <- (model$r.squared*100) %>% round()
+  
+  xlabel <- variables$short[match(input$V1, variables$label)]
+  ylabel <- variables$short[match(input$V2, variables$label)]
+  
+  plot_ly(scatter_data) %>%
+    add_trace(
+      x = ~V1, 
+      y = ~V2, 
+      text = ~paste0("CBG: ", CBG),
+      type = 'scatter', 
+      mode = 'markers',
+      showlegend = F
+    ) %>% 
+    add_trace(
+      x = ~V1,
+      y = ~trendline,
+      type = 'scatter',
+      mode = 'lines',
+      line = list(simplify=F, size = 5, color = 'rgba(255, 165, 0, 1)'),
+      showlegend = F,
+      hoverinfo = "skip"
+    ) %>%
+    layout(
+      title = list(
+        text = paste0(
+          "Trend: +1 in <b>",
+          gsub("\\$ ","",xlabel),
+          "</b> correlated with ",
+          ifelse(
+            effect > 0,
+            "+",
+            ""
+          ),
+          effect,
+          " in <b>",
+          gsub("\\$ ","",ylabel),
+          "</b>\nFit: ",
+          r2,
+          "% of variation in ",
+          gsub("\\$ ","",ylabel), 
+          " explained by variation in ",
+          gsub("\\$ ","",xlabel)
+        ),
+        font = list(size = 9)
+      ),
+      xaxis = list(
+        title = xlabel,
+        fixedrange = T
+      ), 
+      yaxis = list(
+        title = ylabel,
+        fixedrange = T
+      ),
+      margin = list(t = 65, l = 65, b = 65)
+    ) %>% 
+    config(displayModeBar = F)
+  
+})
+```
+
+```{r, context="server"}
+output$timeplot <- renderPlotly({
+  
+  time_data <-
+    data %>% 
+    filter(
+      Names %in% 
+        variables$code[match(input$V3, variables$label)]
+    ) %>% 
+    left_join(
+      cbgs %>% 
+        st_set_geometry(NULL)
+    ) %>% 
+    group_by(year) %>% 
+    summarize(
+      Values = weighted.mean(Values, POP, na.rm = T)
+    )
+  
+  row <- input$table_rows_selected
+  
+  time_data_cbg <- data.frame(
+    year = NA,
+    Values = NA
+  )
+  
+  if(length(row)){
+    
+    time_data_cbg <- data %>% 
+      filter(
+        Names %in% 
+          variables$code[match(input$V3, variables$label)],
+        CBG == cbgs$CBG[row]
+      )
+    
+  }
+  
+  plot_ly(
+    data = time_data,
+    x = ~year
+  ) %>% 
+    add_trace(
+      y = ~Values,
+      type = "scatter",
+      mode = "lines",
+      line = list(
+        color = "rgb(255,165,0)",
+        width = 3
+      ),
+      name = "City Average",
+      showlegend = T
+    ) %>% 
+    add_trace(
+      data = time_data_cbg,
+      x = ~year,
+      y = ~Values,
+      type = "scatter",
+      mode = "lines",
+      line = list(
+        color = "rgb(31,119,180)",
+        width = 2
+      ),
+      name = "Selected Block Group",
+      showlegend = T
+    ) %>% 
+    layout(
+      xaxis = list(
+        title = "Year",
+        fixedrange = T
+      ),
+      yaxis = list(
+        title = input$V3,
+        fixedrange = T
+      ),
+      legend = list(
+        xanchor = "center",
+        yanchor = "bottom",
+        x = 0.5,
+        y = 1,
+        orientation = 'h'
+      ),
+      margin = list(t = 65, l = 65, b = 65)
+    ) %>% 
+    config(displayModeBar = F)
+  
+})
+```
+
+
+### {.no-padding data-width=600}
+
+```{r}
+leafletOutput("map")
+```
+
+```{r, context="server"}
+output$map <- renderLeaflet({
+  map <- 
+    leaflet(
+      options = leafletOptions(
+        attributionControl=FALSE
+      )
+    ) %>% 
+    addProviderTiles(providers$CartoDB.Positron, group = "Minimal Basemap") %>%
+    addMapboxTiles(
+      style_id = "satellite-streets-v11",
+      username = "mapbox",
+      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
+      group = "Satellite Basemap"
+    ) %>% 
+    addMapboxTiles(
+      style_id = "streets-v11",
+      username = "mapbox",
+      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
+      group = "Default Basemap"
+    ) %>% 
+    addMapPane("blocks", 410) %>% 
+    addMapPane("city", 420) %>% 
+    addPolygons(
+      data = boundary,
+      fill = F,
+      weight = 2,
+      color = "black",
+      options = 
+        pathOptions(
+          pane = "city"
+        )
+    ) %>% 
+    addLayersControl(
+      baseGroups = c(
+        "Minimal Basemap",
+        "Satellite Basemap",
+        "Default Basemap"
+      ),
+      options = layersControlOptions(collapsed = FALSE)
+    ) %>%
+    showGroup("SVI") %>% 
+    showGroup("Default Basemap")
+  
+  for(x in 1:nrow(variables)){
+    map <- 
+      map %>% 
+      addPolygons(
+        data = data %>% 
+          filter(
+            year %in% c(2016,2018),
+            Names == variables[x,1]
+          ) %>% 
+          left_join(cbgs) %>% 
+          st_as_sf(),
+        fillColor = ~pal_list[[x]](Values),
+        color = "white",
+        weight = 0.5,
+        opacity = 0.5,
+        fillOpacity = 0.7,
+        group = variables[x, 3],
+        label = ~paste0(CBG,": ", Values %>% round(2))
+      )
+  }
+  
+  map
+  
+})
+```
+
+```{r}
+observeEvent(input$V4,{
+  
+  leafletProxy('map') %>% 
+    removeControl(layerId = "legend") %>% 
+    hideGroup(variables$short) %>% 
+    showGroup(
+      variables %>% 
+        filter(label == input$V4) %>% 
+        pull(short)
+    )
+  
+  for(x in 1:nrow(variables)){
+    
+    if(variables[x,2] %in% isolate(input$V4)){
+      
+      leafletProxy('map') %>% 
+        addLegend(
+          data = data %>% 
+            filter(
+              year %in% c(2016,2018),
+              Names == variables[x,1]
+            ),
+          pal = pal_list[[x]],
+          values = ~Values,
+          title = variables[x,3],
+          opacity = 0.5,
+          layerId = "legend",
+          position = "bottomright"
+        )
+      
+    }
+    
+  }
+})
+```
+
+```{r, context="server"}
+observeEvent(input$table_rows_selected,{
+  
+  leafletProxy('map') %>% 
+    removeShape(layerId = "select")
+  
+  row <- input$table_rows_selected
+  
+  if(length(row)){
+    
+    leafletProxy('map') %>% 
+      addPolygons(
+        data = cbgs[row,],
+        fill = F,
+        color = "black",
+        weight = 2,
+        opacity = 1,
+        layerId = "select",
+        options = 
+          pathOptions(
+            pane = "blocks"
+          )
+      ) %>% 
+      flyTo(
+        lng = cbgs[row,] %>% st_centroid() %>% st_coordinates() %>% .[1],
+        lat = cbgs[row,] %>% st_centroid() %>% st_coordinates() %>% .[2], 
+        zoom = isolate(input$map_zoom)
+      )
+  }
+
+}, ignoreInit = T, ignoreNULL = F)
+```
+
+```{r, context="server"}
+# observeEvent(input$map_marker_click, {
+#   clickId <- input$map_marker_click$id
+#   dataTableProxy("table") %>%
+#     selectRows(which(qSub()$id == clickId)) %>%
+#     selectPage(which(input$table01_rows_all == clickId) %/% input$table01_state$length + 1)
+# })
+```
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### {.no-padding}
+
+```{r}
+dataTableOutput("table")
+```
+
+```{r}
+output$table <- renderDataTable(
+  
+  data %>% 
+    filter(
+      year %in% c(2016,2018)
+    ) %>% 
+    mutate(
+      Values = Values %>% round(1)
+    ) %>% 
+    left_join(
+      variables,
+      by = c("Names" = "code")
+    ) %>% 
+    select(
+      `Block Group` = CBG,
+      short,
+      Values
+    ) %>% 
+    pivot_wider(
+      names_from = short,
+      values_from = Values
+    ) %>% 
+    arrange(`Block Group`),
+  options = list(
+    pageLength = 5,
+    dom = 'tp'
+  ),
+  selection = 'single'
+  
+)
+```
+
