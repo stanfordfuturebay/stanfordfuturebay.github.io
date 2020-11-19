@@ -236,7 +236,11 @@ cbgs_acs_2018 <-
     CBG,
     EP_POV = B17010_002E/B17010_001E*100,
     EP_UNEMP = B23025_005E/B23025_001E*100,
-    EP_PCI = B19301_001E,
+    EP_PCI = ifelse(
+      B19301_001E > 0,
+      B19301_001E,
+      NA
+    ),
     EP_NOHSDP = (
       B15003_002E +
       B15003_003E +
@@ -647,7 +651,11 @@ cbgs_acs_2013 <-
     CBG,
     EP_POV = B17010_002E/B17010_001E*100,
     EP_UNEMP = B23025_005E/B23025_001E*100,
-    EP_PCI = B19301_001E,
+    EP_PCI = ifelse(
+      B19301_001E > 0,
+      B19301_001E,
+      NA
+    ),
     EP_NOHSDP = (
       B15003_002E +
       B15003_003E +
