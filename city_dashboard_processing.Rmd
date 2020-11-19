@@ -25,7 +25,7 @@ Update these variables to point to a new city. Only slight modification necessar
 Only other update to make is to the filename of the .rda file saved in the last chunk.
 
 ```{r}
-city <- "Knoxville"
+city <- "East Palo Alto"
 state_abbr <- "CA"
 state <- "06"
 county <- "081"

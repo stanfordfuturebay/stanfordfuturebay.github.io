@@ -22,6 +22,7 @@ library(sf)
 library(DT)
 library(shinydashboard)
 library(colorRamps)
+library(RColorBrewer)
 library(mapboxapi)
 
 load("city.rda")
@@ -130,7 +131,7 @@ variables <- data.frame(
 
 cbg_Ids <- cbgs$CBG
 
-colors <- primary.colors(nrow(variables)+1, 5, no.white = T) %>% .[-1]
+colors <- colorRampPalette(brewer.pal(8,"Set1"))(31)
 
 pal_list <- 
   1:nrow(variables) %>%
