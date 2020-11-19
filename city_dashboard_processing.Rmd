@@ -22,13 +22,13 @@ acs_vars_2018_5yr <- readRDS("acs_vars_2018_5yr.rds")
 
 Update these variables to point to a new city. Only slight modification necessary to switch to non-city boundaries, just manually change `boundary`.
 
-Only other update to make is to the filename of the .Rdata file saved in the last chunk.
+Only other update to make is to the filename of the .rda file saved in the last chunk.
 
 ```{r}
 city <- "Knoxville"
-state_abbr <- "TN"
-state <- "47"
-county <- "093"
+state_abbr <- "CA"
+state <- "06"
+county <- "081"
 ```
 
 ```{r}
@@ -41,7 +41,7 @@ cbgs <-
   st_transform(26910) %>% 
   st_buffer(-10) %>% 
   st_transform(4269) %>% 
-  .[boundary, ] %>% 
+  .[boundary, ] %>%
   st_set_geometry(NULL) %>% 
   left_join(
     block_groups(state, county, cb = T, progress_bar = F) %>% select(GEOID)
@@ -231,8 +231,9 @@ cbgs_acs_2018 <-
   mutate(
     CBG = paste0(state,county,tract,block_group)
   ) %>% 
-  filter(CBG %in% cbgs$GEOID) %>% 
+  filter(CBG %in% cbgs$CBG) %>% 
   transmute(
+    CBG,
     EP_POV = B17010_002E/B17010_001E*100,
     EP_UNEMP = B23025_005E/B23025_001E*100,
     EP_PCI = B19301_001E,
@@ -641,8 +642,9 @@ cbgs_acs_2013 <-
   mutate(
     CBG = paste0(state,county,tract,block_group)
   ) %>% 
-  filter(CBG %in% cbgs$GEOID) %>% 
+  filter(CBG %in% cbgs$CBG) %>% 
   transmute(
+    CBG,
     EP_POV = B17010_002E/B17010_001E*100,
     EP_UNEMP = B23025_005E/B23025_001E*100,
     EP_PCI = B19301_001E,
@@ -889,7 +891,7 @@ Eviction lab data
 ```{r}
 eviction <- read_csv(paste0("https://eviction-lab-data-downloads.s3.amazonaws.com/",state_abbr,"/block-groups.csv")) %>% 
   select(CBG = GEOID, year, evictions, `eviction-filings`) %>% 
-  filter(CBG %in% cbgs$GEOID) %>% 
+  filter(CBG %in% cbgs$CBG) %>% 
   pivot_longer(
     -c(CBG, year),
     names_to = "Names",
@@ -910,6 +912,6 @@ save(
   cbgs,
   boundary,
   data,
-  file = "city.rda"
+  file = paste0(city,".rda")
 )
 ```

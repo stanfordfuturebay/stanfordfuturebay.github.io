@@ -128,7 +128,7 @@ variables <- data.frame(
   )
 )
 
-cbg_Ids <- cbgs$GEOID
+cbg_Ids <- cbgs$CBG
 
 colors <- primary.colors(nrow(variables)+1, 5, no.white = T) %>% .[-1]
 
