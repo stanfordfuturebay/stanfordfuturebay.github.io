@@ -1,25 +1,26 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",727,0,NA,NA
-"2","Age Group 10-19",1239,0,NA,NA
-"3","Age Group 20-29",2596,0,NA,NA
-"4","Age Group 30-39",2475,1,NA,NA
-"5","Age Group 40-49",2069,2,NA,NA
-"6","Age Group 50-59",1638,13,NA,NA
-"7","Age Group 60-69",1123,25,NA,NA
-"8","Age Group 70-79",470,28,NA,NA
-"9","Age Group 80-89",279,55,NA,NA
+"1","Age Group < 9",730,0,NA,NA
+"2","Age Group 10-19",1248,0,NA,NA
+"3","Age Group 20-29",2614,0,NA,NA
+"4","Age Group 30-39",2495,1,NA,NA
+"5","Age Group 40-49",2087,2,NA,NA
+"6","Age Group 50-59",1654,13,NA,NA
+"7","Age Group 60-69",1133,25,NA,NA
+"8","Age Group 70-79",473,28,NA,NA
+"9","Age Group 80-89",280,55,NA,NA
 "10","Age Group 90+",163,44,NA,NA
 "11","Age Group Unknown",1,NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native",7,1,NA,NA
-"13","Race/Ethnicity  Asian",1265,39,NA,NA
-"14","Race/Ethnicity  Black",158,6,NA,NA
-"15","Race/Ethnicity  Latino/Hispanic",6471,38,NA,NA
-"16","Race/Ethnicity  Pacific Islander",273,4,NA,NA
-"17","Race/Ethnicity  White",1532,80,NA,NA
-"18","Race/Ethnicity Multirace",88,NA,NA,NA
-"19","Race/Ethnicity Other",95,0,NA,NA
-"20","Race/Ethnicity Unknown",2891,0,NA,NA
-"21","Sex Female",6438,85,NA,NA
-"22","Sex Male",6341,83,NA,NA
+"12","Race/Ethnicity  American Indian/Alaska Native",8,1,NA,NA
+"13","Race/Ethnicity  Asian",1276,39,NA,NA
+"14","Race/Ethnicity  Black",162,6,NA,NA
+"15","Race/Ethnicity  Latino/Hispanic",6505,38,NA,NA
+"16","Race/Ethnicity  Pacific Islander",276,4,NA,NA
+"17","Race/Ethnicity  White",1560,80,NA,NA
+"18","Race/Ethnicity Multirace",94,NA,NA,NA
+"19","Race/Ethnicity Other",96,0,NA,NA
+"20","Race/Ethnicity Unknown",2901,0,NA,NA
+"21","Sex Female",6484,85,NA,NA
+"22","Sex Male",6392,83,NA,NA
 "23","Sex Other",1,NA,NA,NA
-"24",NA,NA,NA,"case data up to and including november 17, 2020","death data last updated november 16, 2020."
+"24","Sex Unknown",1,NA,NA,NA
+"25",NA,NA,NA,"case data up to and including november 18, 2020","death data last updated november 16, 2020."
