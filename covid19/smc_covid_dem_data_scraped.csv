@@ -1,25 +1,26 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",754,0,NA,NA
-"2","Age Group 10-19",1289,0,NA,NA
-"3","Age Group 20-29",2659,0,NA,NA
-"4","Age Group 30-39",2560,1,NA,NA
-"5","Age Group 40-49",2138,2,NA,NA
-"6","Age Group 50-59",1699,13,NA,NA
-"7","Age Group 60-69",1157,26,NA,NA
-"8","Age Group 70-79",492,28,NA,NA
-"9","Age Group 80-89",287,55,NA,NA
-"10","Age Group 90+",167,44,NA,NA
+"1","Age Group < 9",782,0,NA,NA
+"2","Age Group 10-19",1357,0,NA,NA
+"3","Age Group 20-29",2776,0,NA,NA
+"4","Age Group 30-39",2662,1,NA,NA
+"5","Age Group 40-49",2214,2,NA,NA
+"6","Age Group 50-59",1761,13,NA,NA
+"7","Age Group 60-69",1188,27,NA,NA
+"8","Age Group 70-79",498,28,NA,NA
+"9","Age Group 80-89",298,55,NA,NA
+"10","Age Group 90+",170,44,NA,NA
 "11","Age Group Unknown",1,NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native",8,1,NA,NA
-"13","Race/Ethnicity  Asian",1303,39,NA,NA
-"14","Race/Ethnicity  Black",171,6,NA,NA
-"15","Race/Ethnicity  Latino/Hispanic",6661,39,NA,NA
-"16","Race/Ethnicity  Pacific Islander",283,4,NA,NA
-"17","Race/Ethnicity  White",1620,80,NA,NA
-"18","Race/Ethnicity Multirace",99,NA,NA,NA
-"19","Race/Ethnicity Other",85,0,NA,NA
-"20","Race/Ethnicity Unknown",2973,0,NA,NA
-"21","Sex Female",6661,85,NA,NA
-"22","Sex Male",6541,84,NA,NA
+"12","Race/Ethnicity  American Indian/Alaska Native",9,1,NA,NA
+"13","Race/Ethnicity  Asian",1360,39,NA,NA
+"14","Race/Ethnicity  Black",182,6,NA,NA
+"15","Race/Ethnicity  Latino/Hispanic",6838,40,NA,NA
+"16","Race/Ethnicity  Pacific Islander",299,4,NA,NA
+"17","Race/Ethnicity  White",1742,80,NA,NA
+"18","Race/Ethnicity Multirace",105,NA,NA,NA
+"19","Race/Ethnicity Other",87,0,NA,NA
+"20","Race/Ethnicity Unknown",3085,0,NA,NA
+"21","Sex Female",6911,85,NA,NA
+"22","Sex Male",6794,85,NA,NA
 "23","Sex Other",1,NA,NA,NA
-"24",NA,NA,NA,"case data up to and including november 20, 2020","death data last updated november 19, 2020."
+"24","Sex Unknown",1,NA,NA,NA
+"25",NA,NA,NA,"data up to and including november 24, 2020","death data last updated november 23, 2020."
