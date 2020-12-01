@@ -1,26 +1,26 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",827,0,NA,NA
-"2","Age Group 10-19",1435,0,NA,NA
-"3","Age Group 20-29",2887,0,NA,NA
-"4","Age Group 30-39",2744,1,NA,NA
-"5","Age Group 40-49",2251,2,NA,NA
-"6","Age Group 50-59",1816,13,NA,NA
-"7","Age Group 60-69",1203,27,NA,NA
-"8","Age Group 70-79",520,28,NA,NA
-"9","Age Group 80-89",305,55,NA,NA
-"10","Age Group 90+",159,44,NA,NA
+"1","Age Group < 9",848,0,NA,NA
+"2","Age Group 10-19",1465,0,NA,NA
+"3","Age Group 20-29",2954,0,NA,NA
+"4","Age Group 30-39",2799,1,NA,NA
+"5","Age Group 40-49",2287,2,NA,NA
+"6","Age Group 50-59",1860,13,NA,NA
+"7","Age Group 60-69",1236,27,NA,NA
+"8","Age Group 70-79",530,28,NA,NA
+"9","Age Group 80-89",314,55,NA,NA
+"10","Age Group 90+",164,44,NA,NA
 "11","Age Group Unknown",1,NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native",9,1,NA,NA
-"13","Race/Ethnicity  Asian",1401,39,NA,NA
-"14","Race/Ethnicity  Black",196,6,NA,NA
-"15","Race/Ethnicity  Latino/Hispanic",7016,40,NA,NA
-"16","Race/Ethnicity  Pacific Islander",315,4,NA,NA
-"17","Race/Ethnicity  White",1834,80,NA,NA
-"18","Race/Ethnicity Multirace",123,NA,NA,NA
-"19","Race/Ethnicity Other",87,0,NA,NA
-"20","Race/Ethnicity Unknown",3167,0,NA,NA
-"21","Sex Female",7133,85,NA,NA
-"22","Sex Male",7011,85,NA,NA
+"13","Race/Ethnicity  Asian",1437,39,NA,NA
+"14","Race/Ethnicity  Black",203,6,NA,NA
+"15","Race/Ethnicity  Latino/Hispanic",7142,40,NA,NA
+"16","Race/Ethnicity  Pacific Islander",321,4,NA,NA
+"17","Race/Ethnicity  White",1895,80,NA,NA
+"18","Race/Ethnicity Multirace",124,NA,NA,NA
+"19","Race/Ethnicity Other",88,0,NA,NA
+"20","Race/Ethnicity Unknown",3239,0,NA,NA
+"21","Sex Female",7285,85,NA,NA
+"22","Sex Male",7171,85,NA,NA
 "23","Sex Other",1,NA,NA,NA
-"24","Sex Unknown",3,NA,NA,NA
-"25",NA,NA,NA,"data up to and including november 27, 2020","death data last updated november 27, 2020."
+"24","Sex Unknown",1,NA,NA,NA
+"25",NA,NA,NA,"data up to and including november 29, 2020","death data last updated november 27, 2020."
