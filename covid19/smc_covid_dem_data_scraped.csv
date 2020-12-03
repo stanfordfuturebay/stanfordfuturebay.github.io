@@ -1,26 +1,24 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",865,0,NA,NA
-"2","Age Group 10-19",1477,0,NA,NA
-"3","Age Group 20-29",2987,0,NA,NA
-"4","Age Group 30-39",2828,1,NA,NA
-"5","Age Group 40-49",2307,2,NA,NA
-"6","Age Group 50-59",1880,13,NA,NA
-"7","Age Group 60-69",1250,27,NA,NA
-"8","Age Group 70-79",535,28,NA,NA
-"9","Age Group 80-89",319,55,NA,NA
-"10","Age Group 90+",165,44,NA,NA
-"11","Age Group Unknown",1,NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native",9,1,NA,NA
-"13","Race/Ethnicity  Asian",1453,39,NA,NA
-"14","Race/Ethnicity  Black",204,6,NA,NA
-"15","Race/Ethnicity  Latino/Hispanic",7221,40,NA,NA
-"16","Race/Ethnicity  Pacific Islander",328,4,NA,NA
-"17","Race/Ethnicity  White",1917,80,NA,NA
-"18","Race/Ethnicity Multirace",132,NA,NA,NA
-"19","Race/Ethnicity Other",93,0,NA,NA
-"20","Race/Ethnicity Unknown",3257,0,NA,NA
-"21","Sex Female",7376,85,NA,NA
-"22","Sex Male",7235,85,NA,NA
-"23","Sex Other",1,NA,NA,NA
-"24","Sex Unknown",2,NA,NA,NA
-"25",NA,NA,NA,"data up to and including november 30, 2020","death data last updated november 30, 2020."
+"1","Age Group < 9",875,0,NA,NA
+"2","Age Group 10-19",1500,0,NA,NA
+"3","Age Group 20-29",3031,0,NA,NA
+"4","Age Group 30-39",2867,1,NA,NA
+"5","Age Group 40-49",2343,2,NA,NA
+"6","Age Group 50-59",1907,13,NA,NA
+"7","Age Group 60-69",1262,27,NA,NA
+"8","Age Group 70-79",542,28,NA,NA
+"9","Age Group 80-89",320,55,NA,NA
+"10","Age Group 90+",164,44,NA,NA
+"11","Race/Ethnicity  American Indian/Alaska Native",9,1,NA,NA
+"12","Race/Ethnicity  Asian",1474,39,NA,NA
+"13","Race/Ethnicity  Black",207,6,NA,NA
+"14","Race/Ethnicity  Latino/Hispanic",7290,40,NA,NA
+"15","Race/Ethnicity  Pacific Islander",335,4,NA,NA
+"16","Race/Ethnicity  White",1964,80,NA,NA
+"17","Race/Ethnicity Multirace",133,NA,NA,NA
+"18","Race/Ethnicity Other",96,0,NA,NA
+"19","Race/Ethnicity Unknown",3304,0,NA,NA
+"20","Sex Female",7476,85,NA,NA
+"21","Sex Male",7333,85,NA,NA
+"22","Sex Unknown",2,NA,NA,NA
+"23",NA,NA,NA,"data up to and including december 1, 2020","death data last updated november 30, 2020."
