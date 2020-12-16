@@ -222,6 +222,7 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
   cases_age <- scc_age_cases %>% 
     dplyr::select(age_group, count) %>%
     rename(count_scc = count) %>%
+    mutate(age_group = ifelse(age_group == "19 or Under", "19 or under", age_group)) %>%
     left_join(smc_age_data %>% dplyr::select(demographic, Cases) %>%
                 rename(count_smc = Cases, age_group = demographic) %>%
                 # need to coalesce the <20 age group to fit with SCC data
