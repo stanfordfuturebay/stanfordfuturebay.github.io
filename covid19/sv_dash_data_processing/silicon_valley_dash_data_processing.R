@@ -198,7 +198,8 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
                 mutate(race_eth = case_when(race_eth == "American Indian/Alaska Native" ~ "Other", race_eth == "Multirace" ~ "Other", TRUE ~ race_eth)) %>%
                 group_by(race_eth) %>%
                 summarize(count_smc = sum(count_smc))) %>%
-    mutate(total = count_smc + count_scc)
+    mutate(count_smc = replace_na(count_smc, 0),
+           total = count_smc + count_scc)
   
   # save csv
   write.csv(cases_race, "covid19/sv_dash_data_processing/sv_cases_by_race.csv")
@@ -214,7 +215,8 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
                 mutate(race_eth = case_when(race_eth == "American Indian/Alaska Native" ~ "Other", race_eth == "Multirace" ~ "Other", TRUE ~ race_eth)) %>%
                 group_by(race_eth) %>%
                 summarize(count_smc = sum(count_smc))) %>%
-    mutate(total = count_smc + count_scc)
+    mutate(count_smc = replace_na(count_smc, 0),
+           total = count_smc + count_scc)
   
   # save csv
   write.csv(deaths_race, "covid19/sv_dash_data_processing/sv_deaths_by_race.csv")
@@ -229,7 +231,8 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
                 mutate(age_group = ifelse(age_group == "< 9" | age_group == "10-19", "19 or under", age_group)) %>%
                 group_by(age_group) %>%
                 summarize(count_smc = sum(count_smc))) %>%
-    mutate(total = count_smc + count_scc)
+    mutate(count_smc = replace_na(count_smc, 0),
+           total = count_smc + count_scc)
   
   # save csv
   write.csv(cases_age, "covid19/sv_dash_data_processing/sv_cases_by_age.csv")
@@ -245,7 +248,8 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
                 mutate(age_group = ifelse(age_group == "< 9" | age_group == "10-19", "19 or under", age_group)) %>%
                 group_by(age_group) %>%
                 summarize(count_smc = sum(count_smc))) %>%
-    mutate(total = count_smc + count_scc)
+    mutate(count_smc = replace_na(count_smc, 0),
+           total = count_smc + count_scc)
   
   # save csv
   write.csv(deaths_age, "covid19/sv_dash_data_processing/sv_deaths_by_age.csv")
