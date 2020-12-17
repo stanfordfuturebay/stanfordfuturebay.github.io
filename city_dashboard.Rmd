@@ -24,6 +24,7 @@ library(shinydashboard)
 library(colorRamps)
 library(RColorBrewer)
 library(mapboxapi)
+library(htmltools)
 
 load("city.rda")
 
@@ -59,7 +60,10 @@ variables <- data.frame(
     "EP_WELFARE", 
     "EP_NOBROADBAND",
     "evictions", 
-    "eviction-filings"
+    "eviction-filings",
+    "WALK",
+    "BIKE",
+    "DRIVE"
   ),
   label = c(
     "Social Vulnerability Index",
@@ -92,7 +96,10 @@ variables <- data.frame(
     "% Public Assistance",
     "% No Broadband",
     "Evictions",
-    "Eviction Filings"
+    "Eviction Filings",
+    "% Walkable to Vaccine Site",
+    "% Bikable to Vaccine Site",
+    "% Drivable to Vaccine Site"
   ),
   short = c(
     "SVI",
@@ -125,13 +132,16 @@ variables <- data.frame(
     "% Assistance",
     "% No Broadband",
     "Evictions",
-    "Eviction Filings"
+    "Eviction Filings",
+    "% Walk to Vaccine",
+    "% Bike to Vaccine",
+    "% Drive to Vaccine"
   )
 )
 
 cbg_Ids <- cbgs$CBG
 
-colors <- colorRampPalette(brewer.pal(8,"Set1"))(31)
+colors <- colorRampPalette(brewer.pal(8,"Set1"))(34)
 
 pal_list <- 
   1:nrow(variables) %>%
@@ -141,7 +151,7 @@ pal_list <-
         palette = colorRamp(c("#FFFFFF", colors[x]), interpolate = "spline"),
         domain = data %>% 
           filter(
-            year %in% c(2016,2018),
+            year %in% c(2016,2019),
             Names == variables[x,1]
           ) %>% 
           pull(Values)
@@ -157,7 +167,29 @@ Home
 Inputs {.sidebar}
 -----------------------------------------------------------------------
 
-**Correlation Plot (Tab 1)** - Each dot is a block group. Keep in mind that correlation is not causation. Select two variables to plot by:
+**Map** - Block groups shown in color. City boundary in black.
+
+```{r}
+selectInput(
+  "V5", 
+  label = "Variable to view on map", 
+  choices = variables$label, 
+  selected = variables$label[1]
+)
+```
+
+**Access Plot (Tab 1)** - The bar chart compares population counts for the city as a whole and the population within 5 min. driving, 10 min. biking, and 10 min. walking of COVID-19 testing (or future vaccination) sites.
+
+```{r}
+selectInput(
+  "V4", 
+  label = "Population of choice", 
+  choices = c("All", variables %>% filter(!code %in% c("SVI", "EP_PCI", "evictions", "eviction-filings", "WALK", "BIKE", "DRIVE")) %>% pull(label)), 
+  selected = "All"
+)
+```
+
+**Correlation Plot (Tab 2)** - Each dot is a block group. Keep in mind that correlation is not causation. Select two variables to plot by:
 
 ```{r}
 selectInput(
@@ -175,7 +207,7 @@ selectInput(
 )
 ```
 
-**Longitudinal Plot (Tab 2)** - The primary longitudinal data available is on evictions. Census data can only be plotted as the change from 2009-2013 summary data to 2014-2018 summary data. The average line is shown in orange, and individual block groups can be added in blue
+**Longitudinal Plot (Tab 3)** - The primary longitudinal data available is on evictions. Census data can only be plotted as the change from 2009-2013 summary data to 2015-2019 summary data. The average line is shown in orange, and individual block groups can be added in blue.
 
 ```{r}
 selectInput(
@@ -186,25 +218,14 @@ selectInput(
 )
 ```
 
-**Map** - Block groups shown in color. City boundary in black.
-
-```{r}
-selectInput(
-  "V4", 
-  label = "Variable to view on map", 
-  choices = variables$label, 
-  selected = variables$label[1]
-)
-```
-
 **Table** - Click on column headers to sort. Click on rows to highlight block group on the longitudinal plot (tab 2) and map.
 
-**About the data** - Most data is from the American Communities Survey 2009-2013 or 2014-2018 5-year Detailed Tables (shown by default in plots, map, and table):
+**About the data** - Most data is from the American Communities Survey 2009-2013 or 2015-2019 5-year Detailed Tables (shown by default in plots, map, and table):
 
 - Social Vulnerability Index: Calculated using the CDC's [methodology](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/pdf/SVI2018Documentation-H.pdf) and the next 15 variables
 - % Below Poverty: B17010, POVERTY STATUS IN THE PAST 12 MONTHS OF FAMILIES BY FAMILY TYPE BY PRESENCE OF RELATED CHILDREN UNDER 18 YEARS BY AGE OF RELATED CHILDREN
 - % Unemployed: B23025, EMPLOYMENT STATUS FOR THE POPULATION 16 YEARS AND OVER
-- \$ Per Capita Income: B19301, PER CAPITA INCOME IN THE PAST 12 MONTHS (IN 2018 INFLATION-ADJUSTED DOLLARS)
+- \$ Per Capita Income: B19301, PER CAPITA INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 - % No High School Diploma: B15003, EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
 - % Aged 65 or Older: B01001, SEX BY AGE
 - % Aged 17 or Younger: B01001, SEX BY AGE
@@ -218,17 +239,237 @@ selectInput(
 - % No Vehicle: B25044, TENURE BY VEHICLES AVAILABLE
 - % Group Quarters: B09019, HOUSEHOLD TYPE (INCLUDING LIVING ALONE) BY RELATIONSHIP
 - % Medicare/Medicaid/Direct Purchase/Employer/No health insurance: B27010, TYPES OF HEALTH INSURANCE COVERAGE BY AGE (Medicare includes Medicare only, Employer + Medicare, Medicare + Medicaid; Medicaid includes Medicaid only, Medicare + Medicaid; Direct Purchase includes Direct Purchase only, Employer + Direct Purchase, Direct Purchase + Medicare; Employer includes Employer only, Employer + Direct Purchase, Employer + Medicare)
-- % Households Earning < \$25,000: B19001, HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2018 INFLATION-ADJUSTED DOLLARS)
+- % Households Earning < \$25,000: B19001, HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 - % Receiving SNAP: B22010, RECEIPT OF FOOD STAMPS/SNAP IN THE PAST 12 MONTHS BY DISABILITY STATUS FOR HOUSEHOLDS
 - % Renters Paying 30%+ or 50%+ Income on Rent: B25070, GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS
 - % Owners Paying 30%+ or 50%+ Income on Housing: B25070, GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS
 - % Public Assistance: B19057, PUBLIC ASSISTANCE INCOME IN THE PAST 12 MONTHS FOR HOUSEHOLDS
-- % No Broadband: B28008, PRESENCE OF A COMPUTER AND TYPE OF INTERNET SUBSCRIPTION IN HOUSEHOLD (only available for 2014-2018)
+- % No Broadband: B28008, PRESENCE OF A COMPUTER AND TYPE OF INTERNET SUBSCRIPTION IN HOUSEHOLD (only available for 2015-2019)
 
 Evictions and Eviction Filings 2000-2016 data is from [The Eviction Lab at Princeton University](https://data-downloads.evictionlab.org/). 2016 data is shown by default on plots, map, and table.
 
+COVID-19 Testing or Vaccination Site Access uses open locations from [GISCorps](https://covid-19-giscorps.hub.arcgis.com/pages/contribute-covid-19-testing-sites-data), downloaded on `r Sys.Date()`. 10 minute walking, 10 minute cycling, and 5 minute driving isochrones were generated using [MapBox Isochrone API](https://docs.mapbox.com/api/navigation/isochrone/). "Access" is defined as the percentage of census block group area within these isochrones.
+
 Row {data-height=600}
 -----------------------------------------------------------------------
+
+### {.no-padding data-width=600}
+
+```{r}
+leafletOutput("map")
+```
+
+```{r, context="server"}
+output$map <- renderLeaflet({
+  map <- 
+    leaflet(
+      options = leafletOptions(
+        attributionControl=FALSE
+      )
+    ) %>% 
+    addProviderTiles(providers$CartoDB.Positron, group = "Minimal Basemap") %>%
+    addMapboxTiles(
+      style_id = "satellite-streets-v11",
+      username = "mapbox",
+      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
+      group = "Satellite Basemap"
+    ) %>% 
+    addMapboxTiles(
+      style_id = "streets-v11",
+      username = "mapbox",
+      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
+      group = "Default Basemap"
+    ) %>% 
+    addMapPane("blocks", 410) %>% 
+    addMapPane("city", 420) %>% 
+    addMapPane("access", 430) %>% 
+    addMapPane("sites", 440) %>% 
+    addPolygons(
+      data = boundary,
+      fill = F,
+      weight = 2,
+      color = "black",
+      options = 
+        pathOptions(pane = "city")
+    ) %>% 
+    addMarkers(
+      data = vaccine_access %>% 
+        st_set_geometry("location"),
+      popup = ~paste(name, address1, address2, sep = "<br>"),
+      options =
+        pathOptions(pane = "sites"),
+      group = "Test/Vaccine Sites"
+    ) %>% 
+    addPolygons(
+      data = vaccine_access %>% 
+        st_set_geometry("walk"),
+      color = "white",
+      fillColor = "white",
+      fillOpacity = 0.25,
+      opacity = 1,
+      weight = 0.1,
+      highlightOptions = highlightOptions(
+        weight = 2
+      ),
+      options =
+        pathOptions(pane = "access"),
+      group = "10m Walking Access"
+    ) %>% 
+    addPolygons(
+      data = vaccine_access %>% 
+        st_set_geometry("bike"),
+      color = "white",
+      fillColor = "white",
+      fillOpacity = 0.1,
+      opacity = 1,
+      weight = 0.1,
+      highlightOptions = highlightOptions(
+        weight = 2
+      ),
+      options =
+        pathOptions(pane = "access"),
+      group = "10m Biking Access"
+    ) %>% 
+    addPolygons(
+      data = vaccine_access %>% 
+        st_set_geometry("drive"),
+      color = "white",
+      fillColor = "white",
+      fillOpacity = 0.1,
+      opacity = 1,
+      weight = 0.1,
+      highlightOptions = highlightOptions(
+        weight = 2
+      ),
+      options =
+        pathOptions(pane = "access"),
+      group = "5m Driving Access"
+    ) %>% 
+    addLayersControl(
+      baseGroups = c(
+        "Minimal Basemap",
+        "Satellite Basemap",
+        "Default Basemap"
+      ),
+      overlayGroups = c(
+        "Test/Vaccine Sites",
+        "10m Walking Access",
+        "10m Biking Access",
+        "5m Driving Access"
+      ),
+      options = layersControlOptions(collapsed = FALSE)
+    ) %>%
+    showGroup("SVI") %>% 
+    showGroup("Default Basemap") %>% 
+    hideGroup("Test/Vaccine Sites") %>% 
+    hideGroup("10m Walking Access") %>% 
+    hideGroup("10m Biking Access") %>% 
+    hideGroup("5m Driving Access")
+  
+  for(x in 1:nrow(variables)){
+    map <- 
+      map %>% 
+      addPolygons(
+        data = data %>% 
+          filter(
+            year %in% c(2016,2019),
+            Names == variables[x,1]
+          ) %>% 
+          left_join(cbgs) %>% 
+          st_as_sf(),
+        fillColor = ~pal_list[[x]](Values),
+        color = "white",
+        weight = 0.5,
+        opacity = 0.5,
+        fillOpacity = 0.7,
+        group = variables[x, 3],
+        label = ~paste0(CBG,": ", Values %>% round(2))
+      )
+  }
+  
+  map
+  
+})
+```
+
+```{r}
+observeEvent(input$V5,{
+  
+  leafletProxy('map') %>% 
+    removeControl(layerId = "legend") %>% 
+    hideGroup(variables$short) %>% 
+    showGroup(
+      variables %>% 
+        filter(label == input$V5) %>% 
+        pull(short)
+    )
+  
+  for(x in 1:nrow(variables)){
+    
+    if(variables[x,2] %in% isolate(input$V5)){
+      
+      leafletProxy('map') %>% 
+        addLegend(
+          data = data %>% 
+            filter(
+              year %in% c(2016,2019),
+              Names == variables[x,1]
+            ),
+          pal = pal_list[[x]],
+          values = ~Values,
+          title = variables[x,3],
+          opacity = 0.5,
+          layerId = "legend",
+          position = "bottomright"
+        )
+      
+    }
+    
+  }
+})
+```
+
+```{r, context="server"}
+observeEvent(input$table_rows_selected,{
+  
+  leafletProxy('map') %>% 
+    removeShape(layerId = "select")
+  
+  row <- input$table_rows_selected
+  
+  if(length(row)){
+    
+    leafletProxy('map') %>% 
+      addPolygons(
+        data = cbgs[row,],
+        fill = F,
+        color = "black",
+        weight = 2,
+        opacity = 1,
+        layerId = "select",
+        options = 
+          pathOptions(
+            pane = "blocks"
+          )
+      ) %>% 
+      flyTo(
+        lng = cbgs[row,] %>% st_centroid() %>% st_coordinates() %>% .[1],
+        lat = cbgs[row,] %>% st_centroid() %>% st_coordinates() %>% .[2], 
+        zoom = isolate(input$map_zoom)
+      )
+  }
+
+}, ignoreInit = T, ignoreNULL = F)
+```
+
+```{r, context="server"}
+# observeEvent(input$map_marker_click, {
+#   clickId <- input$map_marker_click$id
+#   dataTableProxy("table") %>%
+#     selectRows(which(qSub()$id == clickId)) %>%
+#     selectPage(which(input$table01_rows_all == clickId) %/% input$table01_state$length + 1)
+# })
+```
 
 ### {.no-padding data-width=400}
 
@@ -244,6 +485,11 @@ Row {data-height=600}
 tabBox(
   width = "100%",
   height = "100vh",
+  tabPanel(
+    "Access",
+    plotlyOutput("accessplot", height = "52vh"),
+    style = "width:100%; height:52vh"
+  ),
   tabPanel(
     "Correlation", 
     plotlyOutput("scatterplot", height = "52vh"),
@@ -263,7 +509,7 @@ output$scatterplot <- renderPlotly({
   scatter_data <-
     data %>% 
     filter(
-      year %in% c(2016,2018),
+      year %in% c(2016,2019),
       Names %in% c(
         variables$code[match(input$V1, variables$label)],
         variables$code[match(input$V2, variables$label)]
@@ -433,160 +679,74 @@ output$timeplot <- renderPlotly({
 })
 ```
 
-
-### {.no-padding data-width=600}
-
-```{r}
-leafletOutput("map")
-```
-
-```{r, context="server"}
-output$map <- renderLeaflet({
-  map <- 
-    leaflet(
-      options = leafletOptions(
-        attributionControl=FALSE
-      )
-    ) %>% 
-    addProviderTiles(providers$CartoDB.Positron, group = "Minimal Basemap") %>%
-    addMapboxTiles(
-      style_id = "satellite-streets-v11",
-      username = "mapbox",
-      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
-      group = "Satellite Basemap"
-    ) %>% 
-    addMapboxTiles(
-      style_id = "streets-v11",
-      username = "mapbox",
-      access_token = "pk.eyJ1IjoiZGVyZWtvdXlhbmciLCJhIjoiY2s5Yno5bXByMDM1djNlcDhsMTFqM3VjcyJ9.bcf4iQucxDFqq-0a9bwmsQ",
-      group = "Default Basemap"
-    ) %>% 
-    addMapPane("blocks", 410) %>% 
-    addMapPane("city", 420) %>% 
-    addPolygons(
-      data = boundary,
-      fill = F,
-      weight = 2,
-      color = "black",
-      options = 
-        pathOptions(
-          pane = "city"
-        )
-    ) %>% 
-    addLayersControl(
-      baseGroups = c(
-        "Minimal Basemap",
-        "Satellite Basemap",
-        "Default Basemap"
-      ),
-      options = layersControlOptions(collapsed = FALSE)
-    ) %>%
-    showGroup("SVI") %>% 
-    showGroup("Default Basemap")
+```{r, context = "server"}
+output$accessplot <- renderPlotly({
   
-  for(x in 1:nrow(variables)){
-    map <- 
-      map %>% 
-      addPolygons(
-        data = data %>% 
-          filter(
-            year %in% c(2016,2018),
-            Names == variables[x,1]
-          ) %>% 
-          left_join(cbgs) %>% 
-          st_as_sf(),
-        fillColor = ~pal_list[[x]](Values),
-        color = "white",
-        weight = 0.5,
-        opacity = 0.5,
-        fillOpacity = 0.7,
-        group = variables[x, 3],
-        label = ~paste0(CBG,": ", Values %>% round(2))
-      )
+  subpop <- data.frame(
+    CBG = cbgs_isochrone_intersect$CBG,
+    subpop = 1
+  )
+  
+  if(input$V4 != "All"){
+    
+    subpop <- data %>% 
+      filter(year == 2019) %>% 
+      filter(
+        Names %in% 
+          variables$code[match(input$V4, variables$label)]
+      ) %>% 
+      transmute(CBG, subpop = Values/100)
+    
   }
   
-  map
-  
-})
-```
-
-```{r}
-observeEvent(input$V4,{
-  
-  leafletProxy('map') %>% 
-    removeControl(layerId = "legend") %>% 
-    hideGroup(variables$short) %>% 
-    showGroup(
-      variables %>% 
-        filter(label == input$V4) %>% 
-        pull(short)
+  access <- cbgs_isochrone_intersect %>% 
+    left_join(subpop) %>% 
+    left_join(cbgs %>% select(CBG, POP) %>% st_drop_geometry()) %>% 
+    transmute(
+      pop = POP * city_perc_area * subpop,
+      `5m Driving` = pop * drive_perc_area,
+      `10m Biking` = pop * bike_perc_area,
+      `10m Walking` = pop * walk_perc_area
+    ) %>% 
+    rename(`Total in City` = pop) %>% 
+    summarize_all(sum, na.rm = T) %>% 
+    pivot_longer(
+      everything(),
+      names_to = "names",
+      values_to = "values"
+    ) %>% 
+    mutate(
+      names = names %>% factor(levels = names),
+      perc = paste0(signif(values/max(values)*100, 2),"%"),
+      values = signif(values, 2)
     )
   
-  for(x in 1:nrow(variables)){
-    
-    if(variables[x,2] %in% isolate(input$V4)){
-      
-      leafletProxy('map') %>% 
-        addLegend(
-          data = data %>% 
-            filter(
-              year %in% c(2016,2018),
-              Names == variables[x,1]
-            ),
-          pal = pal_list[[x]],
-          values = ~Values,
-          title = variables[x,3],
-          opacity = 0.5,
-          layerId = "legend",
-          position = "bottomright"
-        )
-      
-    }
-    
-  }
-})
-```
-
-```{r, context="server"}
-observeEvent(input$table_rows_selected,{
-  
-  leafletProxy('map') %>% 
-    removeShape(layerId = "select")
-  
-  row <- input$table_rows_selected
-  
-  if(length(row)){
-    
-    leafletProxy('map') %>% 
-      addPolygons(
-        data = cbgs[row,],
-        fill = F,
-        color = "black",
-        weight = 2,
-        opacity = 1,
-        layerId = "select",
-        options = 
-          pathOptions(
-            pane = "blocks"
-          )
-      ) %>% 
-      flyTo(
-        lng = cbgs[row,] %>% st_centroid() %>% st_coordinates() %>% .[1],
-        lat = cbgs[row,] %>% st_centroid() %>% st_coordinates() %>% .[2], 
-        zoom = isolate(input$map_zoom)
+  plot_ly(
+    data = access,
+    x = ~names,
+    y = ~values,
+    text = ~perc,
+    textposition = "auto",
+    type = "bar"
+  ) %>% 
+    layout(
+      title = list(
+        text = paste0("COVID-19 Test/Vaccine Access\nPopulation: ", input$V4),
+        font = list(size = 10)
+      ),
+      margin = list(t = 65, l = 65, b = 65),
+      xaxis = list(
+        title = "",
+        fixedrange = T
+      ),
+      yaxis = list(
+        title = "Population",
+        fixedrange = T
       )
-  }
-
-}, ignoreInit = T, ignoreNULL = F)
-```
-
-```{r, context="server"}
-# observeEvent(input$map_marker_click, {
-#   clickId <- input$map_marker_click$id
-#   dataTableProxy("table") %>%
-#     selectRows(which(qSub()$id == clickId)) %>%
-#     selectPage(which(input$table01_rows_all == clickId) %/% input$table01_state$length + 1)
-# })
+    ) %>% 
+    config(displayModeBar = F)
+  
+})
 ```
 
 Row {data-height=400}
@@ -603,7 +763,7 @@ output$table <- renderDataTable(
   
   data %>% 
     filter(
-      year %in% c(2016,2018)
+      year %in% c(2016,2019)
     ) %>% 
     mutate(
       Values = Values %>% round(1)
@@ -630,4 +790,3 @@ output$table <- renderDataTable(
   
 )
 ```
-

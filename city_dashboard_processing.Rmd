@@ -10,14 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-library(censusapi)
+library(mapboxapi)
 library(tidyverse)
 library(tigris)
 library(sf)
+library(leaflet)
+library(censusapi)
+options(scipen = 999)
 
 Sys.setenv(CENSUS_KEY="c8aa67e4086b4b5ce3a8717f59faa9a28f611dab")
 
-acs_vars_2018_5yr <- readRDS("acs_vars_2018_5yr.rds")
+acs_vars_2019_5yr <- readRDS("acs_vars_2019_5yr.rds")
 ```
 
 Update these variables to point to a new city. Only slight modification necessary to switch to non-city boundaries, just manually change `boundary`.
@@ -34,20 +37,20 @@ county <- "081"
 ```{r}
 boundary <- places(state, cb = T, progress_bar = F) %>% 
   filter(NAME == city) %>% 
-  select(geometry)
+  select(geometry) %>% 
+  st_transform(26910)
 
 cbgs <- 
   block_groups(state, county, cb = T, progress_bar = F) %>%
   st_transform(26910) %>% 
+  .[boundary, ] %>%
   st_buffer(-10) %>% 
-  st_transform(4269) %>% 
   .[boundary, ] %>%
   st_set_geometry(NULL) %>% 
   left_join(
     block_groups(state, county, cb = T, progress_bar = F) %>% select(GEOID)
   ) %>% 
   st_as_sf() %>% 
-  st_transform(4326) %>% 
   select(CBG = GEOID) %>% 
   arrange(CBG) %>% 
   left_join(
@@ -62,14 +65,193 @@ cbgs <-
         CBG = paste0(state,county,tract,block_group),
         POP = B01001_001E
       )
-  )
+  ) %>% 
+  st_transform(26910) %>% 
+  mutate(original_area = st_area(.))
 ```
 
 ```{r}
-cbgs_acs_2018 <-
+covid_testing <-
+  st_read("https://opendata.arcgis.com/datasets/11fe8f374c344549815a716c8472832f_0.geojson")
+
+vaccine_sites <- covid_testing %>%
+  .[cbgs %>% st_buffer(5000) %>% 
+  st_transform(4326), ] %>% 
+  filter(status == "Open")
+
+walk <- mb_isochrone(
+  vaccine_sites,
+  profile = "walking",
+  time = 10
+)
+
+bike <- mb_isochrone(
+  vaccine_sites,
+  profile = "cycling",
+  time = 10
+)
+
+drive <- mb_isochrone(
+  vaccine_sites,
+  profile = "driving",
+  time = 5
+)
+
+vaccine_access <-
+  vaccine_sites %>% 
+  as.data.frame() %>% 
+  rename(location = geometry) %>% 
+  cbind(walk$geometry) %>% 
+  rename(walk = geometry) %>% 
+  cbind(bike$geometry) %>% 
+  rename(bike = geometry) %>% 
+  cbind(drive$geometry) %>% 
+  rename(drive = geometry) %>% 
+  separate(fulladdr, c("address1","address2"), sep = ",", extra = "merge")
+```
+
+```{r}
+cbgs_city_intersect <-
+  cbgs %>% 
+  st_intersection(boundary) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    city_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, city_perc_area)
+
+cbgs_walk_intersect <-
+  cbgs %>% 
+  st_intersection(
+    vaccine_access %>% 
+      st_set_geometry("walk") %>% 
+      st_union() %>% 
+      st_transform(26910)
+  ) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    walk_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, walk_perc_area)
+
+cbgs_walk_intersect_city <-
+  cbgs %>% 
+  st_intersection(boundary) %>% 
+  st_intersection(
+    vaccine_access %>% 
+      st_set_geometry("walk") %>% 
+      st_union() %>% 
+      st_transform(26910)
+  ) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    walk_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, walk_perc_area)
+
+cbgs_bike_intersect <-
+  cbgs %>% 
+  st_intersection(
+    vaccine_access %>% 
+      st_set_geometry("bike") %>% 
+      st_union() %>% 
+      st_transform(26910)
+  ) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    bike_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, bike_perc_area)
+
+cbgs_bike_intersect_city <-
+  cbgs %>% 
+  st_intersection(boundary) %>% 
+  st_intersection(
+    vaccine_access %>% 
+      st_set_geometry("bike") %>% 
+      st_union() %>% 
+      st_transform(26910)
+  ) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    bike_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, bike_perc_area)
+
+cbgs_drive_intersect <-
+  cbgs %>% 
+  st_intersection(
+    vaccine_access %>% 
+      st_set_geometry("drive") %>% 
+      st_union() %>% 
+      st_transform(26910)
+  ) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    drive_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, drive_perc_area)
+
+cbgs_drive_intersect_city <-
+  cbgs %>% 
+  st_intersection(boundary) %>% 
+  st_intersection(
+    vaccine_access %>% 
+      st_set_geometry("drive") %>% 
+      st_union() %>% 
+      st_transform(26910)
+  ) %>% 
+  mutate(
+    leftover_area = st_area(.),
+    drive_perc_area = leftover_area / original_area
+  ) %>% 
+  st_drop_geometry() %>% 
+  select(CBG, drive_perc_area)
+
+cbgs_isochrone_intersect <-
+  cbgs_city_intersect %>% 
+  left_join(cbgs_walk_intersect_city) %>% 
+  left_join(cbgs_bike_intersect_city) %>% 
+  left_join(cbgs_drive_intersect_city)
+
+cbgs_access <- 
+  cbgs_city_intersect %>% 
+  left_join(cbgs_walk_intersect) %>% 
+  left_join(cbgs_bike_intersect) %>% 
+  left_join(cbgs_drive_intersect) %>% 
+  transmute(
+    CBG,
+    WALK = walk_perc_area,
+    BIKE = bike_perc_area,
+    DRIVE = drive_perc_area
+  ) %>% 
+  pivot_longer(
+    -CBG,
+    names_to = "Names",
+    values_to = "Values"
+  ) %>% 
+  mutate(
+    Values = ifelse(
+      is.na(Values),
+      0,
+      Values * 100
+    ),
+    year = 2018
+  )
+```
+
+
+```{r}
+cbgs_acs_2019 <-
   getCensus(
     name = "acs/acs5",
-    vintage = 2018,
+    vintage = 2019,
     region = "block group:*",
     regionin = paste0("state:",state,"+county:",county),
     vars = c(
@@ -167,7 +349,7 @@ cbgs_acs_2018 <-
       "B25014_013E", 
       "B25044_003E", # No vehicle available
       "B25044_010E",
-      "B09019_038E", # In group quarters
+      "B09019_026E", # In group quarters
       "B27010_001E", # Civilian noninstitutionalized population
       "B27010_004E", # Health insurance coverage
       "B27010_005E",
@@ -341,7 +523,7 @@ cbgs_acs_2018 <-
       B25044_003E +
       B25044_010E
     )/B25014_001E*100,
-    EP_GROUPQ = B09019_038E/B01001_001E,
+    EP_GROUPQ = B09019_026E/B01001_001E,
     EP_MEDICARE = (
       B27010_006E +
       B27010_012E +
@@ -477,7 +659,7 @@ cbgs_acs_2018 <-
     names_to = "Names",
     values_to = "Values"
   ) %>% 
-  mutate(year = 2018)
+  mutate(year = 2019)
 ```
 
 Broadband data not available in 2013 
@@ -910,9 +1092,13 @@ eviction <- read_csv(paste0("https://eviction-lab-data-downloads.s3.amazonaws.co
 ```{r}
 data <- rbind(
   cbgs_acs_2013,
-  cbgs_acs_2018,
-  eviction
+  cbgs_acs_2019,
+  eviction,
+  cbgs_access
 )
+
+cbgs <- cbgs %>% st_transform(4326)
+boundary <- boundary %>% st_transform(4326)
 ```
 
 ```{r}
@@ -920,6 +1106,8 @@ save(
   cbgs,
   boundary,
   data,
+  vaccine_access,
+  cbgs_isochrone_intersect,
   file = paste0(city,".rda")
 )
 ```
