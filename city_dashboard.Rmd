@@ -298,17 +298,19 @@ output$map <- renderLeaflet({
       popup = ~paste(name, address1, address2, sep = "<br>"),
       options =
         pathOptions(pane = "sites"),
-      group = "Test/Vaccine Sites"
+      group = "Test/Vaccine Sites",
+      icon = covid_icon
     ) %>% 
     addPolygons(
       data = vaccine_access %>% 
         st_set_geometry("walk"),
-      color = "white",
+      color = "black",
       fillColor = "white",
-      fillOpacity = 0.25,
-      opacity = 1,
+      fillOpacity = 0,
+      opacity = 0.5,
       weight = 0.1,
       highlightOptions = highlightOptions(
+        opacity = 1,
         weight = 2
       ),
       options =
@@ -316,14 +318,25 @@ output$map <- renderLeaflet({
       group = "10m Walking Access"
     ) %>% 
     addPolygons(
+      data = vaccine_walk,
+      color = "black",
+      fill = F,
+      opacity = 1,
+      weight = 0.5,
+      options =
+        pathOptions(pane = "access"),
+      group = "10m Walking Access"
+    ) %>% 
+    addPolygons(
       data = vaccine_access %>% 
         st_set_geometry("bike"),
-      color = "white",
+      color = "black",
       fillColor = "white",
-      fillOpacity = 0.1,
-      opacity = 1,
+      fillOpacity = 0,
+      opacity = 0.5,
       weight = 0.1,
       highlightOptions = highlightOptions(
+        opacity = 1,
         weight = 2
       ),
       options =
@@ -331,16 +344,37 @@ output$map <- renderLeaflet({
       group = "10m Biking Access"
     ) %>% 
     addPolygons(
+      data = vaccine_bike,
+      color = "black",
+      fill = F,
+      opacity = 1,
+      weight = 0.5,
+      options =
+        pathOptions(pane = "access"),
+      group = "10m Biking Access"
+    ) %>% 
+    addPolygons(
       data = vaccine_access %>% 
         st_set_geometry("drive"),
-      color = "white",
+      color = "black",
       fillColor = "white",
-      fillOpacity = 0.1,
-      opacity = 1,
+      fillOpacity = 0,
+      opacity = 0.5,
       weight = 0.1,
       highlightOptions = highlightOptions(
+        opacity = 1,
         weight = 2
       ),
+      options =
+        pathOptions(pane = "access"),
+      group = "5m Driving Access"
+    ) %>% 
+    addPolygons(
+      data = vaccine_drive,
+      color = "black",
+      fill = F,
+      opacity = 1,
+      weight = 0.5,
       options =
         pathOptions(pane = "access"),
       group = "5m Driving Access"
