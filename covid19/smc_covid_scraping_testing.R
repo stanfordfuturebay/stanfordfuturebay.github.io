@@ -94,7 +94,7 @@ while(!(last_date %in% result_vals$test_date)) {
   down_key <- shift_page_keys[[7]]
   
   processed_days <- length(unique(curr_result$test_date))
-  scroll_end <- processed_days
+  scroll_end <- processed_days - processed_days / 4
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
@@ -149,7 +149,7 @@ while(!(last_date %in% result_vals$test_date)) {
 # it misses the last values, so run this one more time but only use the second half
 # of the picked up table values
 processed_days <- length(unique(curr_result$test_date))
-scroll_end <- processed_days
+scroll_end <- processed_days - processed_days / 4
 for (i in 1:scroll_end) {
   remDr$mouseMoveToLocation(webElement = down_key)
   remDr$click()
