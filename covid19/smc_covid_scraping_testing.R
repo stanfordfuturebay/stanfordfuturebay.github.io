@@ -77,11 +77,9 @@ while(!(last_date %in% result_vals$test_date)) {
   shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
   shift_page_keys_loc <- lapply(shift_page_keys, function(x) x$getElementLocation())
   
-  # the down page key has dimensions of 26 height and 9 width, find the key with those
-  # dimensions and largest y value
-  height_val <- 26
-  width_val <- 9
-  relevant_y_pos <- sapply(shift_page_keys_loc, function(val) ifelse(val$height == height_val & val$width == width_val, val$y, NA))
+  # the down page key has x and y dimensions that are nonzero and not equal to each other, 
+  # find the key with those dimensions and largest y value
+  relevant_y_pos <- sapply(shift_page_keys_loc, function(val) ifelse(val$height != 0 & val$width != 0 & val$height != val$width, val$y, NA))
   index_max_y <- which.max(relevant_y_pos)
   down_key <- shift_page_keys[[index_max_y]]
   
