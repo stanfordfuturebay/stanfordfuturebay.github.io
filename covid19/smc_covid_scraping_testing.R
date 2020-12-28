@@ -48,7 +48,22 @@ table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivot
 
 curr_result <- NULL
 
-for (i in 1:(length(table_vals)/2)) { # only do half of length to not run into issues with catching all values
+# forwards for first half
+for (i in 1:(length(table_vals)/2)) {
+  curr_val <- table_vals[[i]]
+  # move over that value and get relevant parameters
+  remDr$mouseMoveToLocation(webElement = curr_val)
+  Sys.sleep(1)
+  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  # first entry in title/value corresponds to date, second to the value itself
+  curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                               test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                               test_value = hover_value[[2]]$getElementText() %>% unlist()))
+}
+
+# backwards for second half
+for (i in length(table_vals):(length(table_vals)/2 + 1)) {
   curr_val <- table_vals[[i]]
   # move over that value and get relevant parameters
   remDr$mouseMoveToLocation(webElement = curr_val)
@@ -73,19 +88,13 @@ while(!(last_date %in% result_vals$test_date)) {
   # bind to full results data frame
   result_vals <- rbind(result_vals, curr_result)
   
-  # find the down page key, which should be the one in the farthest x and y position and with correct dimensions
+  # find the down page key
   shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-  shift_page_keys_loc <- lapply(shift_page_keys, function(x) x$getElementLocation())
-  
-  # # the down page key has x and y dimensions that are nonzero and not equal to each other, 
-  # # find the key with those dimensions and largest y value
-  # relevant_y_pos <- sapply(shift_page_keys_loc, function(val) ifelse(val$height != 0 & val$width != 0 & val$height != val$width, val$y, NA))
-  # index_max_y <- which.max(relevant_y_pos)
-  # down_key <- shift_page_keys[[index_max_y]]
+  # the down page key is the 7th one
   down_key <- shift_page_keys[[7]]
   
   processed_days <- length(unique(curr_result$test_date))
-  scroll_end <- processed_days * 2 - processed_days / 2
+  scroll_end <- processed_days
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
@@ -113,6 +122,22 @@ while(!(last_date %in% result_vals$test_date)) {
     })
   }
   
+  # backwards for second half
+  for (i in length(table_vals):(length(table_vals)/2 + 1)) {
+    try({
+      curr_val <- table_vals[[i]]
+      # move over that value and get relevant parameters
+      remDr$mouseMoveToLocation(webElement = curr_val)
+      Sys.sleep(1)
+      hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+      hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+      # first entry in title/value corresponds to date, second to the value itself
+      curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                   test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                                   test_value = hover_value[[2]]$getElementText() %>% unlist()))
+    })
+  }
+  
   # arrange by date
   curr_result <- curr_result %>% arrange(test_date)
   
@@ -124,7 +149,7 @@ while(!(last_date %in% result_vals$test_date)) {
 # it misses the last values, so run this one more time but only use the second half
 # of the picked up table values
 processed_days <- length(unique(curr_result$test_date))
-scroll_end <- processed_days * 2 - processed_days / 2
+scroll_end <- processed_days
 for (i in 1:scroll_end) {
   remDr$mouseMoveToLocation(webElement = down_key)
   remDr$click()
