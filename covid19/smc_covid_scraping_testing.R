@@ -213,7 +213,7 @@ headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
 
 
 # function to find the demographic data
-findDemData <- function(heading_name) {
+findDemData <- function(heading_name, headings) {
   index_selected <- which(headings_text == heading_name)
   
   # pull up the table view
@@ -255,22 +255,22 @@ findDemData <- function(heading_name) {
 }
 
 # find the cases and age data
-cases_age_result <- findDemData("Cases by Age Group") %>%
+cases_age_result <- findDemData("Cases by Age Group", headings) %>%
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Cases = value)
 
 # find the cases and race/ethnicity data
-cases_race_result <- findDemData("Cases by Race/Ethnicity") %>%
+cases_race_result <- findDemData("Cases by Race/Ethnicity", headings) %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Cases = value)
 
 # find the deaths and age data
-deaths_age_result <- findDemData("Deaths by Age Group") %>%
+deaths_age_result <- findDemData("Deaths by Age Group", headings) %>%
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Deaths = value)
 
 # find the deaths and race/ethnicity data
-deaths_race_result <- findDemData("Deaths by Race/Ethnicity") %>%
+deaths_race_result <- findDemData("Deaths by Race/Ethnicity", headings) %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Deaths = value)
 
