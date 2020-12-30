@@ -207,13 +207,13 @@ webElem <- remDr$findElements(using = "css", ".allow-deferred-rendering .themabl
 webElem[[2]]$clickElement() # click the historical button
 Sys.sleep(10)
 
-# find heading locations of the demographic data
-headings <- remDr$findElements(using = "css", value = "[class='preTextWithEllipsis']")
-headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
-
 
 # function to find the demographic data
-findDemData <- function(heading_name, headings) {
+findDemData <- function(heading_name) {
+  # find heading locations of the demographic data
+  headings <- remDr$findElements(using = "css", value = "[class='preTextWithEllipsis']")
+  headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
+  
   index_selected <- which(headings_text == heading_name)
   
   # pull up the table view
@@ -255,22 +255,22 @@ findDemData <- function(heading_name, headings) {
 }
 
 # find the cases and age data
-cases_age_result <- findDemData("Cases by Age Group", headings) %>%
+cases_age_result <- findDemData("Cases by Age Group") %>%
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Cases = value)
 
 # find the cases and race/ethnicity data
-cases_race_result <- findDemData("Cases by Race/Ethnicity", headings) %>%
+cases_race_result <- findDemData("Cases by Race/Ethnicity") %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Cases = value)
 
 # find the deaths and age data
-deaths_age_result <- findDemData("Deaths by Age Group", headings) %>%
+deaths_age_result <- findDemData("Deaths by Age Group") %>%
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Deaths = value)
 
 # find the deaths and race/ethnicity data
-deaths_race_result <- findDemData("Deaths by Race/Ethnicity", headings) %>%
+deaths_race_result <- findDemData("Deaths by Race/Ethnicity") %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Deaths = value)
 
@@ -330,6 +330,10 @@ write.csv(dem_data_smc_cleaned_with_dates, "covid19/smc_covid_dem_data_scraped_t
 
 # now get cases data, from same dashboard
 # pull up cases data
+# find heading locations
+headings <- remDr$findElements(using = "css", value = "[class='preTextWithEllipsis']")
+headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
+
 index_daily_cases <- which(headings_text == "Cases by Episode Date")
 
 # pull up the table view
