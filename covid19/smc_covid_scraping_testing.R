@@ -95,6 +95,9 @@ while(!(last_date %in% result_vals$test_date)) {
   
   processed_days <- length(unique(curr_result$test_date))
   scroll_end <- processed_days - processed_days / 4
+  # the scroll end has to be adjusted based on the screen, I found that the above worked 
+  # on the remote server when running in Github actions
+  
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
@@ -108,34 +111,31 @@ while(!(last_date %in% result_vals$test_date)) {
   curr_result <- NULL
   
   for (i in 1:(length(table_vals)/2)) {
-    try({
-      curr_val <- table_vals[[i]]
-      # move over that value and get relevant parameters
-      remDr$mouseMoveToLocation(webElement = curr_val)
-      Sys.sleep(1)
-      hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-      hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-      # first entry in title/value corresponds to date, second to the value itself
-      curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                                   test_type = hover_title[[2]]$getElementText() %>% unlist(),
-                                                   test_value = hover_value[[2]]$getElementText() %>% unlist()))
-    })
+    curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                                 test_value = hover_value[[2]]$getElementText() %>% unlist()))
   }
   
   # backwards for second half
   for (i in length(table_vals):(length(table_vals)/2 + 1)) {
-    try({
-      curr_val <- table_vals[[i]]
-      # move over that value and get relevant parameters
-      remDr$mouseMoveToLocation(webElement = curr_val)
-      Sys.sleep(1)
-      hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-      hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-      # first entry in title/value corresponds to date, second to the value itself
-      curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                                   test_type = hover_title[[2]]$getElementText() %>% unlist(),
-                                                   test_value = hover_value[[2]]$getElementText() %>% unlist()))
-    })
+    
+    curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                                 test_value = hover_value[[2]]$getElementText() %>% unlist()))
   }
   
   # arrange by date
@@ -164,18 +164,18 @@ curr_result <- NULL
 
 # second half of table values
 for (i in length(table_vals):(length(table_vals)/2 + 1)) {
-  try({
-    curr_val <- table_vals[[i]]
-    # move over that value and get relevant parameters
-    remDr$mouseMoveToLocation(webElement = curr_val)
-    Sys.sleep(1)
-    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-    # first entry in title/value corresponds to date, second to the value itself
-    curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                                 test_type = hover_title[[2]]$getElementText() %>% unlist(),
-                                                 test_value = hover_value[[2]]$getElementText() %>% unlist()))
-  })
+  
+  curr_val <- table_vals[[i]]
+  # move over that value and get relevant parameters
+  remDr$mouseMoveToLocation(webElement = curr_val)
+  Sys.sleep(1)
+  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  # first entry in title/value corresponds to date, second to the value itself
+  curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                               test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                               test_value = hover_value[[2]]$getElementText() %>% unlist()))
+  
 }
 
 # arrange by date
@@ -199,6 +199,8 @@ tests_smc <- results_final %>%
 
 write.csv(tests_smc, "covid19/smc_tests_scraped_testing.csv")
 
+
+
 # now get demographic data
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
 Sys.sleep(10)
@@ -209,18 +211,7 @@ Sys.sleep(10)
 
 
 # function to find the demographic data
-findDemData <- function(heading_name) {
-  # find heading locations of the demographic data
-  headings <- remDr$findElements(using = "css", value = "[class='preTextWithEllipsis']")
-  headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
-  
-  index_selected <- which(headings_text == heading_name)
-  
-  # pull up the table view
-  remDr$mouseMoveToLocation(webElement = headings[[index_selected]])
-  headings[[index_selected]]$sendKeysToElement(list(key = "shift", key = "f10"))
-  show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
-  show_as_table$clickElement()
+findDemData <- function() {
   
   # switch to larger view of table
   buttons_switch <- remDr$findElements(using = "css", value = "[class='glyphicon pbi-glyph-rotatevertical glyph-small']")
@@ -254,23 +245,67 @@ findDemData <- function(heading_name) {
   return(result)
 }
 
+# find all demographic data bars
+dem_data_bars <- remDr$findElements(using = "css", value = "[class='bar setFocusRing']")
+# note that the bars correspond to: 
+# bars 1-10: age and cases data
+# bars 11-13: sex and cases data
+# bars 14-23: age and deaths data
+# bars 24-25: sex and deaths data
+# bars 26-33: race and deaths data
+# bars 34-42: race and cases data
+# will use ones in the middle of those chunks for the respective demographic groups,
+# in case they get shifted a bit
+age_cases_index <- 5
+age_deaths_index <- 18
+race_deaths_index <- 29
+race_cases_index <- 38
+
 # find the cases and age data
-cases_age_result <- findDemData("Cases by Age Group") %>%
+# pull up the table view
+selected_elem <- dem_data_bars[[age_cases_index]]
+remDr$mouseMoveToLocation(webElement = selected_elem)
+selected_elem$sendKeysToElement(list(key = "shift", key = "f10"))
+show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
+show_as_table$clickElement()
+# find resulting data
+cases_age_result <- findDemData() %>%
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Cases = value)
 
 # find the cases and race/ethnicity data
-cases_race_result <- findDemData("Cases by Race/Ethnicity") %>%
+# pull up the table view
+selected_elem <- dem_data_bars[[race_cases_index]]
+remDr$mouseMoveToLocation(webElement = selected_elem)
+selected_elem$sendKeysToElement(list(key = "shift", key = "f10"))
+show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
+show_as_table$clickElement()
+# find resulting data
+cases_race_result <- findDemData() %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Cases = value)
 
 # find the deaths and age data
-deaths_age_result <- findDemData("Deaths by Age Group") %>%
+# pull up the table view
+selected_elem <- dem_data_bars[[age_deaths_index]]
+remDr$mouseMoveToLocation(webElement = selected_elem)
+selected_elem$sendKeysToElement(list(key = "shift", key = "f10"))
+show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
+show_as_table$clickElement()
+# find resulting data
+deaths_age_result <- findDemData() %>%
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Deaths = value)
 
 # find the deaths and race/ethnicity data
-deaths_race_result <- findDemData("Deaths by Race/Ethnicity") %>%
+# pull up the table view
+selected_elem <- dem_data_bars[[race_deaths_index]]
+remDr$mouseMoveToLocation(webElement = selected_elem)
+selected_elem$sendKeysToElement(list(key = "shift", key = "f10"))
+show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
+show_as_table$clickElement()
+# find resulting data
+deaths_race_result <- findDemData() %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Deaths = value)
 
@@ -330,15 +365,15 @@ write.csv(dem_data_smc_cleaned_with_dates, "covid19/smc_covid_dem_data_scraped_t
 
 # now get cases data, from same dashboard
 # pull up cases data
-# find heading locations
-headings <- remDr$findElements(using = "css", value = "[class='preTextWithEllipsis']")
-headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
-
-index_daily_cases <- which(headings_text == "Cases by Episode Date")
-
+# find columns in the cases over time chart (note this finds both values in the cases
+# by episode date and total cases by episode date chart, but we use an index to select
+# a bar in the former graph)
+columns <- remDr$findElements(using = "css", value = "[class='column setFocusRing']")
+index_to_select <- length(columns) / 4 # this index is within the daily cases graph, which is the first half of the returned list of columns
+column_selected <- columns[[index_to_select]] 
 # pull up the table view
-remDr$mouseMoveToLocation(webElement = headings[[index_daily_cases]])
-spec_bar$sendKeysToElement(list(key = "shift", key = "f10"))
+remDr$mouseMoveToLocation(webElement = column_selected)
+column_selected$sendKeysToElement(list(key = "shift", key = "f10"))
 show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
 show_as_table$clickElement()
 
@@ -418,32 +453,31 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
   curr_result <- NULL
   
   for (i in 1:(length(table_vals)/2)) {
-    try({
-      curr_val <- table_vals[[i]]
-      # move over that value and get relevant parameters
-      remDr$mouseMoveToLocation(webElement = curr_val)
-      Sys.sleep(1)
-      hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-      hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-      # first entry in title/value corresponds to date, second to the value itself
-      curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                                   num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-    })
+    
+    curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 num_cases = hover_value[[2]]$getElementText() %>% unlist()))
   }
   
   # backwards for second half
   for (i in length(table_vals):(length(table_vals)/2 + 1)) {
-    try({
-      curr_val <- table_vals[[i]]
-      # move over that value and get relevant parameters
-      remDr$mouseMoveToLocation(webElement = curr_val)
-      Sys.sleep(1)
-      hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-      hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-      # first entry in title/value corresponds to date, second to the value itself
-      curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                                   num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-    })
+    
+    curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 num_cases = hover_value[[2]]$getElementText() %>% unlist()))
+    
   }
   
   # arrange by date
@@ -474,17 +508,17 @@ curr_result <- NULL
 
 # second half of table values
 for (i in length(table_vals):(length(table_vals)/2 + 1)) {
-  try({
-    curr_val <- table_vals[[i]]
-    # move over that value and get relevant parameters
-    remDr$mouseMoveToLocation(webElement = curr_val)
-    Sys.sleep(1)
-    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-    # first entry in title/value corresponds to date, second to the value itself
-    curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                                 num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-  })
+  
+  curr_val <- table_vals[[i]]
+  # move over that value and get relevant parameters
+  remDr$mouseMoveToLocation(webElement = curr_val)
+  Sys.sleep(1)
+  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  # first entry in title/value corresponds to date, second to the value itself
+  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
+
 }
 
 # arrange by date
