@@ -254,8 +254,56 @@ findDemData <- function(heading_name) {
   return(result)
 }
 
-# find the cases and age data
-cases_age_result <- findDemData("Cases by Age Group") %>%
+# # find the cases and age data
+# cases_age_result <- findDemData("Cases by Age Group") %>%
+#   mutate(demographic = paste0("Age Group ", demographic)) %>%
+#   rename(Cases = value)
+
+# cases and age data
+heading_name <- "Cases by Age Group"
+
+# find heading locations of the demographic data
+headings <- remDr$findElements(using = "css", value = "[class='preTextWithEllipsis']")
+headings_text <- sapply(headings, function(x) x$getElementText() %>% unlist())
+
+index_selected <- which(headings_text == heading_name)
+
+# pull up the table view
+remDr$mouseMoveToLocation(webElement = headings[[index_selected]])
+spec_bar$sendKeysToElement(list(key = "shift", key = "f10"))
+show_as_table <- remDr$findElement(using = "css", value = "[title='Show as a table']")
+show_as_table$clickElement()
+
+# switch to larger view of table
+buttons_switch <- remDr$findElements(using = "css", value = "[class='glyphicon pbi-glyph-rotatevertical glyph-small']")
+remDr$mouseMoveToLocation(webElement = buttons_switch[[1]])
+remDr$click()
+
+# pull values
+table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
+table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
+
+result <- data.frame(demographic = character(0), 
+                     value = character(0)) 
+
+for (i in 1:length(table_vals)) { 
+  curr_val <- table_vals[[i]]
+  # move over that value and get relevant parameters
+  remDr$mouseMoveToLocation(webElement = curr_val)
+  Sys.sleep(1)
+  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  # first entry in title/value corresponds to date, second to the value itself
+  result <- rbind(result, data.frame(demographic = hover_value[[1]]$getElementText() %>% unlist(),
+                                     value = hover_value[[2]]$getElementText() %>% unlist()))
+}
+
+# go back to main dashboard
+return_button <- remDr$findElement(using = "css", value = "[class='menuItem']")
+remDr$mouseMoveToLocation(webElement = return_button)
+remDr$click()
+
+cases_age_result <- result %>% 
   mutate(demographic = paste0("Age Group ", demographic)) %>%
   rename(Cases = value)
 
