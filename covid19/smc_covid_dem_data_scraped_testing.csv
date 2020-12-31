@@ -1,0 +1,22 @@
+"","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
+"1","Age Group < 9","1497","0",NA,NA
+"2","Age Group 10-19","2455","0",NA,NA
+"3","Age Group 20-29","4775","0",NA,NA
+"4","Age Group 30-39","4638","1",NA,NA
+"5","Age Group 40-49","3809","3",NA,NA
+"6","Age Group 50-59","3257","16",NA,NA
+"7","Age Group 60-69","2036","35",NA,NA
+"8","Age Group 70-79","931","37",NA,NA
+"9","Age Group 80-89","567","73",NA,NA
+"10","Age Group 90+","277","52",NA,NA
+"11","Age Group Unknown","4",NA,NA,NA
+"12","Race/Ethnicity American Indian/Alaska Native","33","1",NA,NA
+"13","Race/Ethnicity Asian","2421","54",NA,NA
+"14","Race/Ethnicity Black","367","8",NA,NA
+"15","Race/Ethnicity Latino/Hispanic","10871","48",NA,NA
+"16","Race/Ethnicity Pacific Islander","514","5",NA,NA
+"17","Race/Ethnicity White","3467","99",NA,NA
+"18","Race/Ethnicity Multirace","305",NA,NA,NA
+"19","Race/Ethnicity Other","126","0",NA,NA
+"20","Race/Ethnicity Unknown","6142","2",NA,NA
+"21",NA,NA,NA,"data up to and including december 29, 2020","death data last updated december 28, 2020."
