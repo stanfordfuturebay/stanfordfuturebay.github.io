@@ -536,10 +536,10 @@ remDr$click()
 table_boxes <- remDr$findElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")
 # find elements that are headers of the table
 table_boxes_text <- sapply(table_boxes, function(x) x$getElementText())
-index_date_header <- which(table_boxes_text == "episode_date")
+index_dates_header <- which(table_boxes_text == "episode_date")
 index_values_header <- which(table_boxes_text == "n")
-dates_header <- table_boxes[[index_date_header]]
-values_header <- table_boxes[[index_value_header]]
+dates_header <- table_boxes[[index_dates_header]]
+values_header <- table_boxes[[index_values_header]]
 # start with the dates header
 # get location
 dates_header_loc <- dates_header$getElementLocation()
