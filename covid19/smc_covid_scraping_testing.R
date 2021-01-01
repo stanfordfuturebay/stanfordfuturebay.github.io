@@ -533,13 +533,21 @@ remDr$click()
 
 # for this one, we need to expand the table width to be able to see all the values
 # on one line, so first find the headers of the table
-table_boxes <- remDr$findElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")
-# find elements that are headers of the table
-table_boxes_text <- sapply(table_boxes, function(x) x$getElementText())
-index_dates_header <- which(table_boxes_text == "episode_date")
-index_values_header <- which(table_boxes_text == "n")
-dates_header <- table_boxes[[index_dates_header]]
-values_header <- table_boxes[[index_values_header]]
+# dates header
+dates_header_parent <- remDr$findElements(using = "css", value = "[class='corner']")
+dates_header <- dates_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
+# values header
+values_header_parent <- remDr$findElements(using = "css", value = "[class='columnHeaders']")
+values_header <- values_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
+
+# table_boxes <- remDr$findElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")
+# # find elements that are headers of the table
+# table_boxes_text <- sapply(table_boxes, function(x) x$getElementText())
+# index_dates_header <- which(table_boxes_text == "episode_date")
+# index_values_header <- which(table_boxes_text == "n")
+# dates_header <- table_boxes[[index_dates_header]]
+# values_header <- table_boxes[[index_values_header]]
+
 # start with the dates header
 # get location
 dates_header_loc <- dates_header$getElementLocation()
