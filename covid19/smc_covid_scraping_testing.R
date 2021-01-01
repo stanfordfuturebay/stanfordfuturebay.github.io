@@ -534,9 +534,12 @@ remDr$click()
 # for this one, we need to expand the table width to be able to see all the values
 # on one line, so first find the headers of the table
 table_boxes <- remDr$findElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")
-# first and second elements are the headers of the table
-dates_header <- table_boxes[[1]]
-values_header <- table_boxes[[2]]
+# find elements that are headers of the table
+table_boxes_text <- sapply(table_boxes, function(x) x$getElementText())
+index_date_header <- which(table_boxes_text == "episode_date")
+index_values_header <- which(table_boxes_text == "n")
+dates_header <- table_boxes[[index_date_header]]
+values_header <- table_boxes[[index_value_header]]
 # start with the dates header
 # get location
 dates_header_loc <- dates_header$getElementLocation()
