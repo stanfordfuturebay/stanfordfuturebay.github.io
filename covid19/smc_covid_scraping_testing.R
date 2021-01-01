@@ -513,12 +513,15 @@ write.csv(dem_data_smc_cleaned_with_dates, "covid19/smc_covid_dem_data_scraped_t
 
 
 # now get cases data, from same dashboard
+# reload page
+remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+Sys.sleep(1)
 # pull up cases data
 # find columns in the cases over time chart (note this finds both values in the cases
 # by episode date and total cases by episode date chart, but we use an index to select
 # a bar in the former graph)
 columns <- remDr$findElements(using = "css", value = "[class='column setFocusRing']")
-index_to_select <- length(columns) / 4 # this index is within the daily cases graph, which is the first half of the returned list of columns
+index_to_select <- round(length(columns) / 4,0) # this index is within the daily cases graph, which is the first half of the returned list of columns
 column_selected <- columns[[index_to_select]]
 # pull up the table view
 remDr$mouseMoveToLocation(webElement = column_selected)
