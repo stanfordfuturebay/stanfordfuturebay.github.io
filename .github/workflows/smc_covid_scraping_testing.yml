@@ -8,8 +8,9 @@ name: SMC COVID Scraping Testing
 
 # Controls when the action will run. Triggers the workflow at a specific time
 on:
-  schedule:
-    - cron: '30 18 * * *'
+  workflow_dispatch:
+#  schedule:
+#    - cron: '30 18 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -43,7 +44,7 @@ jobs:
         R -e 'install.packages("dplyr")'
     # Run R script to scrape data
     - name: Scrape data
-      run: R -e 'source("covid19/smc_covid_scraping_testing.R", echo = TRUE)'
+      run: R -e 'source("covid19/smc_covid_scraping_testing_cases_only.R", echo = TRUE)'
       
     # Add new files in correct folder
     - name: Commit files
