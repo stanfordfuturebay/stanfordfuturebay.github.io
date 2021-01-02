@@ -547,14 +547,6 @@ dates_header <- dates_header_parent[[1]]$findChildElement(using = "css", value =
 values_header_parent <- remDr$findElements(using = "css", value = "[class='columnHeaders']")
 values_header <- values_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
 
-# table_boxes <- remDr$findElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")
-# # find elements that are headers of the table
-# table_boxes_text <- sapply(table_boxes, function(x) x$getElementText())
-# index_dates_header <- which(table_boxes_text == "episode_date")
-# index_values_header <- which(table_boxes_text == "n")
-# dates_header <- table_boxes[[index_dates_header]]
-# values_header <- table_boxes[[index_values_header]]
-
 # start with the dates header
 # get location
 dates_header_loc <- dates_header$getElementSize()
@@ -633,9 +625,7 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
   down_key <- shift_page_keys[[7]]
   
   processed_days <- length(unique(curr_result$episode_date))
-  scroll_end <- processed_days - processed_days / 5
-  # trying a different scroll end, the below one works on my computer
-  # scroll_end <- processed_days - processed_days / 4
+  scroll_end <- processed_days - processed_days / 4
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
