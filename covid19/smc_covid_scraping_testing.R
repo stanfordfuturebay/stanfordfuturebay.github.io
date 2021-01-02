@@ -598,6 +598,8 @@ table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivot
 
 curr_result <- NULL
 
+Sys.sleep(1)
+
 for (i in 1:length(table_vals)) { 
   curr_val <- table_vals[[i]]
   # move over that value and get relevant parameters
@@ -605,6 +607,7 @@ for (i in 1:length(table_vals)) {
   Sys.sleep(1)
   hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
   hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  Sys.sleep(1)
   # first entry in title/value corresponds to date, second to the value itself
   curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
                                                num_cases = hover_value[[2]]$getElementText() %>% unlist()))
@@ -630,7 +633,7 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
   down_key <- shift_page_keys[[7]]
   
   processed_days <- length(unique(curr_result$episode_date))
-  scroll_end <- processed_days - processed_days/4
+  scroll_end <- processed_days - processed_days / 4
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
@@ -643,6 +646,8 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
   # process table values
   curr_result <- NULL
   
+  Sys.sleep(1)
+  
   for (i in length(table_vals):1) {
     
     curr_val <- table_vals[[i]]
@@ -651,6 +656,7 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
     Sys.sleep(1)
     hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
     hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    Sys.sleep(1)
     # first entry in title/value corresponds to date, second to the value itself
     curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
                                                  num_cases = hover_value[[2]]$getElementText() %>% unlist()))
