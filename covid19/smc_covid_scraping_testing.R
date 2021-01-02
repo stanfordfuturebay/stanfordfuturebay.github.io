@@ -633,7 +633,9 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
   down_key <- shift_page_keys[[7]]
   
   processed_days <- length(unique(curr_result$episode_date))
-  scroll_end <- processed_days - processed_days / 4
+  scroll_end <- processed_days - processed_days / 5
+  # trying a different scroll end, the below one works on my computer
+  # scroll_end <- processed_days - processed_days / 4
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
