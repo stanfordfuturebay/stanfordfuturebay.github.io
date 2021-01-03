@@ -83,6 +83,16 @@ remDr$click()
 
 Sys.sleep(5)
 
+# get new header locations/sizes
+# dates header
+dates_header_parent <- remDr$findElements(using = "css", value = "[class='corner']")
+dates_header <- dates_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
+# values header
+values_header_parent <- remDr$findElements(using = "css", value = "[class='columnHeaders']")
+values_header <- values_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
+dates_header_loc <- dates_header$getElementSize()
+values_header_loc <- values_header$getElementSize()
+
 # now find values in the table - start at the top and scroll down
 cases_result_vals <- data.frame("episode_date" = character(0),
                                 "num_cases" = character(0))
@@ -159,8 +169,8 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
              error = function(c) {
                c$message <- paste0(c$message, ", processed so far: ", nrow(cases_result_vals), 
                                    ", in this iteration: ", nrow(curr_result), ", i=", i, 
-                                   ", values header width = ", values_header_loc$width, 
-                                   ", dates header width=", dates_header_loc$width)
+                                   ", new values header width = ", values_header_loc$width, 
+                                   ", new dates header width=", dates_header_loc$width)
                stop(c)})
   }
   
