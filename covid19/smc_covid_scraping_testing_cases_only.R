@@ -10,7 +10,7 @@ remDr <- remoteDriver(
   path = "/wd/hub",
   browserName = "chrome",
   # testing 
-  version = "87.0.4280.88"
+  version = "87.0.4280.20"
 )
 remDr$open()
 
@@ -82,6 +82,8 @@ remDr$buttonup()
 # move mouse away
 remDr$mouseMoveToLocation(x = 10, y = 0)
 remDr$click()
+
+Sys.sleep(5)
 
 # now find values in the table - start at the top and scroll down
 cases_result_vals <- data.frame("episode_date" = character(0),
