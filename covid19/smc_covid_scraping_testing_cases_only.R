@@ -8,9 +8,7 @@ remDr <- remoteDriver(
   remoteServerAddr = "localhost",
   port = 4444L,
   path = "/wd/hub",
-  browserName = "chrome",
-  # testing 
-  version = "87.0.4280.20"
+  browserName = "chrome"
 )
 remDr$open()
 
@@ -121,516 +119,57 @@ curr_result <- curr_result %>%
 last_date <- curr_result$episode_date[nrow(curr_result)]
 
 # while have not recorded that date, scroll down, process next table
-# removing from loop for the moment for debugging
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+while(!(last_date %in% cases_result_vals$episode_date)) {
+  # bind to full results data frame
+  cases_result_vals <- rbind(cases_result_vals, curr_result)
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  # find the down page key
+  shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
+  # the down page key is the 7th one
+  down_key <- shift_page_keys[[7]]
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  processed_days <- length(unique(curr_result$episode_date))
+  scroll_end <- processed_days - processed_days / 4
+  for (i in 1:scroll_end) {
+    remDr$mouseMoveToLocation(webElement = down_key)
+    remDr$click()
+  }
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  # get the new table
+  table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
+  table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  # process table values
+  curr_result <- NULL
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
   Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  for (i in length(table_vals):1) {
+    
+    tryCatch({curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    Sys.sleep(1)
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 num_cases = hover_value[[2]]$getElementText() %>% unlist()))}, 
+             error = function(c) {
+               c$message <- paste0(c$message, ", processed so far: ", nrow(cases_result_vals), 
+                                   ", in this iteration: ", nrow(curr_result), ", i=", i)})
+  }
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  # arrange by date
+  curr_result <- curr_result  %>%
+    mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
+    arrange(episode_date)
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
+  # last value's date
+  last_date <- curr_result$episode_date[nrow(curr_result)]
   
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
 }
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-# bind to full results data frame
-cases_result_vals <- rbind(cases_result_vals, curr_result)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(unique(curr_result$episode_date))
-scroll_end <- processed_days - processed_days / 4
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# get the new table
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-# process table values
-curr_result <- NULL
-
-Sys.sleep(1)
-
-for (i in length(table_vals):1) {
-  
-  curr_val <- table_vals[[i]]
-  # move over that value and get relevant parameters
-  remDr$mouseMoveToLocation(webElement = curr_val)
-  Sys.sleep(1)
-  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-  Sys.sleep(1)
-  # first entry in title/value corresponds to date, second to the value itself
-  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-}
-
-# arrange by date
-curr_result <- curr_result  %>%
-  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-  arrange(episode_date)
-
-# last value's date
-last_date <- curr_result$episode_date[nrow(curr_result)]
-
-
-# while(!(last_date %in% cases_result_vals$episode_date)) {
-#   # bind to full results data frame
-#   cases_result_vals <- rbind(cases_result_vals, curr_result)
-#   
-#   # find the down page key
-#   shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-#   # the down page key is the 7th one
-#   down_key <- shift_page_keys[[7]]
-#   
-#   processed_days <- length(unique(curr_result$episode_date))
-#   scroll_end <- processed_days - processed_days / 4
-#   for (i in 1:scroll_end) {
-#     remDr$mouseMoveToLocation(webElement = down_key)
-#     remDr$click()
-#   }
-#   
-#   # get the new table
-#   table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-#   table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-#   
-#   # process table values
-#   curr_result <- NULL
-#   
-#   Sys.sleep(1)
-#   
-#   for (i in length(table_vals):1) {
-#     
-#     curr_val <- table_vals[[i]]
-#     # move over that value and get relevant parameters
-#     remDr$mouseMoveToLocation(webElement = curr_val)
-#     Sys.sleep(1)
-#     hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
-#     hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
-#     Sys.sleep(1)
-#     # first entry in title/value corresponds to date, second to the value itself
-#     curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
-#                                                  num_cases = hover_value[[2]]$getElementText() %>% unlist()))
-#   }
-#   
-#   # arrange by date
-#   curr_result <- curr_result  %>%
-#     mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
-#     arrange(episode_date)
-#   
-#   # last value's date
-#   last_date <- curr_result$episode_date[nrow(curr_result)]
-#   
-# }
 
 # only save the unique values in the data frame of results
 cases_results_final <- unique(cases_result_vals)
