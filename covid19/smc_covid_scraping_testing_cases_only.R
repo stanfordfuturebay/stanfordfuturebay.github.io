@@ -56,7 +56,7 @@ dates_header_loc <- dates_header$getElementSize()
 # move the mouse to the right-most location of the header
 remDr$mouseMoveToLocation(webElement = dates_header,
                           # following arguments are the offset from the element
-                          x = 0.5*dates_header_loc$width,
+                          x = round(0.5*dates_header_loc$width, 0),
                           y = 0)
 # press and hold, move mouse
 remDr$buttondown()
@@ -68,7 +68,7 @@ remDr$buttonup()
 # repeat for the values column
 values_header_loc <- values_header$getElementSize()
 remDr$mouseMoveToLocation(webElement = values_header,
-                          x = 0.5*values_header_loc$width,
+                          x = round(0.5*values_header_loc$width, 0),
                           y = 0)
 # press and hold, move mouse
 remDr$buttondown()
