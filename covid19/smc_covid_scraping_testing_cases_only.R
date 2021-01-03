@@ -158,7 +158,8 @@ while(!(last_date %in% cases_result_vals$episode_date)) {
                                                  num_cases = hover_value[[2]]$getElementText() %>% unlist()))}, 
              error = function(c) {
                c$message <- paste0(c$message, ", processed so far: ", nrow(cases_result_vals), 
-                                   ", in this iteration: ", nrow(curr_result), ", i=", i)})
+                                   ", in this iteration: ", nrow(curr_result), ", i=", i)
+               stop(c)})
   }
   
   # arrange by date
