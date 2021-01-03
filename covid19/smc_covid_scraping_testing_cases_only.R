@@ -49,32 +49,46 @@ dates_header <- dates_header_parent[[1]]$findChildElement(using = "css", value =
 # get location
 dates_header_loc <- dates_header$getElementSize()
 # move the mouse to the right-most location of the header
-remDr$mouseMoveToLocation(webElement = dates_header,
-                          # following arguments are the offset from the element
-                          x = round(0.5*dates_header_loc$width, 0) - 1,
-                          y = 0)
+remDr$mouseMoveToLocation(webElement = dates_header)
+remDr$mouseMoveToLocation(x = round(0.5*dates_header_loc$width, 0) - 1, y = 0)
 # press and hold, move mouse
 remDr$buttondown()
-remDr$mouseMoveToLocation(webElement = dates_header,
-                          # following arguments are the offset from the element
-                          x = dates_header_loc$width,
-                          y = 0)
+remDr$mouseMoveToLocation(x = round(0.5*dates_header_loc$width, 0), y = 0)
 remDr$buttonup()
+# # move the mouse to the right-most location of the header
+# remDr$mouseMoveToLocation(webElement = dates_header,
+#                           # following arguments are the offset from the element
+#                           x = round(0.5*dates_header_loc$width, 0) - 1,
+#                           y = 0)
+# # press and hold, move mouse
+# remDr$buttondown()
+# remDr$mouseMoveToLocation(webElement = dates_header,
+#                           # following arguments are the offset from the element
+#                           x = dates_header_loc$width,
+#                           y = 0)
+# remDr$buttonup()
 # repeat for the values column
 # values header
 values_header_parent <- remDr$findElements(using = "css", value = "[class='columnHeaders']")
 values_header <- values_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
 values_header_loc <- values_header$getElementSize()
-remDr$mouseMoveToLocation(webElement = values_header,
-                          x = round(0.5*values_header_loc$width, 0),
-                          y = 0)
+remDr$mouseMoveToLocation(webElement = values_header)
+remDr$mouseMoveToLocation(x = round(0.5*values_header_loc$width, 0), y = 0)
 # press and hold, move mouse
 remDr$buttondown()
-remDr$mouseMoveToLocation(webElement = values_header,
-                          # need to offset by more since this column starts smaller
-                          x = 4*values_header_loc$width,
-                          y = 0)
+# need to offset by more since this column starts smaller
+remDr$mouseMoveToLocation(x = 2*values_header_loc$width, y = 0)
 remDr$buttonup()
+# remDr$mouseMoveToLocation(webElement = values_header,
+#                           x = round(0.5*values_header_loc$width, 0),
+#                           y = 0)
+# # press and hold, move mouse
+# remDr$buttondown()
+# remDr$mouseMoveToLocation(webElement = values_header,
+#                           # need to offset by more since this column starts smaller
+#                           x = 4*values_header_loc$width,
+#                           y = 0)
+# remDr$buttonup()
 # move mouse away
 remDr$mouseMoveToLocation(x = 10, y = 0)
 remDr$click()
