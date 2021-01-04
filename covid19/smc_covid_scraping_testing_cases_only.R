@@ -12,10 +12,6 @@ remDr <- remoteDriver(
 )
 remDr$open()
 
-# # manually set width and height to match what I have on my screen when I was creating this code
-# window_height <- 682
-# window_width <- 1200
-# remDr$setWindowSize(window_width, window_height)
 
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
 Sys.sleep(10)
