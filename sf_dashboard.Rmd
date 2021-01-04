@@ -1,5 +1,5 @@
 ---
-title: "Generic City Dashboard"
+title: "San Francisco COVID-19 Vulnerability Dashboard"
 runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
@@ -26,7 +26,7 @@ library(RColorBrewer)
 library(mapboxapi)
 library(htmltools)
 
-load("city.rda")
+load("sf_svi.rda")
 
 variables <- data.frame(
   code = c(
@@ -207,7 +207,7 @@ selectInput(
 )
 ```
 
-**Longitudinal Plot (Tab 3)** - The primary longitudinal data available is on evictions. Census data can only be plotted as the change from 2010-2014 summary data to 2015-2019 summary data. The average line is shown in orange, and individual block groups can be added in blue.
+**Longitudinal Plot (Tab 3)** - The primary longitudinal data available is on evictions. Census data can only be plotted as the change from 2009-2013 summary data to 2015-2019 summary data. The average line is shown in orange, and individual block groups can be added in blue.
 
 ```{r}
 selectInput(
@@ -220,7 +220,7 @@ selectInput(
 
 **Table** - Click on column headers to sort. Click on rows to highlight block group on the longitudinal plot (tab 2) and map.
 
-**About the data** - Most data is from the American Communities Survey 2010-2014 or 2015-2019 5-year Detailed Tables (shown by default in plots, map, and table):
+**About the data** - Most data is from the American Communities Survey 2009-2013 or 2015-2019 5-year Detailed Tables (shown by default in plots, map, and table):
 
 - Social Vulnerability Index: Calculated using the CDC's [methodology](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/pdf/SVI2018Documentation-H.pdf) and the next 15 variables
 - % Below Poverty: B17010, POVERTY STATUS IN THE PAST 12 MONTHS OF FAMILIES BY FAMILY TYPE BY PRESENCE OF RELATED CHILDREN UNDER 18 YEARS BY AGE OF RELATED CHILDREN

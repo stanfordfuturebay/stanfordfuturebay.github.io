@@ -1,0 +1,12 @@
+name: sf_dashboard
+title: sf_dashboard
+username:
+account: stanfordfuturebay
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3413831
+bundleId: 4003412
+url: https://stanfordfuturebay.shinyapps.io/sf_dashboard/
+when: 1608245385.49757
+asMultiple: FALSE
+asStatic: FALSE
