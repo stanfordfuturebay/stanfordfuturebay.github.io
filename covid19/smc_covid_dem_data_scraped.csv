@@ -1,24 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9",1002,0,NA,NA
-"2","Age Group 10-19",1687,0,NA,NA
-"3","Age Group 20-29",3472,0,NA,NA
-"4","Age Group 30-39",3284,1,NA,NA
-"5","Age Group 40-49",2676,2,NA,NA
-"6","Age Group 50-59",2175,13,NA,NA
-"7","Age Group 60-69",1421,29,NA,NA
-"8","Age Group 70-79",621,30,NA,NA
-"9","Age Group 80-89",363,58,NA,NA
-"10","Age Group 90+",181,44,NA,NA
-"11","Race/Ethnicity  American Indian/Alaska Native",10,1,NA,NA
-"12","Race/Ethnicity  Asian",1664,43,NA,NA
-"13","Race/Ethnicity  Black",243,6,NA,NA
-"14","Race/Ethnicity  Latino/Hispanic",8146,42,NA,NA
-"15","Race/Ethnicity  Pacific Islander",372,4,NA,NA
-"16","Race/Ethnicity  White",2330,81,NA,NA
-"17","Race/Ethnicity Multirace",201,NA,NA,NA
-"18","Race/Ethnicity Other",108,0,NA,NA
-"19","Race/Ethnicity Unknown",3810,0,NA,NA
-"20","Sex Female",8532,88,NA,NA
-"21","Sex Male",8348,89,NA,NA
-"22","Sex Other",2,NA,NA,NA
-"23",NA,NA,NA,"data up to and including december 9, 2020","death data last updated december 7, 2020."
+"1","Age Group < 9","1591","0",NA,NA
+"2","Age Group 10-19","2619","0",NA,NA
+"3","Age Group 20-29","5046","0",NA,NA
+"4","Age Group 30-39","4850","1",NA,NA
+"5","Age Group 40-49","4032","4",NA,NA
+"6","Age Group 50-59","3459","16",NA,NA
+"7","Age Group 60-69","2175","36",NA,NA
+"8","Age Group 70-79","997","39",NA,NA
+"9","Age Group 80-89","633","75",NA,NA
+"10","Age Group 90+","317","56",NA,NA
+"11","Age Group Unknown","5",NA,NA,NA
+"12","Race/Ethnicity American Indian/Alaska Native","38","1",NA,NA
+"13","Race/Ethnicity Asian","2619","57",NA,NA
+"14","Race/Ethnicity Black","383","9",NA,NA
+"15","Race/Ethnicity Latino/Hispanic","11399","50",NA,NA
+"16","Race/Ethnicity Pacific Islander","551","5",NA,NA
+"17","Race/Ethnicity White","3748","103",NA,NA
+"18","Race/Ethnicity Multirace","359",NA,NA,NA
+"19","Race/Ethnicity Other","132","0",NA,NA
+"20","Race/Ethnicity Unknown","6495","2",NA,NA
+"21",NA,NA,NA,"data up to and including january 3, 2021","death data last updated december 30, 2020."
