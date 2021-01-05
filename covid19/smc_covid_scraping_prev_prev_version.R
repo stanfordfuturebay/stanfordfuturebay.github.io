@@ -18,16 +18,11 @@ remDr$open()
 # first getting testing data
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiMWI5NmE5M2ItOTUwMC00NGNmLWEzY2UtOTQyODA1YjQ1NWNlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
 Sys.sleep(5)
-
-# EDIT AS OF 11/25/20 - SMC changed their dashboard so now to see all of the testing data, one has to click on the button that says "Historical". The next two lines do that before getting the testing data
-webElem <- remDr$findElements(using = "css", ".allow-deferred-rendering .themableBackgroundColor") # these are the buttons that change between historical and last 30 days
-webElem[[2]]$clickElement() # click the historical button
-Sys.sleep(5)
 webElem <- remDr$findElements(using = "class", value = "column") # these correspond to the bars in the bar chart of testing over time
 
 # check if the url was correct and the data is there before scraping and saving the new file
 if (length(webElem) != 0) {
-# the next chunk of code is modified from Derek's previous scraping of the lab testing dashboard for SMC
+# the next chunk of code is from Derek's previous scraping of the lab testing dashboard for SMC
   tests <-
     1:length(webElem) %>% 
     map(function(x){
@@ -36,16 +31,15 @@ if (length(webElem) != 0) {
     unlist() %>% 
     as.data.frame()
 
-  # also edited 11/25/20
   tests_clean <-
     tests %>% 
     rename(text = ".") %>% 
     separate(text, c("date","test_text"), sep = "\\.") %>% 
-    separate(test_text, c(NA,"type","tests"), sep = " ") %>% 
+    separate(test_text, c(NA,"type",NA,"tests"), sep = " ") %>% 
     mutate(
       date = 
         substr(date,23,nchar(.)) %>% 
-        as.Date("%m/%d/%Y"),
+        as.Date("%A, %B %d, %Y"),
       tests = 
         tests %>% 
         str_remove(",") %>%
@@ -68,10 +62,6 @@ if (length(webElem) != 0) {
 
 # now get demographic data
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
-Sys.sleep(5)
-# EDIT AS OF 11/25/20 - SMC changed their dashboard, make sure historical is selected
-webElem <- remDr$findElements(using = "css", ".allow-deferred-rendering .themableBackgroundColor") # these are the buttons that change between historical and last 30 days
-webElem[[2]]$clickElement() # click the historical button
 Sys.sleep(5)
 webElem <- remDr$findElements(using = "class", value = "bar") # these are the elements that correspond to the demographic data bar charts (note they are bars rather than columns)
 
@@ -107,9 +97,9 @@ if (length(webElem) != 0) {
       as.data.frame()
   
     # find the text with the case update date
-    # (which follows the "up to and including" phrase, at least in the version of the dashboard at this time - edited 11/25/20)
+    # (which follows the "case data" phrase, at least in the version of the dashboard at this time)
     case_update_date_str <- text_vals %>%
-      filter(grepl("up to and including", tolower(.), fixed = TRUE))
+      filter(grepl("case data", tolower(.), fixed = TRUE))
     case_update_date_str <- tolower(case_update_date_str$.)
     if (is_empty(case_update_date_str)) { # if length is zero, no information on case data date was listed
       case_update_date_str <- "no date listed"
@@ -153,20 +143,17 @@ if (length(webElem) != 0) {
     unlist() %>% 
     as.data.frame()
 
-  # updated 11/25/20 to process for the new form of the dashboard
   cases_clean <-
     cases %>% 
     rename(text = ".") %>% 
     separate(text, c("date","cases_text"), sep = "\\.") %>% 
-    # note we only want the values with NOT the sum
-    filter(!str_detect(cases_text, "Sum")) %>%
-    separate(cases_text, c(NA,NA,"cases"), sep = " ") %>% # everything else designated as NA isn't relevant
+    separate(cases_text, c(NA,"type",NA,NA,NA,"cases")) %>% # everything else designated as NA isn't relevant
     mutate(
-      date = substr(date,14,nchar(.)) %>% # just get relevant date information
+      date = substr(date,6,nchar(.)) %>% # just get relevant date information
         as.Date("%A, %B %d, %Y"),
-      cases = cases %>% as.numeric(),
-      total_cases = cumsum(cases)) %>%
-    rename(new_cases = cases)
+      cases = cases %>% as.numeric()) %>%
+    spread(key = type, value = cases) %>%
+    rename(new_cases = New, total_cases = Total)
 
   write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
 }
