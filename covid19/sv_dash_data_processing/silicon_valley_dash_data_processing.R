@@ -241,7 +241,12 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
     dplyr::select(age_group, count) %>%
     rename(count_scc = count) %>%
     # some of the names are a little weird so I need to fix them
-    mutate(age_group = case_when(age_group == "19 or Under" ~ "19 or under", age_group == "20 - 29" ~ "20-29", TRUE ~ age_group)) %>% 
+    mutate(age_group = case_when(age_group == "19 or Under" ~ "19 or under", 
+                                 age_group == "20 - 29" ~ "20-29", 
+                                 age_group == "Unkown" ~ "Unknown",
+                                 TRUE ~ age_group)) %>% 
+    group_by(age_group) %>%
+    summarize(count_scc = sum(count_scc)) %>%
     left_join(smc_age_data %>% dplyr::select(demographic, Deaths) %>%
                 rename(count_smc = Deaths, age_group = demographic) %>%
                 # need to coalesce the <20 age group to fit with SCC data
