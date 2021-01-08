@@ -1,0 +1,12 @@
+name: rwc_dashboard
+title: rwc_dashboard
+username:
+account: stanfordfuturebay
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3452618
+bundleId: 4070856
+url: https://stanfordfuturebay.shinyapps.io/rwc_dashboard/
+when: 1610073109.44935
+asMultiple: FALSE
+asStatic: FALSE
