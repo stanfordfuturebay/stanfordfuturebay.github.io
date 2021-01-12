@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9","1723","0",NA,NA
-"2","Age Group 10-19","2822","0",NA,NA
-"3","Age Group 20-29","5437","0",NA,NA
-"4","Age Group 30-39","5176","1",NA,NA
-"5","Age Group 40-49","4310","6",NA,NA
-"6","Age Group 50-59","3765","16",NA,NA
-"7","Age Group 60-69","2360","39",NA,NA
-"8","Age Group 70-79","1101","47",NA,NA
-"9","Age Group 80-89","695","81",NA,NA
-"10","Age Group 90+","356","65",NA,NA
-"11","Age Group Unknown","9",NA,NA,NA
-"12","Race/Ethnicity American Indian/Alaska Native","37","2",NA,NA
-"13","Race/Ethnicity Asian","2857","65",NA,NA
-"14","Race/Ethnicity Black","352","11",NA,NA
-"15","Race/Ethnicity Latino/Hispanic","12114","56",NA,NA
-"16","Race/Ethnicity Pacific Islander","584","5",NA,NA
-"17","Race/Ethnicity White","4117","113",NA,NA
-"18","Race/Ethnicity Multirace","432",NA,NA,NA
-"19","Race/Ethnicity Other","145","0",NA,NA
-"20","Race/Ethnicity Unknown","7116","3",NA,NA
-"21",NA,NA,NA,"data up to and including january 8, 2021","death data last updated january 7, 2021."
+"1","Age Group < 9","1799","0",NA,NA
+"2","Age Group 10-19","2958","0",NA,NA
+"3","Age Group 20-29","5667","0",NA,NA
+"4","Age Group 30-39","5378","1",NA,NA
+"5","Age Group 40-49","4529","6",NA,NA
+"6","Age Group 50-59","3924","16",NA,NA
+"7","Age Group 60-69","2449","39",NA,NA
+"8","Age Group 70-79","1142","47",NA,NA
+"9","Age Group 80-89","728","81",NA,NA
+"10","Age Group 90+","372","65",NA,NA
+"11","Age Group Unknown","6",NA,NA,NA
+"12","Race/Ethnicity American Indian/Alaska Native","39","2",NA,NA
+"13","Race/Ethnicity Asian","3003","65",NA,NA
+"14","Race/Ethnicity Black","367","11",NA,NA
+"15","Race/Ethnicity Latino/Hispanic","12453","56",NA,NA
+"16","Race/Ethnicity Pacific Islander","601","5",NA,NA
+"17","Race/Ethnicity White","4309","113",NA,NA
+"18","Race/Ethnicity Multirace","439",NA,NA,NA
+"19","Race/Ethnicity Other","150","0",NA,NA
+"20","Race/Ethnicity Unknown","7591","3",NA,NA
+"21",NA,NA,NA,"data up to and including january 10, 2021","death data last updated january 7, 2021."
