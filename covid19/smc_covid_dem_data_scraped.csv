@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9","2282","0",NA,NA
-"2","Age Group 10-19","3757","0",NA,NA
-"3","Age Group 20-29","6738","0",NA,NA
-"4","Age Group 30-39","6387","1",NA,NA
-"5","Age Group 40-49","5443","8",NA,NA
-"6","Age Group 50-59","4721","21",NA,NA
-"7","Age Group 60-69","3068","54",NA,NA
-"8","Age Group 70-79","1447","75",NA,NA
-"9","Age Group 80-89","928","123",NA,NA
-"10","Age Group 90+","458","100",NA,NA
-"11","Age Group Unknown","6",NA,NA,NA
+"1","Age Group < 9","2343","0",NA,NA
+"2","Age Group 10-19","3866","0",NA,NA
+"3","Age Group 20-29","6902","0",NA,NA
+"4","Age Group 30-39","6515","1",NA,NA
+"5","Age Group 40-49","5555","10",NA,NA
+"6","Age Group 50-59","4824","21",NA,NA
+"7","Age Group 60-69","3140","55",NA,NA
+"8","Age Group 70-79","1486","77",NA,NA
+"9","Age Group 80-89","949","125",NA,NA
+"10","Age Group 90+","465","106",NA,NA
+"11","Age Group Unknown","7",NA,NA,NA
 "12","Race/Ethnicity American Indian/Alaska Native","48","2",NA,NA
-"13","Race/Ethnicity Asian","3772","101",NA,NA
-"14","Race/Ethnicity Black","503","18",NA,NA
-"15","Race/Ethnicity Latino/Hispanic","14851","88",NA,NA
-"16","Race/Ethnicity Pacific Islander","703","9",NA,NA
-"17","Race/Ethnicity White","5402","158",NA,NA
-"18","Race/Ethnicity Multirace","738",NA,NA,NA
-"19","Race/Ethnicity Other","186","0",NA,NA
-"20","Race/Ethnicity Unknown","9032","6",NA,NA
-"21",NA,NA,NA,"data up to and including january 28, 2021","death data last updated january 28, 2021."
+"13","Race/Ethnicity Asian","3878","105",NA,NA
+"14","Race/Ethnicity Black","537","19",NA,NA
+"15","Race/Ethnicity Latino/Hispanic","15172","90",NA,NA
+"16","Race/Ethnicity Pacific Islander","718","9",NA,NA
+"17","Race/Ethnicity White","5529","164",NA,NA
+"18","Race/Ethnicity Multirace","777",NA,NA,NA
+"19","Race/Ethnicity Other","192","0",NA,NA
+"20","Race/Ethnicity Unknown","9201","6",NA,NA
+"21",NA,NA,NA,"data up to and including february 1, 2021","death data last updated february 1, 2021."
