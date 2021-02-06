@@ -44,7 +44,7 @@ jobs:
         R -e 'install.packages("dplyr")'
     # Run R script to scrape data
     - name: Scrape data
-      run: R -e 'source("covid19/smc_covid_scraping_testactions.R", echo = TRUE)'
+      run: R -e 'source("covid19/smc_covid_scraping.R", echo = TRUE)'
       
     # Add new files in correct folder
     - name: Commit files
