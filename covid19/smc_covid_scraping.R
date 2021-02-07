@@ -40,7 +40,8 @@ remDr$click()
 # now find values in the table - start at the top and scroll down
 result_vals <- data.frame("test_date" = character(0), 
                           "test_type" = character(0), 
-                          "test_value" = character(0)) # will store all final results
+                          "test_value" = character(0),
+                          "date" = as.Date(character(0))) # will store all final results
 
 # start a loop to repeatedly process, then scroll down until all values are captured
 
@@ -63,15 +64,17 @@ for (i in 1:length(table_vals)) {
                                                test_value = hover_value[[2]]$getElementText() %>% unlist()))
 }
 
-# arrange by date
-curr_result <- curr_result %>% arrange(test_date)
+# format date and arrange by date
+curr_result <- curr_result %>% 
+  mutate(date = as.Date(test_date, "%m/%d/%Y")) %>%
+  arrange(date)
 
 # last value's date
-last_date <- curr_result$test_date[nrow(curr_result)]
+last_date <- curr_result$date[nrow(curr_result)]
 
 # while have not recorded that date, scroll down, process next table
 
-while(!(last_date %in% result_vals$test_date)) {
+while(!(last_date %in% result_vals$date)) {
   # bind to full results data frame
   result_vals <- rbind(result_vals, curr_result)
   
@@ -111,10 +114,12 @@ while(!(last_date %in% result_vals$test_date)) {
   }
   
   # arrange by date
-  curr_result <- curr_result %>% arrange(test_date)
+  curr_result <- curr_result %>% 
+    mutate(date = as.Date(test_date, "%m/%d/%Y")) %>%
+    arrange(date)
   
   # last value's date
-  last_date <- curr_result$test_date[nrow(curr_result)]
+  last_date <- curr_result$date[nrow(curr_result)]
   
 }
 
@@ -123,9 +128,9 @@ results_final <- unique(result_vals)
 
 # process slightly
 tests_smc <- results_final %>%
-  mutate(date = as.Date(test_date, "%m/%d/%Y"),
-         test_value = as.numeric(str_remove(test_value, ","))) %>%
+  mutate(test_value = as.numeric(str_remove(test_value, ","))) %>%
   spread(key = test_type, value = test_value) %>%
+  arrange(date) %>%
   dplyr::select(date, Positive, Negative) %>%
   rename(pos_tests = Positive, neg_tests = Negative) %>%
   mutate(cumulative_pos = cumsum(pos_tests), # get cumulative positive tests
