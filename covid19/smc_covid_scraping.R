@@ -131,10 +131,10 @@ tests_smc <- results_final %>%
   mutate(test_value = as.numeric(str_remove(test_value, ","))) %>%
   spread(key = test_type, value = test_value) %>%
   arrange(date) %>%
-  dplyr::select(date, Positive, Negative) %>%
-  rename(pos_tests = Positive, neg_tests = Negative) %>%
+  dplyr::select(date, Positive, Negative, Inconclusive) %>%
+  rename(pos_tests = Positive, neg_tests = Negative, inconclusive_tests = Inconclusive) %>%
   mutate(cumulative_pos = cumsum(pos_tests), # get cumulative positive tests
-         total_tests = pos_tests + neg_tests, # total tests
+         total_tests = pos_tests + neg_tests + inconclusive_tests, # total tests
          perc_pos = pos_tests / total_tests) # percent positive tests
 
 write.csv(tests_smc, "covid19/smc_tests_scraped.csv")
