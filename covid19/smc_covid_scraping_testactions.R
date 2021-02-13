@@ -13,6 +13,6 @@ remDr <- remoteDriver(
 remDr$open()
 
 # first getting testing data
-remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiMWI5NmE5M2ItOTUwMC00NGNmLWEzY2UtOTQyODA1YjQ1NWNlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+remDr$navigate("https://www.smchealth.org/data-dashboard/lab-testing-data")
 
 remDr$close()
