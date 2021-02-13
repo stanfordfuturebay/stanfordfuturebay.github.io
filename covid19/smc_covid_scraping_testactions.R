@@ -8,7 +8,7 @@ remDr <- remoteDriver(
   remoteServerAddr = "localhost",
   port = 4444L,
   path = "/wd/hub",
-  browserName = "firefox"
+  browserName = "chrome"
 )
 remDr$open()
 
