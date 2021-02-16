@@ -15,7 +15,8 @@ jobs:
   # This workflow contains a single job called "scrape"
   scrape:
     # The type of runner that the job will run on. Needs to be ubuntu to use the start selenoid server action
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: `ubuntu-20.04`
 
     steps:
     # Start selenoid server

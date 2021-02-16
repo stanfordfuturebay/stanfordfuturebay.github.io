@@ -17,7 +17,8 @@ jobs:
   # This workflow contains a single job called "scrape"
   scrape:
     # The type of runner that the job will run on. Needs to be ubuntu to use the start selenoid server action
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: `ubuntu-20.04`
 
     steps:
     # Start selenoid server
@@ -44,7 +45,7 @@ jobs:
         R -e 'install.packages("dplyr")'
     # Run R script to scrape data
     - name: Scrape data
-      run: R -e 'source("covid19/smc_covid_scraping_testactions.R", echo = TRUE)'
+      run: R -e 'source("covid19/smc_covid_scraping.R", echo = TRUE)'
       
     # Add new files in correct folder
     - name: Commit files
