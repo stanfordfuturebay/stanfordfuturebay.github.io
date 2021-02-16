@@ -5,13 +5,18 @@ library(seleniumPipes)
 library(tidyverse)
 library(dplyr)
 
-remDr <- remoteDriver(
-  remoteServerAddr = "localhost",
-  port = 4444L,
-  path = "/wd/hub",
-  browserName = "chrome"
-)
-remDr$open()
+# remDr <- remoteDriver(
+#   remoteServerAddr = "localhost",
+#   port = 4444L,
+#   path = "/wd/hub",
+#   browserName = "chrome"
+# )
+# remDr$open()
+
+system("taskkill /im java.exe /f", intern=FALSE, ignore.stdout=FALSE)
+
+rD <- RSelenium::rsDriver(browser=c("chrome"), chromever = "88.0.4324.96")
+remDr <- rD[["client"]]
 
 # first getting testing data
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiMWI5NmE5M2ItOTUwMC00NGNmLWEzY2UtOTQyODA1YjQ1NWNlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
