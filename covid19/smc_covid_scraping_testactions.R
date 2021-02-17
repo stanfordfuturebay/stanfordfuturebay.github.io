@@ -13,6 +13,6 @@ remDr <- remoteDriver(
 remDr$open()
 
 # first getting testing data
-remDr$navigate("https://app.powerbi.com/view?r=eyJrIjoiNDIyYWJjM2ItYTgwMi00NjQzLWEzYTItZWMwNzIzOTY2MDUxIiwidCI6IjA0ZWM2MTA5LTRjNzktNGM3My1hZTcxLWE0NzRjMDlhMWY1YSJ9")
+remDr$navigate("http://bit.ly/smcpowerbi")
 
 remDr$close()
