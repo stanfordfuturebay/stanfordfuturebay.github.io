@@ -13,6 +13,6 @@ remDr <- remoteDriver(
 remDr$open()
 
 # first getting testing data
-remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiODZkYzM4MGYtNDkxNC00Y2ZmLWIyYTUtMDNhZjlmMjkyYmJkIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
+remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiNWY1ODIzYjUtZjgwNS00NTc5LTg0OGItOTA2MWM2YzQ3NTBiIiwidCI6IjBhYzMyMDJmLWMzZTktNGY1Ni04MzBkLTAxN2QwOWQxNmIzZiJ9")
 
 remDr$close()
