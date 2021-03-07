@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9","2613","0",NA,NA
-"2","Age Group 10-19","4205","0",NA,NA
-"3","Age Group 20-29","7329","1",NA,NA
-"4","Age Group 30-39","6982","4",NA,NA
-"5","Age Group 40-49","6030","11",NA,NA
-"6","Age Group 50-59","5210","27",NA,NA
-"7","Age Group 60-69","3393","73",NA,NA
-"8","Age Group 70-79","1598","112",NA,NA
-"9","Age Group 80-89","1012","156",NA,NA
-"10","Age Group 90+","488","137",NA,NA
-"11","Age Group Unknown","5",NA,NA,NA
+"1","Age Group < 9","2623","0",NA,NA
+"2","Age Group 10-19","4233","0",NA,NA
+"3","Age Group 20-29","7364","1",NA,NA
+"4","Age Group 30-39","7018","4",NA,NA
+"5","Age Group 40-49","6053","11",NA,NA
+"6","Age Group 50-59","5235","27",NA,NA
+"7","Age Group 60-69","3408","73",NA,NA
+"8","Age Group 70-79","1607","112",NA,NA
+"9","Age Group 80-89","1014","156",NA,NA
+"10","Age Group 90+","489","137",NA,NA
+"11","Age Group Unknown","4",NA,NA,NA
 "12","Race/Ethnicity American Indian/Alaska Native","48","2",NA,NA
-"13","Race/Ethnicity Asian","4293","150",NA,NA
-"14","Race/Ethnicity Black","566","24",NA,NA
-"15","Race/Ethnicity Latino/Hispanic","16334","120",NA,NA
-"16","Race/Ethnicity Pacific Islander","766","13",NA,NA
-"17","Race/Ethnicity White","6023","204",NA,NA
-"18","Race/Ethnicity Multirace","876",NA,NA,NA
-"19","Race/Ethnicity Other","234","0",NA,NA
-"20","Race/Ethnicity Unknown","9725","8",NA,NA
-"21",NA,NA,NA,"data up to and including february 28, 2021","death data last updated february 25, 2021."
+"13","Race/Ethnicity Asian","4333","152",NA,NA
+"14","Race/Ethnicity Black","568","24",NA,NA
+"15","Race/Ethnicity Latino/Hispanic","16418","121",NA,NA
+"16","Race/Ethnicity Pacific Islander","767","13",NA,NA
+"17","Race/Ethnicity White","6043","205",NA,NA
+"18","Race/Ethnicity Multirace","881",NA,NA,NA
+"19","Race/Ethnicity Other","238","0",NA,NA
+"20","Race/Ethnicity Unknown","9752","8",NA,NA
+"21",NA,NA,NA,"data up to and including march 5, 2021","death data last updated march 4, 2021."
