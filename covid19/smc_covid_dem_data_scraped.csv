@@ -1,22 +1,23 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group < 9","2637","0",NA,NA
-"2","Age Group 10-19","4245","0",NA,NA
-"3","Age Group 20-29","7390","1",NA,NA
-"4","Age Group 30-39","7040","4",NA,NA
-"5","Age Group 40-49","6080","11",NA,NA
-"6","Age Group 50-59","5258","27",NA,NA
-"7","Age Group 60-69","3414","74",NA,NA
-"8","Age Group 70-79","1611","114",NA,NA
-"9","Age Group 80-89","1016","157",NA,NA
-"10","Age Group 90+","489","137",NA,NA
-"11","Age Group Unknown","4",NA,NA,NA
-"12","Race/Ethnicity American Indian/Alaska Native","48","2",NA,NA
-"13","Race/Ethnicity Asian","4342","152",NA,NA
-"14","Race/Ethnicity Black","569","24",NA,NA
-"15","Race/Ethnicity Latino/Hispanic","16470","121",NA,NA
-"16","Race/Ethnicity Pacific Islander","767","13",NA,NA
-"17","Race/Ethnicity White","6067","205",NA,NA
-"18","Race/Ethnicity Multirace","886",NA,NA,NA
-"19","Race/Ethnicity Other","242","0",NA,NA
-"20","Race/Ethnicity Unknown","9793","8",NA,NA
-"21",NA,NA,NA,"data up to and including march 8, 2021","death data last updated march 8, 2021."
+"1","Age Group < 9","2651",NA,NA,NA
+"2","Age Group 10-19","4260","0",NA,NA
+"3","Age Group 20-29","7404","1",NA,NA
+"4","Age Group 30-39","7062","4",NA,NA
+"5","Age Group 40-49","6096","11",NA,NA
+"6","Age Group 50-59","5272","28",NA,NA
+"7","Age Group 60-69","3423","74",NA,NA
+"8","Age Group 70-79","1612","115",NA,NA
+"9","Age Group 80-89","1019","158",NA,NA
+"10","Age Group 90+","488","137",NA,NA
+"11","Age Group Unknown","3",NA,NA,NA
+"12","Age Group 0-9",NA,"0",NA,NA
+"13","Race/Ethnicity American Indian/Alaska Native","48","2",NA,NA
+"14","Race/Ethnicity Asian","4362","152",NA,NA
+"15","Race/Ethnicity Black","570","24",NA,NA
+"16","Race/Ethnicity Latino/Hispanic","16526","122",NA,NA
+"17","Race/Ethnicity Pacific Islander","767","13",NA,NA
+"18","Race/Ethnicity White","6081","207",NA,NA
+"19","Race/Ethnicity Multirace","889",NA,NA,NA
+"20","Race/Ethnicity Other","243","0",NA,NA
+"21","Race/Ethnicity Unknown","9804","8",NA,NA
+"22",NA,NA,NA,"data up to and including march 10, 2021","death data last updated march 8, 2021."
