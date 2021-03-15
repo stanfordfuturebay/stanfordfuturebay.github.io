@@ -52,7 +52,7 @@ try(smc_dem_data <- read_csv("https://raw.githubusercontent.com/stanfordfutureba
 
 # SMC hospitalization data from the CA Department of Public Health
 many_county_hosp_data <- NULL
-try(many_county_hosp_data <- read_csv("https://data.ca.gov/dataset/529ac907-6ba1-4cb7-9aae-8966fc96aeef/resource/42d33765-20fd-44b8-a978-b083b7542225/download/hospitals_by_county.csv"))
+try(many_county_hosp_data <- read_csv("https://data.chhs.ca.gov/dataset/2df3e19e-9ee4-42a6-a087-9761f82033f6/resource/47af979d-8685-4981-bced-96a6b79d3ed5/download/covid19hospitalbycounty.csv", col_types = "cDddddddd"))
 smc_hosp_by_date <- NULL
 try(smc_hosp_by_date <- many_county_hosp_data %>% filter(county == "San Mateo"))
 
@@ -64,7 +64,7 @@ try(smc_deaths_by_date <- us_county_data_nyt %>% filter(county == "San Mateo"))
 
 # get CA data from CA government
 ca_data <- NULL
-try(ca_data <- read_csv("https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv"))
+try(ca_data <- read_csv("https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv"))
 
 # get US data from NYT
 us_data <- NULL
@@ -348,18 +348,24 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & !is.null(ca_data
   
   # process CA data
   total_ca_cases_by_day <- ca_data %>% 
-    # replace any NAs with zero
-    mutate(newcountconfirmed = replace_na(newcountconfirmed, 0),
-           newcountdeaths = replace_na(newcountdeaths, 0)) %>% 
-    group_by(date) %>%
-    # summarize all counties in CA in total
-    summarize(new_cases = sum(newcountconfirmed),
-              new_deaths = sum(newcountdeaths)) %>% 
-    ungroup() %>%
+    # select only data that is summarized for the state level
+    filter(area_type == "State" & !is.na(date)) %>%
     arrange(date) %>%
-    mutate(total_cases = cumsum(new_cases), 
-           total_deaths = cumsum(new_deaths),
-           new_cases_mov7 = movavg(new_cases, 7, type = "s"))
+    mutate(total_cases = cumsum(reported_cases),
+           new_cases_mov7 = movavg(reported_cases, 7, type = "s"))
+    
+    # # replace any NAs with zero
+    # mutate(newcountconfirmed = replace_na(newcountconfirmed, 0),
+    #        newcountdeaths = replace_na(newcountdeaths, 0)) %>% 
+    # group_by(date) %>%
+    # # summarize all counties in CA in total
+    # summarize(new_cases = sum(newcountconfirmed),
+    #           new_deaths = sum(newcountdeaths)) %>% 
+    # ungroup() %>%
+    # arrange(date) %>%
+    # mutate(total_cases = cumsum(new_cases), 
+    #        total_deaths = cumsum(new_deaths),
+    #        new_cases_mov7 = movavg(new_cases, 7, type = "s"))
   
   # process US data
   us_data <- us_data %>%
