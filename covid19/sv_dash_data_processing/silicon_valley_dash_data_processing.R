@@ -228,7 +228,7 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
     left_join(smc_age_data %>% dplyr::select(demographic, Cases) %>%
                 rename(count_smc = Cases, age_group = demographic) %>%
                 # need to coalesce the <20 age group to fit with SCC data
-                mutate(age_group = ifelse(age_group == "< 9" | age_group == "10-19", "19 or under", age_group)) %>%
+                mutate(age_group = ifelse(age_group == "0-9" | age_group == "10-19", "19 or under", age_group)) %>%
                 group_by(age_group) %>%
                 summarize(count_smc = sum(count_smc))) %>%
     mutate(count_smc = replace_na(count_smc, 0),
@@ -250,7 +250,7 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
     left_join(smc_age_data %>% dplyr::select(demographic, Deaths) %>%
                 rename(count_smc = Deaths, age_group = demographic) %>%
                 # need to coalesce the <20 age group to fit with SCC data
-                mutate(age_group = ifelse(age_group == "< 9" | age_group == "10-19", "19 or under", age_group)) %>%
+                mutate(age_group = ifelse(age_group == "0-9" | age_group == "10-19", "19 or under", age_group)) %>%
                 group_by(age_group) %>%
                 summarize(count_smc = sum(count_smc))) %>%
     mutate(count_smc = replace_na(count_smc, 0),

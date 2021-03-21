@@ -248,10 +248,9 @@ deaths_race_result <- findDemData() %>%
   mutate(demographic = paste0("Race/Ethnicity ", demographic)) %>%
   rename(Deaths = value)
 
-age_data <- full_join(cases_age_result, 
-                      deaths_age_result %>% 
-                        mutate(demographic = ifelse(demographic == "Age Group 0 to 9", "Age Group < 9", demographic),
-                               demographic = ifelse(demographic == "Age Group 10 to 19", "Age Group 10-19", demographic)))
+age_data <- full_join(cases_age_result %>% 
+                        mutate(demographic = ifelse(demographic == "Age Group < 9", "Age Group 0-9", demographic)), 
+                      deaths_age_result)
 race_data <- full_join(cases_race_result, deaths_race_result)
 
 dem_data_smc_cleaned <- rbind(age_data, race_data)
@@ -454,6 +453,8 @@ cases_results_final <- unique(cases_result_vals)
 cases_clean <- cases_results_final %>%
   rename(date = episode_date,
          new_cases = num_cases) %>%
+  arrange(date) %>%
+  filter(!is.na(date)) %>%
   mutate(total_cases = cumsum(new_cases))
 
 write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
