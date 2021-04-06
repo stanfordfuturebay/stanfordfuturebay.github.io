@@ -175,7 +175,7 @@ if (!is.null(scc_age_cases) & !is.null(scc_race_cases) & !is.null(scc_age_deaths
   smc_case_update_date_str <- smc_dem_data %>% 
     dplyr::select(case_update_date_str) %>%
     filter(!is.na(case_update_date_str))
-  smc_case_update_date_dem <- parse_date_time(smc_case_update_date_str$case_update_date_str, orders = "mdy")
+  smc_case_update_date_dem <- parse_date_time(sub("as of.*", "", smc_case_update_date_str$case_update_date_str), orders = "mdy")
   
   # save demographic update times for SMC
   update_date <- c(smc_case_update_date_dem, smc_death_update_date_dem)
