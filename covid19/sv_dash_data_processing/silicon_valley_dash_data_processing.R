@@ -348,6 +348,7 @@ if (!is.null(scc_cases_by_date) & !is.null(smc_cases_by_date) & !is.null(ca_data
   
   # process CA data
   total_ca_cases_by_day <- ca_data %>% 
+    rename_with(tolower) %>%
     # select only data that is summarized for the state level
     filter(area_type == "State" & !is.na(date)) %>%
     arrange(date) %>%
