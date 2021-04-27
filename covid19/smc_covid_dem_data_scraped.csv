@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","2811","0",NA,NA
-"2","Age Group 10-19","4557","0",NA,NA
-"3","Age Group 20-29","7792","1",NA,NA
-"4","Age Group 30-39","7434","5",NA,NA
-"5","Age Group 40-49","6378","16",NA,NA
-"6","Age Group 50-59","5558","34",NA,NA
-"7","Age Group 60-69","3555","83",NA,NA
-"8","Age Group 70-79","1660","121",NA,NA
-"9","Age Group 80-89","1045","164",NA,NA
+"1","Age Group 0-9","2815","0",NA,NA
+"2","Age Group 10-19","4579","0",NA,NA
+"3","Age Group 20-29","7814","1",NA,NA
+"4","Age Group 30-39","7448","5",NA,NA
+"5","Age Group 40-49","6388","16",NA,NA
+"6","Age Group 50-59","5573","34",NA,NA
+"7","Age Group 60-69","3561","83",NA,NA
+"8","Age Group 70-79","1663","121",NA,NA
+"9","Age Group 80-89","1046","164",NA,NA
 "10","Age Group 90+","499","140",NA,NA
 "11","Age Group Unknown","3",NA,NA,NA
-"12","Race/Ethnicity American Indian/Alaska Native","53","2",NA,NA
-"13","Race/Ethnicity Asian","4636","163",NA,NA
-"14","Race/Ethnicity Black","621","25",NA,NA
-"15","Race/Ethnicity Latino/Hispanic","17214","133",NA,NA
-"16","Race/Ethnicity Pacific Islander","822","13",NA,NA
-"17","Race/Ethnicity White","6493","222",NA,NA
-"18","Race/Ethnicity Multirace","955",NA,NA,NA
-"19","Race/Ethnicity Other","315","0",NA,NA
-"20","Race/Ethnicity Unknown","10183","6",NA,NA
-"21",NA,NA,NA,"data up to and including april 22, 2021 as of 5:00pm","death data last updated april 22, 2021."
+"12","Race/Ethnicity American Indian/Alaska Native","54","2",NA,NA
+"13","Race/Ethnicity Asian","4653","163",NA,NA
+"14","Race/Ethnicity Black","628","25",NA,NA
+"15","Race/Ethnicity Latino/Hispanic","17241","133",NA,NA
+"16","Race/Ethnicity Pacific Islander","831","13",NA,NA
+"17","Race/Ethnicity White","6503","222",NA,NA
+"18","Race/Ethnicity Multirace","960",NA,NA,NA
+"19","Race/Ethnicity Other","327","0",NA,NA
+"20","Race/Ethnicity Unknown","10192","6",NA,NA
+"21",NA,NA,NA,"data up to and including april 26, 2021 as of 5:00pm","death data last updated april 22, 2021."
