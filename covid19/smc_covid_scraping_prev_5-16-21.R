@@ -15,7 +15,6 @@ remDr <- remoteDriver(
 )
 remDr$open()
 
-# 5/13/21 redone code based on the updated dashboards
 # first getting testing data
 remDr$navigate("https://app.powerbigov.us/view?r=eyJrIjoiMWI5NmE5M2ItOTUwMC00NGNmLWEzY2UtOTQyODA1YjQ1NWNlIiwidCI6IjBkZmFmNjM1LWEwNGQtNDhjYy1hN2UzLTZkYTFhZjA4ODNmOSJ9")
 Sys.sleep(10)
@@ -39,8 +38,11 @@ remDr$mouseMoveToLocation(webElement = buttons_switch[[1]])
 remDr$click()
 
 # now find values in the table - start at the top and scroll down
-result_vals <- vector(mode = "list")
-date_vals <- NULL
+result_vals <- data.frame("test_date" = character(0), 
+                          "test_type" = character(0), 
+                          "test_value" = character(0),
+                          "date" = as.Date(character(0))) # will store all final results
+
 # start a loop to repeatedly process, then scroll down until all values are captured
 
 # first need to do this once outside of the loop
@@ -49,160 +51,87 @@ table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivot
 
 curr_result <- NULL
 
-# get all the values in the table
 for (i in 1:length(table_vals)) {
   curr_val <- table_vals[[i]]
-  
-  curr_result <- c(curr_result, curr_val$getElementAttribute("title")[[1]])
+  # move over that value and get relevant parameters
+  remDr$mouseMoveToLocation(webElement = curr_val)
+  Sys.sleep(1)
+  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  # first entry in title/value corresponds to date, second to the value itself
+  curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                               test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                               test_value = hover_value[[2]]$getElementText() %>% unlist()))
 }
 
-# process - values are in chunks of 20, with the first 20 positive values,
-# the next 20 negative values, and the last 20 inconclusive values
-for (i in seq(1, length(curr_result), by = 60)) {
-  curr_result_subset_pos <- curr_result[i:(i+19)]
-  curr_result_subset_neg <- curr_result[(i+20):(i+39)]
-  curr_result_subset_inc <- curr_result[(i+40):(i+59)]
-  curr_result_vals <- data.frame(Positive = curr_result_subset_pos,
-                                 Negative = curr_result_subset_neg,
-                                 Inconclusive = curr_result_subset_inc)
-  # store as entry in the list 
-  result_vals[[length(result_vals) + 1]] <- curr_result_vals
-}
+# format date and arrange by date
+curr_result <- curr_result %>% 
+  mutate(date = as.Date(test_date, "%m/%d/%Y")) %>%
+  arrange(date)
 
-# get date values
-row_headers <- remDr$findElements(using = "css", value = "[class='rowHeaders']")
-row_header_vals <- row_headers[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")  
+# last value's date
+last_date <- curr_result$date[nrow(curr_result)]
 
-curr_dates <- NULL
+# while have not recorded that date, scroll down, process next table
 
-# get the date values
-for (i in 1:length(row_header_vals)) {
-  curr_val <- row_header_vals[[i]]
-  
-  curr_dates <- c(curr_dates, curr_val$getElementAttribute("title")[[1]])
-}
-
-date_vals <- c(date_vals, curr_dates)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(curr_result) / 3
-scroll_end <- processed_days / 3 # had some trial and error to find a scroll value that worked
-
-# scroll down
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# now start the loop, continue running until get NA values
-while (!NA %in% curr_result_subset_inc) {
-  # first need to do this once outside of the loop
-  table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-  table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-  
-  curr_result <- NULL
-  
-  # get all the values in the table
-  for (i in 1:length(table_vals)) {
-    curr_val <- table_vals[[i]]
-    
-    curr_result <- c(curr_result, curr_val$getElementAttribute("title")[[1]])
-  }
-  
-  # process - values are in chunks of 20, with the first 20 positive values,
-  # the next 20 negative values, and the last 20 inconclusive values
-  # note this doesn't work correctly for the last set (so need to edit that later)
-  for (i in seq(1, length(curr_result), by = 60)) {
-    curr_result_subset_pos <- curr_result[i:(i+19)]
-    curr_result_subset_neg <- curr_result[(i+20):(i+39)]
-    curr_result_subset_inc <- curr_result[(i+40):(i+59)]
-    curr_result_vals <- data.frame(Positive = curr_result_subset_pos,
-                                   Negative = curr_result_subset_neg,
-                                   Inconclusive = curr_result_subset_inc)
-    # store as entry in the list 
-    result_vals[[length(result_vals) + 1]] <- curr_result_vals
-  }
-  
-  # get date values
-  row_headers <- remDr$findElements(using = "css", value = "[class='rowHeaders']")
-  row_header_vals <- row_headers[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")  
-  
-  curr_dates <- NULL
-  
-  # get the date values
-  for (i in 1:length(row_header_vals)) {
-    curr_val <- row_header_vals[[i]]
-    
-    curr_dates <- c(curr_dates, curr_val$getElementAttribute("title")[[1]])
-  }
-  
-  date_vals <- c(date_vals, curr_dates)
+while(!(last_date %in% result_vals$date)) {
+  # bind to full results data frame
+  result_vals <- rbind(result_vals, curr_result)
   
   # find the down page key
   shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
   # the down page key is the 7th one
   down_key <- shift_page_keys[[7]]
   
-  processed_days <- length(curr_result) / 3
-  scroll_end <- processed_days / 3 # had some trial and error to find a scroll value that worked
+  processed_days <- length(unique(curr_result$test_date))
+  scroll_end <- processed_days - processed_days / 4 # had some trial and error to find a scroll value that worked
   
   # scroll down
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
   }
+  
+  # get the new table
+  table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
+  table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
+  
+  # process table values
+  curr_result <- NULL
+  
+  # run backwards to not run into element not found errors
+  for (i in length(table_vals):1) {
+    curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(test_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 test_type = hover_title[[2]]$getElementText() %>% unlist(),
+                                                 test_value = hover_value[[2]]$getElementText() %>% unlist()))
+  }
+  
+  # arrange by date
+  curr_result <- curr_result %>% 
+    mutate(date = as.Date(test_date, "%m/%d/%Y")) %>%
+    arrange(date)
+  
+  # last value's date
+  last_date <- curr_result$date[nrow(curr_result)]
+  
 }
 
-# get unique results
-result_vals_unique <- unique(result_vals)
-date_vals_unique <- unique(date_vals)
-# get dates in date form and in ascending order
-date_vals_unique <- sort(as.Date(date_vals_unique, "%m/%d/%Y"))
+# only save the unique values in the data frame of results
+results_final <- unique(result_vals)
 
-# get results as data frame
-result_vals_joined <- NULL
-for (i in 1:length(result_vals_unique)) {
-  result_vals_joined <- rbind(result_vals_joined, result_vals_unique[[i]])
-}
-
-# deal with any NA values - the last set of values (containing NAs) is not
-# handled correctly, so we need to split them up manually, putting the
-# values (by threes) in positive, negative, an inconclusive columns respectively
-
-# first only save values without NAs
-tests_smc <- result_vals_joined %>%
-  filter(!is.na(Positive) & !is.na(Negative) & !is.na(Inconclusive))
-
-# handle the last set of values
-vals_to_handle <- result_vals_joined %>%
-  filter(is.na(Positive) | is.na(Negative) | is.na(Inconclusive)) %>%
-  unlist()
-
-# get values to actually save (non-NAs)
-vals_to_handle <- vals_to_handle[!is.na(vals_to_handle)]
-
-# store as data frame, appropriately separating and labeling columns
-vals_to_handle_df <- data.frame(Positive = vals_to_handle[seq(1, length(vals_to_handle) - 2, by = 3)],
-                                Negative = vals_to_handle[seq(2, length(vals_to_handle) - 1, by = 3)],
-                                Inconclusive = vals_to_handle[seq(3, length(vals_to_handle), by = 3)])
-
-# join to rest of results
-tests_smc <- rbind(tests_smc, vals_to_handle_df)
-
-# also add date values
-tests_smc$date <- date_vals_unique
-
-# calculate cumulative values
-tests_smc <- tests_smc %>%
+# process slightly
+tests_smc <- results_final %>%
+  mutate(test_value = as.numeric(str_remove(test_value, ","))) %>%
+  spread(key = test_type, value = test_value) %>%
+  arrange(date) %>%
   dplyr::select(date, Positive, Negative, Inconclusive) %>%
-  # change to numeric
-  mutate(Positive = as.numeric(str_remove(Positive, ",")),
-         Negative = as.numeric(str_remove(Negative, ",")),
-         Inconclusive = as.numeric(str_remove(Inconclusive, ",")),) %>%
   rename(pos_tests = Positive, neg_tests = Negative, inconclusive_tests = Inconclusive) %>%
   mutate(cumulative_pos = cumsum(pos_tests), # get cumulative positive tests
          total_tests = pos_tests + neg_tests + inconclusive_tests, # total tests
@@ -228,33 +157,24 @@ findDemData <- function() {
   remDr$mouseMoveToLocation(webElement = buttons_switch[[1]])
   remDr$click()
   
-  # get values first
-  result_vals <- NULL
-  
   # pull values
   table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
   table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
   
+  result <- data.frame(demographic = character(0), 
+                       value = character(0)) 
+  
   for (i in 1:length(table_vals)) { 
     curr_val <- table_vals[[i]]
-    
-    result_vals <- c(result_vals, curr_val$getElementAttribute("title")[[1]])
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    # first entry in title/value corresponds to date, second to the value itself
+    result <- rbind(result, data.frame(demographic = hover_value[[1]]$getElementText() %>% unlist(),
+                                       value = hover_value[[2]]$getElementText() %>% unlist()))
   }
-  
-  # get row labels
-  result_labels <- NULL
-  
-  # get date values
-  row_headers <- remDr$findElements(using = "css", value = "[class='rowHeaders']")
-  row_header_vals <- row_headers[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")  
-  
-  for (i in 1:length(row_header_vals)) { 
-    curr_val <- row_header_vals[[i]]
-    
-    result_labels <- c(result_labels, curr_val$getElementAttribute("title")[[1]])
-  }
-  
-  result <- data.frame(demographic = result_labels, value = result_vals)
   
   # go back to main dashboard
   return_button <- remDr$findElement(using = "css", value = "[class='menuItem']")
@@ -440,9 +360,11 @@ remDr$click()
 
 Sys.sleep(5)
 
+
 # now find values in the table - start at the top and scroll down
-cases_result_vals <- vector(mode = "list")
-cases_date_vals <- NULL
+cases_result_vals <- data.frame("episode_date" = character(0),
+                                "num_cases" = character(0))
+
 # start a loop to repeatedly process, then scroll down until all values are captured
 
 # first need to do this once outside of the loop
@@ -451,133 +373,93 @@ table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivot
 
 curr_result <- NULL
 
-# get all the values in the table, up to the first 20 to not repeat
-for (i in 1:min(length(table_vals), 20)) {
+Sys.sleep(1)
+
+for (i in 1:length(table_vals)) { 
   curr_val <- table_vals[[i]]
-  
-  curr_result <- c(curr_result, curr_val$getElementAttribute("title")[[1]])
+  # move over that value and get relevant parameters
+  remDr$mouseMoveToLocation(webElement = curr_val)
+  Sys.sleep(1)
+  hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+  hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+  Sys.sleep(1)
+  # first entry in title/value corresponds to date, second to the value itself
+  curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                               num_cases = hover_value[[2]]$getElementText() %>% unlist()))
 }
 
-# store
-cases_result_vals[[length(cases_result_vals) + 1]] <- curr_result
+# arrange by date
+curr_result <- curr_result %>%
+  mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
+  arrange(episode_date)
 
-# get date values
-row_headers <- remDr$findElements(using = "css", value = "[class='rowHeaders']")
-row_header_vals <- row_headers[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")  
+# last value's date
+last_date <- curr_result$episode_date[nrow(curr_result)]
 
-curr_dates <- NULL
-
-# get the date values
-for (i in 1:length(row_header_vals)) {
-  curr_val <- row_header_vals[[i]]
-  
-  curr_dates <- c(curr_dates, curr_val$getElementAttribute("title")[[1]])
-}
-
-cases_date_vals <- c(cases_date_vals, curr_dates)
-
-# find the down page key
-shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
-# the down page key is the 7th one
-down_key <- shift_page_keys[[7]]
-
-processed_days <- length(curr_result)
-scroll_end <- processed_days*2 / 3 # had some trial and error to find a scroll value that worked
-
-# scroll down
-for (i in 1:scroll_end) {
-  remDr$mouseMoveToLocation(webElement = down_key)
-  remDr$click()
-}
-
-# now start the loop, continue running until get repeated entries
-while (length(cases_result_vals) < 3 || 
-       length(cases_result_vals[[length(cases_result_vals)]]) != 
-       length(cases_result_vals[[length(cases_result_vals) - 1]]) || 
-       length(cases_result_vals[[length(cases_result_vals)]]) != 
-       length(cases_result_vals[[length(cases_result_vals) - 2]]) ||
-       !(all(cases_result_vals[[length(cases_result_vals)]] == cases_result_vals[[length(cases_result_vals) - 1]]) & 
-         all(cases_result_vals[[length(cases_result_vals)]] == cases_result_vals[[length(cases_result_vals) - 2]]))) {
-  table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-  table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-  
-  curr_result <- NULL
-  
-  # get all the values in the table, up to the first 20 to not repeat
-  for (i in 1:min(length(table_vals), 20)) {
-    curr_val <- table_vals[[i]]
-    
-    curr_result <- c(curr_result, curr_val$getElementAttribute("title")[[1]])
-  }
-  
-  # store
-  cases_result_vals[[length(cases_result_vals) + 1]] <- curr_result
-  
-  # get date values
-  row_headers <- remDr$findElements(using = "css", value = "[class='rowHeaders']")
-  row_header_vals <- row_headers[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")  
-  
-  curr_dates <- NULL
-  
-  # get the date values
-  for (i in 1:length(row_header_vals)) {
-    curr_val <- row_header_vals[[i]]
-    
-    curr_dates <- c(curr_dates, curr_val$getElementAttribute("title")[[1]])
-  }
-  
-  cases_date_vals <- c(cases_date_vals, curr_dates)
+# while have not recorded that date, scroll down, process next table
+while(!(last_date %in% cases_result_vals$episode_date)) {
+  # bind to full results data frame
+  cases_result_vals <- rbind(cases_result_vals, curr_result)
   
   # find the down page key
   shift_page_keys <- remDr$findElements(using = "css", value = "[class='unselectable']")
   # the down page key is the 7th one
   down_key <- shift_page_keys[[7]]
   
-  processed_days <- length(curr_result)
-  scroll_end <- processed_days*2 / 3 # had some trial and error to find a scroll value that worked
-  
-  # scroll down
+  processed_days <- length(unique(curr_result$episode_date))
+  scroll_end <- processed_days - processed_days / 4
   for (i in 1:scroll_end) {
     remDr$mouseMoveToLocation(webElement = down_key)
     remDr$click()
   }
-}
-
-# one last time to catch any missed values 
-# (ones after the first 20 values in the last set of values)
-table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
-table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
-
-curr_result <- NULL
-
-# get any values after the first 20
-for (i in 21:length(table_vals)) {
-  curr_val <- table_vals[[i]]
   
-  curr_result <- c(curr_result, curr_val$getElementAttribute("title")[[1]])
+  # get the new table
+  table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
+  table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
+  
+  # process table values
+  curr_result <- NULL
+  
+  Sys.sleep(1)
+  
+  for (i in length(table_vals):1) {
+    
+    curr_val <- table_vals[[i]]
+    # move over that value and get relevant parameters
+    remDr$mouseMoveToLocation(webElement = curr_val)
+    Sys.sleep(1)
+    hover_title <- remDr$findElements(using = "css", value = "[class='tooltip-title-cell']")
+    hover_value <- remDr$findElements(using = "css", value = "[class='tooltip-value-cell']")
+    Sys.sleep(1)
+    # first entry in title/value corresponds to date, second to the value itself
+    curr_result <- rbind(curr_result, data.frame(episode_date = hover_value[[1]]$getElementText() %>% unlist(),
+                                                 num_cases = hover_value[[2]]$getElementText() %>% unlist()))
+  }
+  
+  # arrange by date
+  curr_result <- curr_result  %>%
+    mutate(episode_date = as.Date(episode_date, "%A, %B %d, %Y")) %>%
+    arrange(episode_date)
+  
+  # last value's date
+  last_date <- curr_result$episode_date[nrow(curr_result)]
+  
 }
 
-# store
-cases_result_vals[[length(cases_result_vals) + 1]] <- curr_result
+# only save the unique values in the data frame of results
+cases_results_final <- unique(cases_result_vals)
 
-# get unique results
-cases_result_vals_unique <- unique(cases_result_vals)
-cases_date_vals_unique <- unique(cases_date_vals)
-# also convert to date form
-cases_date_vals_unique <- sort(as.Date(cases_date_vals_unique, "%A, %B %d, %Y"))
-
-# get results joined
-cases_result_vals_joined <- c()
-for (i in 1:length(cases_result_vals_unique)) {
-  cases_result_vals_joined <- c(cases_result_vals_joined, cases_result_vals_unique[[i]])
-}
-
-# make data frame and process
-cases_clean <- data.frame(date = cases_date_vals_unique,
-                          new_cases = cases_result_vals_joined) %>%
+# process a little more and save
+cases_clean <- cases_results_final %>%
+  rename(date = episode_date,
+         new_cases = num_cases) %>%
+  arrange(date) %>%
+  filter(!is.na(date)) %>%
   mutate(total_cases = cumsum(new_cases))
 
 write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
+
+
 
 # save a csv with the most recent scrape time
 scrape_time_df <- data.frame(scrape_last_time_ran = Sys.time())
