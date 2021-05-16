@@ -294,10 +294,12 @@ if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date) &
     rename(pos_scc = post_rslt, neg_scc = neg_rslt, total_scc = total) %>%
     full_join(smc_testing_by_date %>%
                 dplyr::select(-cumulative_pos) %>%
-                rename(collection_date = date, pos_smc = pos_tests, neg_smc = neg_tests, total_smc = total_tests, perc_pos_smc = perc_pos)) %>%
+                rename(collection_date = date, pos_smc = pos_tests, neg_smc = neg_tests, 
+                       inconclusive_smc = inconclusive_tests, total_smc = total_tests, perc_pos_smc = perc_pos)) %>%
     # calculate positivity rates and moving average
     mutate(pos_smc = replace_na(pos_smc, 0),
            neg_smc = replace_na(neg_smc, 0),
+           inconclusive_smc = replace_na(inconclusive_smc, 0),
            total_smc = replace_na(total_smc, 0),
            pos_scc = replace_na(pos_scc, 0),
            neg_scc = replace_na(neg_scc, 0),
