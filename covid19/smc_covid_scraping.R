@@ -99,7 +99,7 @@ for (i in 1:scroll_end) {
 }
 
 # now start the loop, continue running until get NA values
-while (!NA %in% curr_result_subset_inc) {
+while (!all(is.na(curr_result_subset_inc))) {
   # first need to do this once outside of the loop
   table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
   table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
@@ -157,6 +157,22 @@ while (!NA %in% curr_result_subset_inc) {
   }
 }
 
+# get date values one more time just in case
+# get date values
+row_headers <- remDr$findElements(using = "css", value = "[class='rowHeaders']")
+row_header_vals <- row_headers[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive ']")  
+
+curr_dates <- NULL
+
+# get the date values
+for (i in 1:length(row_header_vals)) {
+  curr_val <- row_header_vals[[i]]
+  
+  curr_dates <- c(curr_dates, curr_val$getElementAttribute("title")[[1]])
+}
+
+date_vals <- c(date_vals, curr_dates)
+
 # get unique results
 result_vals_unique <- unique(result_vals)
 date_vals_unique <- unique(date_vals)
@@ -186,9 +202,12 @@ vals_to_handle <- result_vals_joined %>%
 vals_to_handle <- vals_to_handle[!is.na(vals_to_handle)]
 
 # store as data frame, appropriately separating and labeling columns
-vals_to_handle_df <- data.frame(Positive = vals_to_handle[seq(1, length(vals_to_handle) - 2, by = 3)],
-                                Negative = vals_to_handle[seq(2, length(vals_to_handle) - 1, by = 3)],
-                                Inconclusive = vals_to_handle[seq(3, length(vals_to_handle), by = 3)])
+# vals_to_handle_df <- data.frame(Positive = vals_to_handle[seq(1, length(vals_to_handle) - 2, by = 3)],
+#                                 Negative = vals_to_handle[seq(2, length(vals_to_handle) - 1, by = 3)],
+#                                 Inconclusive = vals_to_handle[seq(3, length(vals_to_handle), by = 3)])
+vals_to_handle_df <- data.frame(Positive = vals_to_handle[seq(1, length(vals_to_handle) / 3, by = 1)],
+                                Negative = vals_to_handle[seq(length(vals_to_handle) / 3 + 1, 2 * length(vals_to_handle) / 3, by = 1)],
+                                Inconclusive = vals_to_handle[seq(length(vals_to_handle)*2 / 3 + 1, length(vals_to_handle), by = 1)])
 
 # join to rest of results
 tests_smc <- rbind(tests_smc, vals_to_handle_df)
