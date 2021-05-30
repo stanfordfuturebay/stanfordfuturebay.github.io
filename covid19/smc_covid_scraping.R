@@ -99,7 +99,7 @@ for (i in 1:scroll_end) {
 }
 
 # now start the loop, continue running until get NA values
-while (!all(is.na(curr_result_subset_inc))) {
+while (!is.na(curr_result_subset_inc[length(curr_result_subset_inc)])) {
   # first need to do this once outside of the loop
   table <- remDr$findElements(using = "css", value = "[class='bodyCells']")
   table_vals <- table[[1]]$findChildElements(using = "css", value = "[class='pivotTableCellWrap cell-interactive tablixAlignRight ']")
@@ -182,21 +182,26 @@ date_vals_unique <- sort(as.Date(date_vals_unique, "%m/%d/%Y"))
 # get results as data frame
 result_vals_joined <- NULL
 for (i in 1:length(result_vals_unique)) {
-  result_vals_joined <- rbind(result_vals_joined, result_vals_unique[[i]])
+  curr_result_vals <- result_vals_unique[[i]]
+  # only bind if current results don't have any NA values
+  if (!any(is.na(curr_result_vals)))
+  result_vals_joined <- rbind(result_vals_joined, curr_result_vals)
 }
 
 # deal with any NA values - the last set of values (containing NAs) is not
 # handled correctly, so we need to split them up manually, putting the
 # values (by threes) in positive, negative, an inconclusive columns respectively
 
-# first only save values without NAs
-tests_smc <- result_vals_joined %>%
-  filter(!is.na(Positive) & !is.na(Negative) & !is.na(Inconclusive))
+# # first only save values without NAs
+# tests_smc <- result_vals_joined %>%
+#   filter(!is.na(Positive) & !is.na(Negative) & !is.na(Inconclusive))
+tests_smc <- result_vals_joined
 
 # handle the last set of values
-vals_to_handle <- result_vals_joined %>%
-  filter(is.na(Positive) | is.na(Negative) | is.na(Inconclusive)) %>%
-  unlist()
+# vals_to_handle <- result_vals_joined %>%
+#   filter(is.na(Positive) | is.na(Negative) | is.na(Inconclusive)) %>%
+#   unlist()
+vals_to_handle <- result_vals_unique[[length(result_vals_unique)]]
 
 # get values to actually save (non-NAs)
 vals_to_handle <- vals_to_handle[!is.na(vals_to_handle)]
