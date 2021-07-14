@@ -320,7 +320,7 @@ if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date) &
   write.csv(testing_by_date, "covid19/sv_dash_data_processing/sv_testing_by_date.csv")
 
   # save csv for the update dates
-  testing_update_date <- c(as.Date(max(scc_testing_by_date$collection_date)), max(smc_testing_by_date$date))
+  testing_update_date <- c(as.Date(max(scc_testing_by_date$collection_date)), as.Date(max(smc_testing_by_date$date), "%m/%d/%Y"))
   county_name <- c("SCC", "SMC")
   testing_update_date_df <- data.frame(county_name, testing_update_date)
   write.csv(testing_update_date_df, "covid19/sv_dash_data_processing/sv_testing_update_dates.csv") 
