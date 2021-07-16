@@ -56,15 +56,22 @@ try(many_county_hosp_data <- read_csv("https://data.chhs.ca.gov/dataset/2df3e19e
 smc_hosp_by_date <- NULL
 try(smc_hosp_by_date <- many_county_hosp_data %>% filter(county == "San Mateo"))
 
-# SMC deaths data from the NY Times
-us_county_data_nyt <- NULL
-try(us_county_data_nyt <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"))
-smc_deaths_by_date <- NULL
-try(smc_deaths_by_date <- us_county_data_nyt %>% filter(county == "San Mateo"))
+# # SMC deaths data from the NY Times
+# us_county_data_nyt <- NULL
+# try(us_county_data_nyt <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"))
+# smc_deaths_by_date <- NULL
+# try(smc_deaths_by_date <- us_county_data_nyt %>% filter(county == "San Mateo"))
 
 # get CA data from CA government
 ca_data <- NULL
 try(ca_data <- read_csv("https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv"))
+
+# get SMC deaths data also from the CA data
+smc_deaths_by_date <- NULL
+try(smc_deaths_by_date <- ca_data %>% 
+      filter(area == "San Mateo") %>% 
+      dplyr::select(date, area, deaths, cumulative_deaths))
+
 
 # get US data from NYT
 us_data <- NULL
@@ -118,10 +125,20 @@ if (!is.null(scc_deaths_by_date) & !is.null(smc_deaths_by_date) &
     (nrow(scc_deaths_by_date) > 0) & (nrow(smc_deaths_by_date) > 0)) {
   deaths_by_date <- scc_deaths_by_date %>% 
     dplyr::select(date, total, cumulative) %>% rename(new_deaths_scc = total, total_deaths_scc = cumulative) %>% 
+    # full_join(smc_deaths_by_date %>% 
+    #             dplyr::select(date, deaths) %>%
+    #             rename(total_deaths_smc = deaths) %>% 
+    #             mutate(new_deaths_smc = c(NA, diff(total_deaths_smc)), date = as.Date(date))) %>%
+    # updated for getting deaths data from the CA government data
     full_join(smc_deaths_by_date %>% 
-                dplyr::select(date, deaths) %>%
-                rename(total_deaths_smc = deaths) %>% 
-                mutate(new_deaths_smc = c(NA, diff(total_deaths_smc)), date = as.Date(date))) %>%
+                dplyr::select(date, deaths, cumulative_deaths) %>%
+                rename(total_deaths_smc = cumulative_deaths,
+                       new_deaths_smc = deaths) %>%
+                # call any deaths without a date as occurring on the most recent date
+                mutate(date = replace_na(date, max(smc_deaths_by_date$date, na.rm = TRUE))) %>%
+                # summarize to get one row for each day
+                group_by(date) %>%
+                summarize(new_deaths_smc = sum(new_deaths_smc))) %>%
     # need to add in dates that aren't listed, which we assume have zero deaths
     full_join(data.frame(date = seq(min(scc_deaths_by_date$date), max(scc_deaths_by_date$date), by = "days"))) %>% 
     arrange(date) %>%
