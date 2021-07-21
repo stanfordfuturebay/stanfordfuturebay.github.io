@@ -331,7 +331,9 @@ if (!is.null(scc_testing_by_date) & !is.null(smc_testing_by_date) &
            perc_pos_mov7 = movavg(perc_pos, 7, type = "s"),
            perc_pos_scc_mov7 = movavg(perc_pos_scc, 7, type = "s"),
            perc_pos_smc_mov7 = movavg(perc_pos_smc, 7, type = "s")) %>%
-    dplyr::select(-X1)
+    dplyr::select(collection_date, pos_scc, neg_scc, total_scc, pos_smc, neg_smc, 
+                  inconclusive_smc, total_smc, perc_pos_smc, perc_pos_scc, pos, 
+                  neg, total, perc_pos, perc_pos_mov7, perc_pos_scc_mov7, perc_pos_smc_mov7)
   
   # save csv
   write.csv(testing_by_date, "covid19/sv_dash_data_processing/sv_testing_by_date.csv")
