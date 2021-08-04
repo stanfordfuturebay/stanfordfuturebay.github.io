@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","3109","0",NA,NA
-"2","Age Group 10-19","4945","0",NA,NA
-"3","Age Group 20-29","8560","1",NA,NA
-"4","Age Group 30-39","8024","5",NA,NA
-"5","Age Group 40-49","6762","18",NA,NA
-"6","Age Group 50-59","5913","39",NA,NA
-"7","Age Group 60-69","3784","87",NA,NA
-"8","Age Group 70-79","1748","123",NA,NA
-"9","Age Group 80-89","1075","167",NA,NA
-"10","Age Group 90+","505","148",NA,NA
-"11","Age Group Unknown","5",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","60","2",NA,NA
-"13","Race/Ethnicity  Asian","5177","167",NA,NA
-"14","Race/Ethnicity  Black","761","27",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","18234","139",NA,NA
-"16","Race/Ethnicity  Pacific Islander","932","14",NA,NA
-"17","Race/Ethnicity  White","7218","233",NA,NA
-"18","Race/Ethnicity Multirace","1018",NA,NA,NA
-"19","Race/Ethnicity Other","581","0",NA,NA
-"20","Race/Ethnicity Unknown","10449","6",NA,NA
-"21",NA,NA,NA,"july 29, 2021","death data last updated july 29, 2021."
+"1","Age Group 0-9","3169","0",NA,NA
+"2","Age Group 10-19","5016","0",NA,NA
+"3","Age Group 20-29","8681","1",NA,NA
+"4","Age Group 30-39","8134","5",NA,NA
+"5","Age Group 40-49","6846","18",NA,NA
+"6","Age Group 50-59","5986","39",NA,NA
+"7","Age Group 60-69","3826","87",NA,NA
+"8","Age Group 70-79","1765","123",NA,NA
+"9","Age Group 80-89","1080","167",NA,NA
+"10","Age Group 90+","509","148",NA,NA
+"11","Age Group Unknown","4",NA,NA,NA
+"12","Race/Ethnicity  American Indian/Alaska Native","62","2",NA,NA
+"13","Race/Ethnicity  Asian","5283","167",NA,NA
+"14","Race/Ethnicity  Black","781","27",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","18422","139",NA,NA
+"16","Race/Ethnicity  Pacific Islander","945","14",NA,NA
+"17","Race/Ethnicity  White","7389","233",NA,NA
+"18","Race/Ethnicity Multirace","1030",NA,NA,NA
+"19","Race/Ethnicity Other","624","0",NA,NA
+"20","Race/Ethnicity Unknown","10480","6",NA,NA
+"21",NA,NA,NA,"august 3, 2021","death data last updated july 29, 2021."
