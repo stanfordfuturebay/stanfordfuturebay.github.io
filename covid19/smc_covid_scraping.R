@@ -376,7 +376,7 @@ if (length(text_objs) != 0) {
   # (which follows the "up to and including" phrase, at least in the version of the dashboard at this time - edited 11/25/20)
   # case_update_date_str <- text_vals %>%
   #   filter(grepl("up to and including", tolower(.), fixed = TRUE))
-  case_update_date_str <- text_vals$.[which(text_vals$. == "Data up to and including ") + 1]
+  case_update_date_str <- text_vals$.[which(grepl("Data up to and including", text_vals$.))]
   case_update_date_str <- tolower(case_update_date_str)
   if (is_empty(case_update_date_str)) { # if length is zero, no information on case data date was listed
     case_update_date_str <- "no date listed"
