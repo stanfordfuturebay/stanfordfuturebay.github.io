@@ -377,6 +377,7 @@ if (length(text_objs) != 0) {
   # case_update_date_str <- text_vals %>%
   #   filter(grepl("up to and including", tolower(.), fixed = TRUE))
   case_update_date_str <- text_vals$.[which(grepl("Data up to and including", text_vals$.))]
+  case_update_date_str <- paste0(case_update_date_str, text_vals$.[which(grepl("Data up to and including", text_vals$.)) + 1])
   case_update_date_str <- tolower(case_update_date_str)
   if (is_empty(case_update_date_str)) { # if length is zero, no information on case data date was listed
     case_update_date_str <- "no date listed"
