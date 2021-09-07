@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>1.5 Reading and saving files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="1.5 Reading and saving files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="1.5 Reading and saving files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="1.5 Reading and saving files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  
+  
+  
+
+<meta name="author" content="Stanford Future Bay Initiative" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="github.html"/>
+<link rel="next" href="loops.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.3/leaflet-providers-plugin.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
+<li class="chapter" data-level="1.9" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>1.9</b> Geospatial data</a></li>
+<li class="chapter" data-level="1.10" data-path="assignment-1.html"><a href="assignment-1.html"><i class="fa fa-check"></i><b>1.10</b> Assignment 1</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a><ul>
+<li class="chapter" data-level="2.1" data-path="census-data.html"><a href="census-data.html"><i class="fa fa-check"></i><b>2.1</b> Census data</a></li>
+<li class="chapter" data-level="2.2" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>2.2</b> Equity analysis</a></li>
+<li class="chapter" data-level="2.3" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.3</b> Migration</a></li>
+<li class="chapter" data-level="2.4" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>2.4</b> Microdata</a></li>
+<li class="chapter" data-level="2.5" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.5</b> Spatial subsets</a></li>
+<li class="chapter" data-level="2.6" data-path="assignment-2.html"><a href="assignment-2.html"><i class="fa fa-check"></i><b>2.6</b> Assignment 2</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="statistics-part-1.html"><a href="statistics-part-1.html"><i class="fa fa-check"></i><b>3</b> Statistics, Part 1</a><ul>
+<li class="chapter" data-level="3.1" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>3.1</b> Probability distributions</a></li>
+<li class="chapter" data-level="3.2" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>3.2</b> Monte Carlo simulations</a></li>
+<li class="chapter" data-level="3.3" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>3.3</b> Simple linear regression</a></li>
+<li class="chapter" data-level="3.4" data-path="sampling-bias.html"><a href="sampling-bias.html"><i class="fa fa-check"></i><b>3.4</b> Sampling bias</a></li>
+<li class="chapter" data-level="3.5" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>3.5</b> Multiple regression</a></li>
+<li class="chapter" data-level="3.6" data-path="assignment-3.html"><a href="assignment-3.html"><i class="fa fa-check"></i><b>3.6</b> Assignment 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="statistics-part-2.html"><a href="statistics-part-2.html"><i class="fa fa-check"></i><b>4</b> Statistics, Part 2</a><ul>
+<li class="chapter" data-level="4.1" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
+<li class="chapter" data-level="4.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>4.2</b> Training and testing data</a></li>
+<li class="chapter" data-level="4.3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>4.3</b> Matching</a></li>
+<li class="chapter" data-level="4.4" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>4.4</b> Difference-in-differences</a></li>
+<li class="chapter" data-level="4.5" data-path="assignment-4.html"><a href="assignment-4.html"><i class="fa fa-check"></i><b>4.5</b> Assignment 4</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="mobility.html"><a href="mobility.html"><i class="fa fa-check"></i><b>5</b> Mobility</a><ul>
+<li class="chapter" data-level="5.1" data-path="travel-survey-data.html"><a href="travel-survey-data.html"><i class="fa fa-check"></i><b>5.1</b> Travel survey data</a></li>
+<li class="chapter" data-level="5.2" data-path="commute-data.html"><a href="commute-data.html"><i class="fa fa-check"></i><b>5.2</b> Commute data</a></li>
+<li class="chapter" data-level="5.3" data-path="routing.html"><a href="routing.html"><i class="fa fa-check"></i><b>5.3</b> Routing</a></li>
+<li class="chapter" data-level="5.4" data-path="accessibility.html"><a href="accessibility.html"><i class="fa fa-check"></i><b>5.4</b> Accessibility</a></li>
+<li class="chapter" data-level="5.5" data-path="assignment-5.html"><a href="assignment-5.html"><i class="fa fa-check"></i><b>5.5</b> Assignment 5</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="land-use.html"><a href="land-use.html"><i class="fa fa-check"></i><b>6</b> Land Use</a><ul>
+<li class="chapter" data-level="6.1" data-path="housing-data.html"><a href="housing-data.html"><i class="fa fa-check"></i><b>6.1</b> Housing data</a></li>
+<li class="chapter" data-level="6.2" data-path="parcel-data.html"><a href="parcel-data.html"><i class="fa fa-check"></i><b>6.2</b> Parcel data</a></li>
+<li class="chapter" data-level="6.3" data-path="census-to-parcel-disaggregation.html"><a href="census-to-parcel-disaggregation.html"><i class="fa fa-check"></i><b>6.3</b> Census-to-parcel disaggregation</a></li>
+<li class="chapter" data-level="6.4" data-path="parcel-and-building-geometries.html"><a href="parcel-and-building-geometries.html"><i class="fa fa-check"></i><b>6.4</b> Parcel and building geometries</a></li>
+<li class="chapter" data-level="6.5" data-path="address-geocoding-and-matching.html"><a href="address-geocoding-and-matching.html"><i class="fa fa-check"></i><b>6.5</b> Address geocoding and matching</a></li>
+<li class="chapter" data-level="6.6" data-path="assignment-6.html"><a href="assignment-6.html"><i class="fa fa-check"></i><b>6.6</b> Assignment 6</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="sustainability.html"><a href="sustainability.html"><i class="fa fa-check"></i><b>7</b> Sustainability</a><ul>
+<li class="chapter" data-level="7.1" data-path="vehicle-emissions.html"><a href="vehicle-emissions.html"><i class="fa fa-check"></i><b>7.1</b> Vehicle emissions</a></li>
+<li class="chapter" data-level="7.2" data-path="building-emissions.html"><a href="building-emissions.html"><i class="fa fa-check"></i><b>7.2</b> Building emissions</a></li>
+<li class="chapter" data-level="7.3" data-path="air-pollution-data.html"><a href="air-pollution-data.html"><i class="fa fa-check"></i><b>7.3</b> Air pollution data</a></li>
+<li class="chapter" data-level="7.4" data-path="household-consumption.html"><a href="household-consumption.html"><i class="fa fa-check"></i><b>7.4</b> Household consumption</a></li>
+<li class="chapter" data-level="7.5" data-path="assignment-7.html"><a href="assignment-7.html"><i class="fa fa-check"></i><b>7.5</b> Assignment 7</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="hazards.html"><a href="hazards.html"><i class="fa fa-check"></i><b>8</b> Hazards</a><ul>
+<li class="chapter" data-level="8.1" data-path="hazard-data.html"><a href="hazard-data.html"><i class="fa fa-check"></i><b>8.1</b> Hazard data</a></li>
+<li class="chapter" data-level="8.2" data-path="exposure-data.html"><a href="exposure-data.html"><i class="fa fa-check"></i><b>8.2</b> Exposure data</a></li>
+<li class="chapter" data-level="8.3" data-path="vulnerability-data.html"><a href="vulnerability-data.html"><i class="fa fa-check"></i><b>8.3</b> Vulnerability data</a></li>
+<li class="chapter" data-level="8.4" data-path="risk-estimation.html"><a href="risk-estimation.html"><i class="fa fa-check"></i><b>8.4</b> Risk estimation</a></li>
+<li class="chapter" data-level="8.5" data-path="assignment-8.html"><a href="assignment-8.html"><i class="fa fa-check"></i><b>8.5</b> Assignment 8</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="web-applications.html"><a href="web-applications.html"><i class="fa fa-check"></i><b>9</b> Web Applications</a><ul>
+<li class="chapter" data-level="9.1" data-path="dashboards.html"><a href="dashboards.html"><i class="fa fa-check"></i><b>9.1</b> Dashboards</a></li>
+<li class="chapter" data-level="9.2" data-path="assignment-9.html"><a href="assignment-9.html"><i class="fa fa-check"></i><b>9.2</b> Assignment 9</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="reading-and-saving-files" class="section level2">
+<h2><span class="header-section-number">1.5</span> Reading and saving files</h2>
+<p>Generally you will be loading data into RStudio from some source, making it more useful or generating insights from it in some way, and then exporting that data out in raw or visualized form. Here are the common ways you’d read data into RStudio:</p>
+<ol style="list-style-type: decimal">
+<li>Find a link online that lets you directly download a data file (e.g. CSV), and use that to directly load data into your Environment. If you find such a link or API, and if it’s stably maintained on the webpage, this is the easiest method.</li>
+<li>If for whatever reason it’s not easy to use the URL as the file path, but you can download the data onto your personal machine or a server, then read the data using the local file path instead. This is also very easy and often a great solution for working in teams that share the same server, but assumes you have set up such a file storage solution, and you might need to worry about changing file paths for different users, as we’ve discussed.</li>
+<li>A variety of packages have functions designed to essentially do Option 1 but with many convenient wrappers around the process, so that instead of having to find URLs or APIs and work with them yourself, you can interact with function parameters and get various pre-processed results. We’ll experience this later in this chapter.</li>
+<li>A variation on downloading datasets from online is scraping content directly from web pages, which will be the subject of a later chapter.</li>
+</ol>
+<p>In this section, we’ll demonstrate Options 1 and 2.</p>
+<p>In either case, functions from the <code>tidyverse</code> package will come in handy. The <a href="https://www.tidyverse.org/">tidyverse</a> is a popular collection of packages that all “share an underlying design philosophy, grammar, and data structures”. It’s creator, Hadley Wickham, was a contributor to the <a href="https://dcl-docs.stanford.edu/home/">Data Challenge Lab course</a> that used to be taught at Stanford (and which, by the way, has a more comprehensive online curriculum that you’re encouraged to also use as a resource to learn R). Basically, we, along with many others believe that features of <code>tidyverse</code> are a deeply intuitive way to learn and use R, and through this curriculum we will essentially be attempting to convince you of that too.</p>
+<p>We’ll dive much more deeply into <code>tidyverse</code> later, but for now, we’ll focus on the functions within its packages that are designed to read data. <code>readr</code> is the main one.</p>
+<p>In an earlier chunk, I’ve already loaded <code>library(tidyverse)</code>. <code>tidyverse</code> uniquely brings in multiple <a href="https://www.tidyverse.org/packages/">core packages</a> when you call it with <code>library()</code>, but in principle you could load <code>library(readr)</code> on its own.</p>
+<p>The <code>tidyverse</code> packages have great documentation, so it’s worth generally reviewing what information is available for <a href="https://readr.tidyverse.org/">readr</a>. Since CSVs are one of the most common types of data format you’d find online, <code>read_csv()</code> is the most common function you’d use, along with its exporting equivalent, <code>write_csv()</code>.</p>
+<p>For our example, let’s look at a large health dataset provided by the Centers for Disease Control and Prevention (CDC) called <a href="https://chronicdata.cdc.gov/500-Cities/500-Cities-Local-Data-for-Better-Health-2019-relea/6vp6-wxuq">500 Cities</a>. Without going into the full background of this data project which you can read about, I’ll simply note that this dataset provides estimates of many health outcomes that typically are difficult to find public data on at the census tract level (more on geographies soon) in the 500 largest U.S. cities. The dataset is fairly large so is also a good test of your personal machine and its ability to handle the kinds of datasets you would expect to be handling in R. On the CDC website, if you were looking for how to grab the data directly from R, you’d be looking for a direct link to .csv data, which requires manual searching. In this case, this can be found in the “Export” button, and copying the link address yields <code>https://chronicdata.cdc.gov/api/views/6vp6-wxuq/rows.csv?accessType=DOWNLOAD</code>. <code>read_csv()</code> has a straightforward schema, as shown below:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="reading-and-saving-files.html#cb6-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb6-2"><a href="reading-and-saving-files.html#cb6-2"></a></span>
+<span id="cb6-3"><a href="reading-and-saving-files.html#cb6-3"></a>health_full &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;https://chronicdata.cdc.gov/api/views/6vp6-wxuq/rows.csv?accessType=DOWNLOAD&quot;</span>)</span></code></pre></div>
+<p><code>&lt;-</code> is used to assign the result of functions to an Environment variable. You can supply a variable name of your choice on the left side. There are some general rules around this, like having no spaces, not leading with a number, and not using certain special characters. You should also develop the habit of using understandable variable names while keeping them relatively short.</p>
+<p>Running the line above may take a minute or more to load. You’ll notice a stop sign shows up in the Console, which lets you know that something is processing. When it’s complete, you’ll see a <code>&gt;</code> show up again in the Console, and you’ll see the newly created variable in your Environment. You can click on it (or type <code>View(health_full)</code>) which will create a new tab in the Source window to view tabular data. As noted previously, <code>names(health_full)</code> in the Console quickly shows the names of the column headers (which matches the data dictionary you can find on the CDC site).</p>
+<p>Reading files can introduce lots of unique challenges, so part of getting good at R is learning how to troubleshoot the unexpected problems you’ll face when interfacing with web pages and different file types. We’ll encounter some more complicated situations throughout this curriculum and revisit advanced reading methods as appropriate.</p>
+<p>We’ll be able to manipulate this data in a variety of ways, and generally with such large datasets you’d be interested in filtering to just the data you need, saving that locally, and then removing the larger original file. I’ll go ahead and demonstrate <code>filter()</code> which is from the <code>dplyr</code> package in <code>tidyverse</code> (more <code>dplyr</code> functions will be showcased soon):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="reading-and-saving-files.html#cb7-1"></a>health_ca &lt;-<span class="st"> </span><span class="kw">filter</span>(health_full, StateAbbr <span class="op">==</span><span class="st"> &quot;CA&quot;</span>)</span></code></pre></div>
+<p><code>filter()</code> takes as its first parameter some existing data object, and as its second parameter a logical condition. Here I’m referencing an existing field name, <code>StateAbbr</code>, which I know is spelled that way because I’ve reviewed the data structure, and I’m filtering to only rows of <code>health_full</code> that have “CA” in the <code>StateAbbr</code> field. The result goes from 800K to 150K rows. For Bay Area work we could further filter to find just the cities in the Bay Area, but for now we’ll go ahead and move on to other examples.</p>
+<p>Now let’s try an example that uses a local file path. PG&amp;E is the local energy utility for the Bay Area, and it provides some ZIP code level data to the public <a href="https://pge-energydatarequest.com/public_datasets">online</a>. This site would be a good example of Option 1, except it has an extra pop-up window that shows up asking for the user to provide some info and fill out some boxes which means we can’t do exactly what we did in the last example (there would be a more involved approach akin to Option 4’s web scraping). But for our purposes, this is a good opportunity to try downloading data directly to your local machine. Go ahead and download 2019 electricity usage for four quarters, and make sure to unzip the CSV contents of the zip folders directly into your “working directory”, which you should have created at the end of the last section. You should see these CSVs immediately in your Files window.</p>
+<p>Since we are using the working directory, then you can use relative file paths as follows:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="reading-and-saving-files.html#cb8-1"></a>pge_<span class="dv">19</span>_q1_elec &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;PGE_2019_Q1_ElectricUsageByZip.csv&quot;</span>)</span></code></pre></div>
+<p>No additional file path information is required; RStudio will by default look inside the working directory for a “PGE_2019_Q1_ElectricUsageByZip.csv” unless you specify otherwise. This means it’s generally the easiest to put input data as well as output contents directly in the working directory, but since this is likely also a cloned repo, you will have constraints on file size if you are syncing to GitHub (generally 100MB per file). So as you start working with bigger files, then generally you’d be interfacing instead with a server location (e.g. Google Drive File Stream) and providing a longer file path.</p>
+<p>Now let’s practice saving some outputs. If you wanted to create a CSV, then <code>write_csv()</code> is your best bet. Here’s what it would look like to save your California-filtered version of the CDC dataset:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="reading-and-saving-files.html#cb9-1"></a><span class="kw">write_csv</span>(health_ca, <span class="st">&quot;health_ca.csv&quot;</span>)</span></code></pre></div>
+<p>Note that in this case, no <code>&lt;-</code> is needed. <code>write_csv()</code> requires the data object you’re interested in, and a file path destination, which in this case we provided as a relative file path into the working directory (we could have supplied any name for this CSV). This should be ~40MB.</p>
+<p>If you don’t need the output to be a CSV for reading into Excel or Google Sheets, and just want to save an output that can be loaded back into R in the future, then the best choice is R’s own data format, .rds. RDS files are more compact than CSVs, and you can hold any kind of data in .rds, as long as it’s “one” data object. <code>saveRDS()</code> can be used very similarly to <code>write_csv()</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="reading-and-saving-files.html#cb10-1"></a><span class="kw">saveRDS</span>(health_ca, <span class="st">&quot;health_ca.rds&quot;</span>)</span></code></pre></div>
+<p>Notice how the .rds file is a tenth the size of the CSV, even though it holds the same information. So if you’re trying to conserve storage space and allow for quick saving/loading, RDS files are the way to go.</p>
+<p>Reading RDS files, by the way, looks like this:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="reading-and-saving-files.html#cb11-1"></a>health_ca &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;health_ca.rds&quot;</span>)</span></code></pre></div>
+<p>In this case, you’ll just be overwriting the existing <code>health_ca</code> data object in your Environment. Note that, like <code>read_csv()</code>, you get to pick whatever name you want on the left side for your variable.</p>
+<p>There are of course many other possible formats you can output data which we’ll encounter as we go. The last point I’ll make in this section is that a set of Environment variables can be saved together in an .rda or .rds file, which you can think of as similar to .rds but able to hold more than one object at a time. For example, you could run:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="reading-and-saving-files.html#cb12-1"></a><span class="kw">save</span>(health_ca, pge_<span class="dv">19</span>_q1_elec, <span class="dt">file =</span> <span class="st">&quot;working_datasets.rda&quot;</span>)</span>
+<span id="cb12-2"><a href="reading-and-saving-files.html#cb12-2"></a><span class="kw">load</span>(“working_datasets.rda”)</span></code></pre></div>
+<p>Note:</p>
+<ul>
+<li>The relevant function is now <code>save()</code>.</li>
+<li>You could list as many Environment variables as you’d like, separated by commas.</li>
+<li>The argument <code>file =</code> needs to be explicitly spelled out here. In fact this could have spelled out for <code>saveRDS()</code> but was unnecessary then, whereas here it’s necessary to avoid misinterpretation by the function, given that there are many other kinds of arguments that can be fed to <code>save()</code>.</li>
+<li>To read in an .rda file, you need to use <code>load()</code>. One key difference between <code>readRDS()</code> and <code>load()</code> is that you can’t specify a variable name, since there might be multiple variables incoming.</li>
+</ul>
+<p>If you just wanted to save the entire Environment, then you could do:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="reading-and-saving-files.html#cb13-1"></a><span class="co"># SAVE POINT</span></span>
+<span id="cb13-2"><a href="reading-and-saving-files.html#cb13-2"></a><span class="kw">save.image</span>(<span class="st">&quot;progress1.rda&quot;</span>)</span>
+<span id="cb13-3"><a href="reading-and-saving-files.html#cb13-3"></a><span class="kw">load</span>(“progress1.rda”)</span></code></pre></div>
+<p>I like using this like a “save” button in a video game, designed as specific checkpoints throughout a long script. If you don’t want to lose the contents of “progress1.rda”, you’d generally leave the <code>save.image()</code> line commented out using <code>Ctrl+Shift+C</code>, and only un-comment it if you want to change the contents of the .rda file.</p>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="github.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="loops.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "none",
+"scroll_highlight": true
+},
+"toolbar": {
+"position": "fixed"
+},
+"search": false,
+"info": false
+});
+});
+</script>
+
+</body>
+
+</html>
