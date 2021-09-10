@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","3688","0",NA,NA
-"2","Age Group 10-19","5587","0",NA,NA
-"3","Age Group 20-29","9626","1",NA,NA
-"4","Age Group 30-39","8964","6",NA,NA
-"5","Age Group 40-49","7516","18",NA,NA
-"6","Age Group 50-59","6553","40",NA,NA
-"7","Age Group 60-69","4181","87",NA,NA
-"8","Age Group 70-79","1945","129",NA,NA
-"9","Age Group 80-89","1154","170",NA,NA
-"10","Age Group 90+","519","149",NA,NA
-"11","Age Group Unknown","5",NA,NA,NA
+"1","Age Group 0-9","3709","0",NA,NA
+"2","Age Group 10-19","5610","0",NA,NA
+"3","Age Group 20-29","9654","1",NA,NA
+"4","Age Group 30-39","9003","7",NA,NA
+"5","Age Group 40-49","7544","18",NA,NA
+"6","Age Group 50-59","6569","40",NA,NA
+"7","Age Group 60-69","4199","87",NA,NA
+"8","Age Group 70-79","1953","129",NA,NA
+"9","Age Group 80-89","1154","171",NA,NA
+"10","Age Group 90+","520","150",NA,NA
+"11","Age Group Unknown","6",NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native","67","2",NA,NA
-"13","Race/Ethnicity  Asian","5945","171",NA,NA
-"14","Race/Ethnicity  Black","906","28",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","19793","141",NA,NA
-"16","Race/Ethnicity  Pacific Islander","1069","14",NA,NA
-"17","Race/Ethnicity  White","8722","238",NA,NA
-"18","Race/Ethnicity Multirace","1068",NA,NA,NA
-"19","Race/Ethnicity Other","1028","0",NA,NA
-"20","Race/Ethnicity Unknown","11140","6",NA,NA
-"21",NA,NA,NA,"data up to and including september 7, 2021","death data last updated september 2, 2021."
+"13","Race/Ethnicity  Asian","5986","172",NA,NA
+"14","Race/Ethnicity  Black","913","28",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","19850","143",NA,NA
+"16","Race/Ethnicity  Pacific Islander","1072","14",NA,NA
+"17","Race/Ethnicity  White","8767","238",NA,NA
+"18","Race/Ethnicity Multirace","1070",NA,NA,NA
+"19","Race/Ethnicity Other","1032","0",NA,NA
+"20","Race/Ethnicity Unknown","11164","6",NA,NA
+"21",NA,NA,NA,"data up to and including september 9, 2021","death data last updated september 9, 2021."
