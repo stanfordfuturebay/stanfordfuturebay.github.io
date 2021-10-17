@@ -188,6 +188,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.2" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>4.2</b> Probability distributions</a></li>
 <li class="chapter" data-level="4.3" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo simulations</a></li>
 </ul></li>
+<li class="chapter" data-level="5" data-path="regression.html"><a href="regression.html"><i class="fa fa-check"></i><b>5</b> Regression</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>5.1</b> Simple linear regression</a></li>
+<li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -221,7 +226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb131-4"><a href="probability-distributions.html#cb131-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb131-5"><a href="probability-distributions.html#cb131-5" aria-hidden="true" tabindex="-1"></a>time</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.26    0.00    0.27</code></pre>
+##    0.55    0.00    0.55</code></pre>
 <div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="probability-distributions.html#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(sample)</span></code></pre></div>
 <p><img src="course_files/figure-html/unnamed-chunk-152-1.png" width="672" /></p>
 <p>Notice that <code>proc.time()</code> has three named numeric values. <code>user</code> and <code>system</code> are more “machine-speak” and refer to different kinds of raw compute time that have accrued since you started your R session, while <code>elapsed</code> is what we would understand as seconds of experienced time. So when we run <code>proc.time()</code> at two different instances and get the difference, it’s the difference in <code>elapsed</code> that likely matters to us, and <code>time[3]</code> would give you that specific value. You can always use this technique to check how long any stretch of code takes; just make sure to run the code in its entirety, either the full chunk or by selecting all lines including <code>start</code> and <code>time</code> and hitting <code>Ctrl+Enter</code>.</p>

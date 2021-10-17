@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5.1 Simple linear regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="5.1 Simple linear regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5.1 Simple linear regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5.1 Simple linear regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  
+  
+  
+
+<meta name="author" content="Stanford Future Bay Initiative" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="regression.html"/>
+<link rel="next" href="multiple-regression.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.4.1/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.4.1/leaflet-providers-plugin.js"></script>
+<link href="libs/HomeButton-0.0.1/home-button.css" rel="stylesheet" />
+<script src="libs/HomeButton-0.0.1/home-button.js"></script>
+<script src="libs/HomeButton-0.0.1/easy-button-src.min.js"></script>
+<script src="libs/clipboard-0.0.1/setClipboardText.js"></script>
+<link href="libs/mapviewCSS-0.0.1/mapview-popup.css" rel="stylesheet" />
+<link href="libs/mapviewCSS-0.0.1/mapview.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>2.1</b> Geospatial data</a></li>
+<li class="chapter" data-level="2.2" data-path="acs-data.html"><a href="acs-data.html"><i class="fa fa-check"></i><b>2.2</b> ACS data</a></li>
+<li class="chapter" data-level="2.3" data-path="decennial-data.html"><a href="decennial-data.html"><i class="fa fa-check"></i><b>2.3</b> Decennial Data</a></li>
+<li class="chapter" data-level="2.4" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.4</b> Spatial subsets</a></li>
+<li class="chapter" data-level="2.5" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.5</b> Migration</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="surveys.html"><a href="surveys.html"><i class="fa fa-check"></i><b>3</b> Surveys</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>3.1</b> Microdata</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>4</b> Distributions</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>4.1</b> Equity analysis</a></li>
+<li class="chapter" data-level="4.2" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>4.2</b> Probability distributions</a></li>
+<li class="chapter" data-level="4.3" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo simulations</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression.html"><a href="regression.html"><i class="fa fa-check"></i><b>5</b> Regression</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>5.1</b> Simple linear regression</a></li>
+<li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="simple-linear-regression" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Simple linear regression</h2>
+<p>This section will not serve as a replacement for a more formal mathematical introduction to regression, but may be a good complement that lets us “peek under the hood” with some real data. You should be familiar with the idea that regression is associated with the trendline that Excel allows one to add to a scatter plot. Let’s go ahead and see how to set that up in R, and then inspect the result more closely. For our demonstration, let’s return to ACS data and compare two different variables in the Bay Area at the tract level: educational attainment and income. Common sense tells us that these outcomes are likely to be related: if one is high for a random census tract, we would bet that the other is also high. For the simple linear regression version, we need to distill both education and income into one-dimensional measures, like “% of population 25 years and older with a college degree or higher” and “% of households making $100,000 or more”, and collect these values at a granular level, in this case census tracts in the Bay Area.</p>
+<p>To construct the education variable for each tract, we’ll use table <code>B06009</code>: PLACE OF BIRTH BY EDUCATIONAL ATTAINMENT IN THE UNITED STATES. It has breakdowns by place of birth that aren’t relevant to our current analysis, but conveniently it starts with giving educational attainment breakdowns overall, and we only need <code>B06009_001E</code>: “Total”; <code>B06009_002E</code>: “Less than high school graduate”, and <code>B06009_003E</code>: “High school graduate (includes equivalency)” to be able to construct “% College degree or higher”. Similarly, for income, we’ll make use of some specific variables in <code>B19001</code> to construct “% $100K+”. If you have a pretty specific measure to create, you can usually grab specific variables in this way and avoid using the “group()” technique; but as you can see below, there is still a lot of typing involved, and you’ll want to make sure you got all your math right.</p>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="simple-linear-regression.html#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb150-2"><a href="simple-linear-regression.html#cb150-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(censusapi)</span>
+<span id="cb150-3"><a href="simple-linear-regression.html#cb150-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb150-4"><a href="simple-linear-regression.html#cb150-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
+<span id="cb150-5"><a href="simple-linear-regression.html#cb150-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tigris)</span>
+<span id="cb150-6"><a href="simple-linear-regression.html#cb150-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-7"><a href="simple-linear-regression.html#cb150-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
+<span id="cb150-8"><a href="simple-linear-regression.html#cb150-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-9"><a href="simple-linear-regression.html#cb150-9" aria-hidden="true" tabindex="-1"></a>acs_vars_2019_5yr <span class="ot">&lt;-</span></span>
+<span id="cb150-10"><a href="simple-linear-regression.html#cb150-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">listCensusMetadata</span>(</span>
+<span id="cb150-11"><a href="simple-linear-regression.html#cb150-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;2019/acs/acs5&quot;</span>,</span>
+<span id="cb150-12"><a href="simple-linear-regression.html#cb150-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">&quot;variables&quot;</span></span>
+<span id="cb150-13"><a href="simple-linear-regression.html#cb150-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="simple-linear-regression.html#cb151-1" aria-hidden="true" tabindex="-1"></a>bay_education_income_tract <span class="ot">&lt;-</span> </span>
+<span id="cb151-2"><a href="simple-linear-regression.html#cb151-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">getCensus</span>(</span>
+<span id="cb151-3"><a href="simple-linear-regression.html#cb151-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
+<span id="cb151-4"><a href="simple-linear-regression.html#cb151-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">vintage =</span> <span class="dv">2019</span>,</span>
+<span id="cb151-5"><a href="simple-linear-regression.html#cb151-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="st">&quot;tract:*&quot;</span>,</span>
+<span id="cb151-6"><a href="simple-linear-regression.html#cb151-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">regionin =</span> <span class="st">&quot;state:06+county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb151-7"><a href="simple-linear-regression.html#cb151-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">vars =</span> <span class="fu">c</span>(</span>
+<span id="cb151-8"><a href="simple-linear-regression.html#cb151-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B06009_001E&quot;</span>,</span>
+<span id="cb151-9"><a href="simple-linear-regression.html#cb151-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B06009_002E&quot;</span>,</span>
+<span id="cb151-10"><a href="simple-linear-regression.html#cb151-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B06009_003E&quot;</span>,</span>
+<span id="cb151-11"><a href="simple-linear-regression.html#cb151-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B19001_001E&quot;</span>,</span>
+<span id="cb151-12"><a href="simple-linear-regression.html#cb151-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B19001_014E&quot;</span>,</span>
+<span id="cb151-13"><a href="simple-linear-regression.html#cb151-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B19001_015E&quot;</span>,</span>
+<span id="cb151-14"><a href="simple-linear-regression.html#cb151-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B19001_016E&quot;</span>,</span>
+<span id="cb151-15"><a href="simple-linear-regression.html#cb151-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;B19001_017E&quot;</span></span>
+<span id="cb151-16"><a href="simple-linear-regression.html#cb151-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb151-17"><a href="simple-linear-regression.html#cb151-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb151-18"><a href="simple-linear-regression.html#cb151-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb151-19"><a href="simple-linear-regression.html#cb151-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">tract =</span> <span class="fu">paste0</span>(state, county, tract),</span>
+<span id="cb151-20"><a href="simple-linear-regression.html#cb151-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">perc_college =</span> <span class="dv">1</span> <span class="sc">-</span> (B06009_002E <span class="sc">+</span> B06009_003E) <span class="sc">/</span> B06009_001E,</span>
+<span id="cb151-21"><a href="simple-linear-regression.html#cb151-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">perc_over100k =</span> (B19001_014E <span class="sc">+</span> B19001_015E <span class="sc">+</span> B19001_016E <span class="sc">+</span> B19001_017E) <span class="sc">/</span> B19001_001E</span>
+<span id="cb151-22"><a href="simple-linear-regression.html#cb151-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb151-23"><a href="simple-linear-regression.html#cb151-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb151-24"><a href="simple-linear-regression.html#cb151-24" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(perc_college), </span>
+<span id="cb151-25"><a href="simple-linear-regression.html#cb151-25" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(perc_over100k)</span>
+<span id="cb151-26"><a href="simple-linear-regression.html#cb151-26" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>It’s useful to filter out NA values for all records you may analyze in regression, since they will not be usable at some point (i.e., missing information will not allow you to compare across variables).</p>
+<p>Note that because we are working with average values from the ACS for a certain geography, in this case census tracts, we should consider an <a href="https://en.wikipedia.org/wiki/Ecological_fallacy">ecological inference problem</a> when interpreting our results. It’s possible that just looking at average statistics for a census tract is masking an underlying relationship between income and race at the individual household level. We’ll try to account for this later when we switch to household-level PUMS data (which bring other important nuances as well).</p>
+<p>Also, regression across units (in this case census tracts) that have geographic relationships with each other can be subject to spatial autocorrelation, in which neighboring units can have an effect on your measures. We’ll cover this issue specifically in a coming chapter; for now, we will assume such issues have negligible effects in order to focus on learning the principles of simple linear regression.</p>
+<p>Let’s first plot this data as a scatter plot using <code>geom_point()</code> in <code>ggplot</code>:</p>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="simple-linear-regression.html#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb152-2"><a href="simple-linear-regression.html#cb152-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb152-3"><a href="simple-linear-regression.html#cb152-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> bay_education_income_tract,</span>
+<span id="cb152-4"><a href="simple-linear-regression.html#cb152-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb152-5"><a href="simple-linear-regression.html#cb152-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> perc_college,</span>
+<span id="cb152-6"><a href="simple-linear-regression.html#cb152-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> perc_over100k</span>
+<span id="cb152-7"><a href="simple-linear-regression.html#cb152-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb152-8"><a href="simple-linear-regression.html#cb152-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-166-1.png" width="672" /></p>
+<p>Now let’s add a regression line using the built-in capabilities of <code>ggplot</code>, specifically <code>geom_smooth()</code> with the argument <code>method = “lm”</code> which stands for “linear model”. Note that in this case, since we want both <code>geom_point()</code> and <code>geom_smooth()</code> to refer to the same data, we move the <code>data =</code> and <code>aes()</code> arguments within <code>ggplot()</code> itself, which is like turning this specific frame of the data into the object in the pipeline.</p>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="simple-linear-regression.html#cb153-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb153-2"><a href="simple-linear-regression.html#cb153-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> bay_education_income_tract,</span>
+<span id="cb153-3"><a href="simple-linear-regression.html#cb153-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb153-4"><a href="simple-linear-regression.html#cb153-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> perc_college,</span>
+<span id="cb153-5"><a href="simple-linear-regression.html#cb153-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> perc_over100k</span>
+<span id="cb153-6"><a href="simple-linear-regression.html#cb153-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb153-7"><a href="simple-linear-regression.html#cb153-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb153-8"><a href="simple-linear-regression.html#cb153-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb153-9"><a href="simple-linear-regression.html#cb153-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-167-1.png" width="672" /></p>
+<p>The default method for <code>geom_smooth()</code> happens to be a more complicated technique called LOESS (locally estimated scatterplot smoothing), but we’ll focus for now on the simple linear version. So how exactly is the “regression line” determined? By definition, the regression line is positioned such that it minimizes the “sum of squares of residuals” (SSR), where residuals are the vertical distances between each scatter plot point and the regression line itself. Let’s try directly calculating this SSR value with a different potential “best fit line” which has a slope 0 and a y-intercept at the mean of the y-axis values: in other words, just a flat horizontal line across the middle of this data. From there, we’ll populate <code>best_fit_candidate</code> with paired values for every actual y-value in the real data, but because this candidate line is a straight horizontal line, every paired value will just be the same as the y-intercept. Then, we’ll calculate the <code>residuals</code> as the difference between each pair of y-values, and take the sum of squares of all residuals.</p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="simple-linear-regression.html#cb154-1" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb154-2"><a href="simple-linear-regression.html#cb154-2" aria-hidden="true" tabindex="-1"></a>yintercept <span class="ot">&lt;-</span> <span class="fu">mean</span>(bay_education_income_tract<span class="sc">$</span>perc_over100k)</span>
+<span id="cb154-3"><a href="simple-linear-regression.html#cb154-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb154-4"><a href="simple-linear-regression.html#cb154-4" aria-hidden="true" tabindex="-1"></a>best_fit_candidate <span class="ot">&lt;-</span> slope <span class="sc">*</span> bay_education_income_tract<span class="sc">$</span>perc_college <span class="sc">+</span> yintercept </span>
+<span id="cb154-5"><a href="simple-linear-regression.html#cb154-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb154-6"><a href="simple-linear-regression.html#cb154-6" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> bay_education_income_tract<span class="sc">$</span>perc_over100k <span class="sc">-</span> best_fit_candidate</span>
+<span id="cb154-7"><a href="simple-linear-regression.html#cb154-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb154-8"><a href="simple-linear-regression.html#cb154-8" aria-hidden="true" tabindex="-1"></a>sumsq_residuals <span class="ot">&lt;-</span> <span class="fu">sum</span>(residuals<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb154-9"><a href="simple-linear-regression.html#cb154-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb154-10"><a href="simple-linear-regression.html#cb154-10" aria-hidden="true" tabindex="-1"></a>sumsq_residuals</span></code></pre></div>
+<pre><code>## [1] 50.81099</code></pre>
+<p>And here’s a plot showing this poor “best fit candidate” in comparison to the actual best fit line according to <code>geom_smooth()</code>:</p>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="simple-linear-regression.html#cb156-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb156-2"><a href="simple-linear-regression.html#cb156-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> bay_education_income_tract,</span>
+<span id="cb156-3"><a href="simple-linear-regression.html#cb156-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb156-4"><a href="simple-linear-regression.html#cb156-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> perc_college,</span>
+<span id="cb156-5"><a href="simple-linear-regression.html#cb156-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> perc_over100k</span>
+<span id="cb156-6"><a href="simple-linear-regression.html#cb156-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb156-7"><a href="simple-linear-regression.html#cb156-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb156-8"><a href="simple-linear-regression.html#cb156-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb156-9"><a href="simple-linear-regression.html#cb156-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb156-10"><a href="simple-linear-regression.html#cb156-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb156-11"><a href="simple-linear-regression.html#cb156-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb156-12"><a href="simple-linear-regression.html#cb156-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> bay_education_income_tract<span class="sc">$</span>perc_college,</span>
+<span id="cb156-13"><a href="simple-linear-regression.html#cb156-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> best_fit_candidate</span>
+<span id="cb156-14"><a href="simple-linear-regression.html#cb156-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb156-15"><a href="simple-linear-regression.html#cb156-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb156-16"><a href="simple-linear-regression.html#cb156-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">1</span></span>
+<span id="cb156-17"><a href="simple-linear-regression.html#cb156-17" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-169-1.png" width="672" /></p>
+<p>If this straight horizontal line yields a SSR of 51, then the actual best fit line must be able to produce a lower SSR. If we didn’t have <code>geom_smooth()</code> to give us the best fit line directly, we could try to use optimization techniques in R to discover the slope and y-intercept of the best fit line. To do this, let’s first turn the code we previously used into a function. We haven’t explicitly done this yet in the curriculum, but this technique is generally available wherever you think it increases clarity of the code or reduces the amount of repetitive writing you have to do. For example, anywhere we’ve used a <code>map()</code> function from <code>purrr</code> in <code>tidyverse</code>, we could have pre-created a function that does the steps within <code>map()</code>. Anyway, here’s the functionalized version of the math we did previously:</p>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="simple-linear-regression.html#cb157-1" aria-hidden="true" tabindex="-1"></a>get_sumsq_residuals <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
+<span id="cb157-2"><a href="simple-linear-regression.html#cb157-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb157-3"><a href="simple-linear-regression.html#cb157-3" aria-hidden="true" tabindex="-1"></a>  slope <span class="ot">&lt;-</span> x[<span class="dv">1</span>]</span>
+<span id="cb157-4"><a href="simple-linear-regression.html#cb157-4" aria-hidden="true" tabindex="-1"></a>  yintercept <span class="ot">&lt;-</span> x[<span class="dv">2</span>]</span>
+<span id="cb157-5"><a href="simple-linear-regression.html#cb157-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb157-6"><a href="simple-linear-regression.html#cb157-6" aria-hidden="true" tabindex="-1"></a>  best_fit_candidate <span class="ot">&lt;-</span> slope <span class="sc">*</span> bay_education_income_tract<span class="sc">$</span>perc_college <span class="sc">+</span> yintercept </span>
+<span id="cb157-7"><a href="simple-linear-regression.html#cb157-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb157-8"><a href="simple-linear-regression.html#cb157-8" aria-hidden="true" tabindex="-1"></a>  residuals <span class="ot">&lt;-</span> bay_education_income_tract<span class="sc">$</span>perc_over100k <span class="sc">-</span> best_fit_candidate</span>
+<span id="cb157-9"><a href="simple-linear-regression.html#cb157-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb157-10"><a href="simple-linear-regression.html#cb157-10" aria-hidden="true" tabindex="-1"></a>  sumsq_residuals <span class="ot">&lt;-</span> <span class="fu">sum</span>(residuals<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb157-11"><a href="simple-linear-regression.html#cb157-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>The name <code>get_sumsq_residuals</code> is up to you, just like naming a data object. After running the chunk above, <code>get_sumsq_residuals()</code> wasn’t actually applied to anything, but it is now available to you to use, just like any function we’ve used so far. Whatever argument you provide to <code>get_sumsq_residuals()</code> inside the parentheses is then used in the way <code>x</code> is used in the function definition. Note that in our case, the function input <code>x</code> actually needs to be a vector with two values within it, which represent the <code>slope</code> and <code>yintercept</code>. If you supply a different data structure for <code>x</code> when running <code>get_sumsq_residuals()</code>, an error will be triggered. You will get back the value of <code>sumsq_residuals</code> if everything runs correctly; this is because it’s the last line in the function, though you can always clarify what you want returned using <code>return()</code>.</p>
+<p>Now let’s use <code>optim()</code> to let R search for the best two values, <code>x[1]</code> and <code>x[2]</code>, given the goal of minimizing the result of <code>get_sumsq_residuals()</code>. Similar to “Goal Seek” in Excel, the function will search through a range of numerical options for <code>x[1]</code> and <code>x[2]</code>. <code>optimize()</code> is the simpler version that optimizes based on a single variable, but here we use <code>optim()</code> to deal with two changing variables, and <code>optim()</code> requires the input to be written as a <code>c()</code> vector, hence the specific structure of the input for the <code>get_sumsq_residuals()</code> function.</p>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="simple-linear-regression.html#cb158-1" aria-hidden="true" tabindex="-1"></a>optimization <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), get_sumsq_residuals)</span>
+<span id="cb158-2"><a href="simple-linear-regression.html#cb158-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb158-3"><a href="simple-linear-regression.html#cb158-3" aria-hidden="true" tabindex="-1"></a>optimization</span></code></pre></div>
+<pre><code>## $par
+## [1]  0.78995722 -0.05999454
+## 
+## $value
+## [1] 23.70676
+## 
+## $counts
+## function gradient 
+##       65       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<p>The output <code>optimization</code> is a list of various potentially useful metrics. <code>optimization$par</code> is the specific pair of results for <code>slope</code> and <code>y-intercept</code>, and <code>optimization$value</code> is the minimized SSR, which we can see is less than our previous attempt. Let’s now directly plot the “best fit line” based on this optimization result and see if it matches the automatic result from <code>geom_smooth()</code>:</p>
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="simple-linear-regression.html#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb160-2"><a href="simple-linear-regression.html#cb160-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> bay_education_income_tract,</span>
+<span id="cb160-3"><a href="simple-linear-regression.html#cb160-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb160-4"><a href="simple-linear-regression.html#cb160-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> perc_college,</span>
+<span id="cb160-5"><a href="simple-linear-regression.html#cb160-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> perc_over100k</span>
+<span id="cb160-6"><a href="simple-linear-regression.html#cb160-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb160-7"><a href="simple-linear-regression.html#cb160-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb160-8"><a href="simple-linear-regression.html#cb160-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb160-9"><a href="simple-linear-regression.html#cb160-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb160-10"><a href="simple-linear-regression.html#cb160-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb160-11"><a href="simple-linear-regression.html#cb160-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb160-12"><a href="simple-linear-regression.html#cb160-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> perc_college,</span>
+<span id="cb160-13"><a href="simple-linear-regression.html#cb160-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> perc_college <span class="sc">*</span> optimization<span class="sc">$</span>par[<span class="dv">1</span>] <span class="sc">+</span> optimization<span class="sc">$</span>par[<span class="dv">2</span>]</span>
+<span id="cb160-14"><a href="simple-linear-regression.html#cb160-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb160-15"><a href="simple-linear-regression.html#cb160-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb160-16"><a href="simple-linear-regression.html#cb160-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="dv">2</span>,</span>
+<span id="cb160-17"><a href="simple-linear-regression.html#cb160-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span></span>
+<span id="cb160-18"><a href="simple-linear-regression.html#cb160-18" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-172-1.png" width="672" /></p>
+<p>Now that you’ve produced the regression line from scratch, you should feel comfortable trusting R’s regression lines. However, keep in mind from your general understanding of regression models that they are only valid if a set of conditions are true about the data, including that the mean of the residuals is ~ 0, and that the residuals are normally distributed.</p>
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="simple-linear-regression.html#cb161-1" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> optimization<span class="sc">$</span>par[<span class="dv">1</span>]</span>
+<span id="cb161-2"><a href="simple-linear-regression.html#cb161-2" aria-hidden="true" tabindex="-1"></a>yintercept <span class="ot">&lt;-</span> optimization<span class="sc">$</span>par[<span class="dv">2</span>]</span>
+<span id="cb161-3"><a href="simple-linear-regression.html#cb161-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb161-4"><a href="simple-linear-regression.html#cb161-4" aria-hidden="true" tabindex="-1"></a>best_fit_candidate <span class="ot">&lt;-</span> slope <span class="sc">*</span> bay_education_income_tract<span class="sc">$</span>perc_college <span class="sc">+</span> yintercept </span>
+<span id="cb161-5"><a href="simple-linear-regression.html#cb161-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb161-6"><a href="simple-linear-regression.html#cb161-6" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> bay_education_income_tract<span class="sc">$</span>perc_over100k <span class="sc">-</span> best_fit_candidate</span>
+<span id="cb161-7"><a href="simple-linear-regression.html#cb161-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb161-8"><a href="simple-linear-regression.html#cb161-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(residuals)</span></code></pre></div>
+<pre><code>## [1] 3.658757e-05</code></pre>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="simple-linear-regression.html#cb163-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(residuals))</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-173-1.png" width="672" /></p>
+<p>The mean of the residual is close to zero, but there appears to be a slight skew to the density curve for the residuals, which might mean that we don’t have the conditions necessary to meaningfully interpret regression results on the data (we will specifically explore problems with spatial autocorrelation later). This particular distribution does not look significantly skewed, but visual inspection of the original scatterplot suggests that a straight best-fit line is mostly appropriate for the underlying data. Many other robust tests for normality are available should your work entail them.</p>
+<p>Besides plotting with <code>ggplot</code>, which is always recommended if you’re working with two continuous variables so you can visually inspect the distribution of data, the formal function for regression analysis is <code>lm()</code>, which is used as follows. If you are familiar with the <code>y = mx + b</code> framing of the regression line, then think of <code>y</code> as the variable you are trying to predict using the <code>x</code> information. Another common way of describing this is that <code>y</code> is the dependent variable, and <code>x</code> is the independent variable. In <code>lm()</code>, the first argument is a specific arrangement where the <code>y</code> variable field name is provided before the <code>~</code>, and the <code>x</code> variable field name is provided after the <code>~</code> (when we move on to multiple regression, you’ll add additional <code>x</code> variables after the <code>~</code>). The second necessary argument to <code>lm()</code> is the overall dataframe.</p>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="simple-linear-regression.html#cb164-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(perc_over100k <span class="sc">~</span> perc_college, bay_education_income_tract)</span>
+<span id="cb164-2"><a href="simple-linear-regression.html#cb164-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb164-3"><a href="simple-linear-regression.html#cb164-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = perc_over100k ~ perc_college, data = bay_education_income_tract)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.56483 -0.07131  0.01394  0.08257  0.37896 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  -0.05996    0.01393  -4.305 1.77e-05 ***
+## perc_college  0.78996    0.01862  42.435  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1227 on 1575 degrees of freedom
+## Multiple R-squared:  0.5334, Adjusted R-squared:  0.5331 
+## F-statistic:  1801 on 1 and 1575 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><code>model</code> holds a lot of information about the regression analysis, and <code>summary(model)</code> is a common way to output results, though you may not necessarily need every single metric provided (depending on how technical your statistical experience is). I’ll describe what I tend to focus on when I view this kind of summary output:</p>
+<ul>
+<li>It’s generally good to see that the Residuals (also accessible in full through <code>model$residuals</code>) are roughly centered on 0 and have roughly symmetrical distribution, which are just other signals of the same findings from our previous chunk’s approach.</li>
+<li><code>model$coefficients</code> gets you the same information as we got from our manual optimization function.</li>
+<li>The standard error for the slope coefficient, in this case a standard error of 0.0186158 on the slope of 0.7899599, is important. Think of it as a measure of uncertainty about the slope of the line. Usually the fundamental question we’re asking when doing a simple linear regression is: Does the specific best fit line through our sample data seem to suggest that the “true best fit line” for the whole population is something other than a flat line (similar to our previous example)? The “0” assumption is called the “null hypothesis”, which is basically the starting assumption that there is no relationship between the <code>x</code> and <code>y</code> values (i.e. knowing information about <code>x</code> does not give us any predictive power on <code>y</code>). But if our particular scatter plot seems to show a non-zero relationship, and the likelihood of an “off-chance sampling” from a full population that conforms with the null hypothesis can be measured using standard error and shown to be exceedingly unlikely, then we formally “reject the null hypothesis” and accept this sample-based regression line as reflective of “reality”. That threshold for deciding to reject the null hypothesis is based on the standard error placing the “off-chance sampling” in the tail ends of a normal distribution and is usually an arbitrary low probability like 0.05, which the asterisks in the output refer to, and which the “p-value” (shown here under the heading <code>Pr(&gt;|t|)</code>) is formally being compared against (i.e. if the p-value is less than 0.05, usually that’s sufficient for a scientific experiment’s results to be considered “statistically significant”). If you haven’t encountered this material through a more formal statistics reading, this brief description certainly doesn’t do the topic justice; I am merely doing a cursory review and pointing out where to find common statistical measures that you should build a fuller understanding of through other sources.</li>
+<li>“R-squared” is a measure of the shared variance between the <code>x</code> and <code>y</code> values. You could say that “variation in x explains 53.3% of the variation in y”. Sharing 100% of variance would be a perfect prediction. The gap is essentially the “residuals”, and you should always expect a gap when dealing with social data because, as we’d expect, everything can have myriad influences in all kinds of directions, and everything also has some amount of natural variation.</li>
+</ul>
+<p>Keep in mind that none of these results should be interpreted as having anything to do with causation; regression analyses should be put squarely in the “correlation” category of analysis (we’ll consider causal inference later). All we’re looking at are relationships between observed values. A classic error is to assume that the regression line shows you how much “directly changing <code>x</code>” affects <code>y</code>, but keep in mind that it was entirely up to us which variables we happened to consider for <code>x</code> vs. <code>y</code>! Perhaps your intuition is that education must certainly be the “lever” which is causing people’s income to also be higher, through better jobs. But consider that high income may also be the means by which parents can pay for better educational opportunities for their children, thereby also increasing the educational attainment of the census tract!</p>
+<p>By the way, if you want to make a “prediction” using this regression model, given a new <code>x</code> value, you can do it as follows:</p>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="simple-linear-regression.html#cb166-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(model, <span class="fu">data.frame</span>(<span class="at">perc_college =</span> <span class="fl">0.5</span>))</span></code></pre></div>
+<pre><code>##       1 
+## 0.33502</code></pre>
+<p><code>predict()</code> receives the <code>model</code> as its first argument, and then can receive a dataframe with a field of <code>x</code> values with the same field name as was used in <code>model</code>. So even though we just want to make one prediction here, given a new Census tract with <code>perc_college = 0.5</code>, we need to feed that in as a dataframe using <code>data.frame()</code>. Also note that if you give no second argument to <code>predict()</code>, it will by default use the original data itself, meaning it will essentially create the same thing as <code>best_fit_candidate</code> from before, with <code>y</code> values for every original <code>x</code> that line up exactly on the regression line.</p>
+<p>As a last demonstration for this section, let’s see what simple linear regression may tell us if we apply it to time series data, like the PG&amp;E data we’ve used in Chapter 1. The major problem is seasonality, which a linear regression is not inherently designed to deal with. However, it would be possible to investigate a particular slice of data, like comparing only Septembers with each other across the years, and if there really is a general trend up or down through the years, we’d be able to describe that trend with a regression line and potentially use it to predict future Septembers.</p>
+<p>In the demonstration below, I’ll set up data for all months from 2013 to 2019 (you can replicate this if you download all the data from the PG&amp;E site, but beware of a few manual corrections you need to make where PG&amp;E simply has poor quality control on its own field names). Then I’ll compute a total <code>AVERAGEKWH</code> for customers in the PG&amp;E territory each month and plot the results. We’ll see what the regression analysis gives us if we apply it directly to the entire dataset.</p>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="simple-linear-regression.html#cb168-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">2013</span><span class="sc">:</span><span class="dv">2019</span></span>
+<span id="cb168-2"><a href="simple-linear-regression.html#cb168-2" aria-hidden="true" tabindex="-1"></a>quarters <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb168-3"><a href="simple-linear-regression.html#cb168-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-4"><a href="simple-linear-regression.html#cb168-4" aria-hidden="true" tabindex="-1"></a>pge_data <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb168-5"><a href="simple-linear-regression.html#cb168-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-6"><a href="simple-linear-regression.html#cb168-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(year <span class="cf">in</span> years) {</span>
+<span id="cb168-7"><a href="simple-linear-regression.html#cb168-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
+<span id="cb168-8"><a href="simple-linear-regression.html#cb168-8" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb168-9"><a href="simple-linear-regression.html#cb168-9" aria-hidden="true" tabindex="-1"></a>    filename <span class="ot">&lt;-</span> </span>
+<span id="cb168-10"><a href="simple-linear-regression.html#cb168-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb168-11"><a href="simple-linear-regression.html#cb168-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;pge/PGE_&quot;</span>,</span>
+<span id="cb168-12"><a href="simple-linear-regression.html#cb168-12" aria-hidden="true" tabindex="-1"></a>        year,</span>
+<span id="cb168-13"><a href="simple-linear-regression.html#cb168-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;_Q&quot;</span>,</span>
+<span id="cb168-14"><a href="simple-linear-regression.html#cb168-14" aria-hidden="true" tabindex="-1"></a>        quarter,</span>
+<span id="cb168-15"><a href="simple-linear-regression.html#cb168-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;_ElectricUsageByZip.csv&quot;</span></span>
+<span id="cb168-16"><a href="simple-linear-regression.html#cb168-16" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb168-17"><a href="simple-linear-regression.html#cb168-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb168-18"><a href="simple-linear-regression.html#cb168-18" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(filename)</span>
+<span id="cb168-19"><a href="simple-linear-regression.html#cb168-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb168-20"><a href="simple-linear-regression.html#cb168-20" aria-hidden="true" tabindex="-1"></a>    pge_data <span class="ot">&lt;-</span> </span>
+<span id="cb168-21"><a href="simple-linear-regression.html#cb168-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rbind</span>(pge_data,temp)</span>
+<span id="cb168-22"><a href="simple-linear-regression.html#cb168-22" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb168-23"><a href="simple-linear-regression.html#cb168-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb168-24"><a href="simple-linear-regression.html#cb168-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb168-25"><a href="simple-linear-regression.html#cb168-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-26"><a href="simple-linear-regression.html#cb168-26" aria-hidden="true" tabindex="-1"></a>pge_avg_kwh <span class="ot">&lt;-</span></span>
+<span id="cb168-27"><a href="simple-linear-regression.html#cb168-27" aria-hidden="true" tabindex="-1"></a>  pge_data <span class="sc">%&gt;%</span> </span>
+<span id="cb168-28"><a href="simple-linear-regression.html#cb168-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CUSTOMERCLASS <span class="sc">==</span> <span class="st">&quot;Elec- Residential&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb168-29"><a href="simple-linear-regression.html#cb168-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(YEAR, MONTH) <span class="sc">%&gt;%</span> </span>
+<span id="cb168-30"><a href="simple-linear-regression.html#cb168-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb168-31"><a href="simple-linear-regression.html#cb168-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">TOTALCUSTOMERS =</span> <span class="fu">sum</span>(TOTALCUSTOMERS, <span class="at">na.rm =</span> T),</span>
+<span id="cb168-32"><a href="simple-linear-regression.html#cb168-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">TOTALMONTHLYKWH =</span> <span class="fu">sum</span>(TOTALKWH, <span class="at">na.rm =</span> T)</span>
+<span id="cb168-33"><a href="simple-linear-regression.html#cb168-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb168-34"><a href="simple-linear-regression.html#cb168-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb168-35"><a href="simple-linear-regression.html#cb168-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">AVGMONTHLYKWH =</span> TOTALMONTHLYKWH<span class="sc">/</span>TOTALCUSTOMERS,</span>
+<span id="cb168-36"><a href="simple-linear-regression.html#cb168-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">DATE =</span> </span>
+<span id="cb168-37"><a href="simple-linear-regression.html#cb168-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(</span>
+<span id="cb168-38"><a href="simple-linear-regression.html#cb168-38" aria-hidden="true" tabindex="-1"></a>        YEAR,</span>
+<span id="cb168-39"><a href="simple-linear-regression.html#cb168-39" aria-hidden="true" tabindex="-1"></a>        MONTH, </span>
+<span id="cb168-40"><a href="simple-linear-regression.html#cb168-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;01&quot;</span>,</span>
+<span id="cb168-41"><a href="simple-linear-regression.html#cb168-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">sep=</span><span class="st">&quot;-&quot;</span></span>
+<span id="cb168-42"><a href="simple-linear-regression.html#cb168-42" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span> <span class="fu">as.Date</span>()</span>
+<span id="cb168-43"><a href="simple-linear-regression.html#cb168-43" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="simple-linear-regression.html#cb169-1" aria-hidden="true" tabindex="-1"></a>pge_avg_kwh <span class="sc">%&gt;%</span> </span>
+<span id="cb169-2"><a href="simple-linear-regression.html#cb169-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb169-3"><a href="simple-linear-regression.html#cb169-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb169-4"><a href="simple-linear-regression.html#cb169-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> DATE,</span>
+<span id="cb169-5"><a href="simple-linear-regression.html#cb169-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> AVGMONTHLYKWH</span>
+<span id="cb169-6"><a href="simple-linear-regression.html#cb169-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb169-7"><a href="simple-linear-regression.html#cb169-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb169-8"><a href="simple-linear-regression.html#cb169-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb169-9"><a href="simple-linear-regression.html#cb169-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb169-10"><a href="simple-linear-regression.html#cb169-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb169-11"><a href="simple-linear-regression.html#cb169-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb169-12"><a href="simple-linear-regression.html#cb169-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Average kBTU/Customer&quot;</span>,</span>
+<span id="cb169-13"><a href="simple-linear-regression.html#cb169-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Residential Electricity Consumption in PG&amp;E Territories&quot;</span></span>
+<span id="cb169-14"><a href="simple-linear-regression.html#cb169-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-179-1.png" width="672" /></p>
+<p>Notice that there is a slight downward trend through the seasonality of the monthly data. Let’s see what <code>lm()</code> reports out:</p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="simple-linear-regression.html#cb170-1" aria-hidden="true" tabindex="-1"></a>model_pge <span class="ot">&lt;-</span> <span class="fu">lm</span>(AVGMONTHLYKWH <span class="sc">~</span> DATE, pge_avg_kwh)</span>
+<span id="cb170-2"><a href="simple-linear-regression.html#cb170-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb170-3"><a href="simple-linear-regression.html#cb170-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_pge)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = AVGMONTHLYKWH ~ DATE, data = pge_avg_kwh)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -117.17  -70.87  -13.91   62.00  177.81 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 973.44834  202.82178   4.800 7.05e-06 ***
+## DATE         -0.02599    0.01194  -2.176   0.0324 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 80.77 on 82 degrees of freedom
+## Multiple R-squared:  0.05459,    Adjusted R-squared:  0.04306 
+## F-statistic: 4.735 on 1 and 82 DF,  p-value: 0.03244</code></pre>
+<p>Notice that an increase of <code>DATE</code> by one unit appears to be associated with a reduction of <code>AVGMONTHLYKWH</code> by -0.0259851 (with a p-value in the 0.01-0.05 range). The <code>DATE</code> field, as a Date-type object, can be automatically converted to numeric values, which is reported out as days since January 1, 1970 (try this out in the Console: <code>Sys.Date() %&gt;% as.numeric()</code>). So, that’s how we know to interpret the regression coefficient as incrementing by days in the <code>x-axis</code>. If we wanted to report this out with more interpretable numbers, we could multiply both sides by 365 and say that every additional year seems to be associated with a reduction in average monthly customer electricity usage of about -9.5 kWh.</p>
+<p>We can actually plot <code>model_pge$residuals</code> as well:</p>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="simple-linear-regression.html#cb172-1" aria-hidden="true" tabindex="-1"></a>pge_avg_kwh <span class="sc">%&gt;%</span> </span>
+<span id="cb172-2"><a href="simple-linear-regression.html#cb172-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb172-3"><a href="simple-linear-regression.html#cb172-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb172-4"><a href="simple-linear-regression.html#cb172-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> DATE,</span>
+<span id="cb172-5"><a href="simple-linear-regression.html#cb172-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> model_pge<span class="sc">$</span>residuals</span>
+<span id="cb172-6"><a href="simple-linear-regression.html#cb172-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb172-7"><a href="simple-linear-regression.html#cb172-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb172-8"><a href="simple-linear-regression.html#cb172-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb172-9"><a href="simple-linear-regression.html#cb172-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">se =</span> F) <span class="sc">+</span></span>
+<span id="cb172-10"><a href="simple-linear-regression.html#cb172-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb172-11"><a href="simple-linear-regression.html#cb172-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb172-12"><a href="simple-linear-regression.html#cb172-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Average kBTU/Customer&quot;</span>,</span>
+<span id="cb172-13"><a href="simple-linear-regression.html#cb172-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Residuals from previous regression&quot;</span></span>
+<span id="cb172-14"><a href="simple-linear-regression.html#cb172-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-181-1.png" width="672" /></p>
+<p>Notice the residuals themselves have a flat horizontal line through them, since the original downward “trend” has been “accounted for”, and the residuals are all the non-trending variation that remains in the data. In a way, we’ve essentially separated out two trends in the PG&amp;E data using this side-effect of regression on seasonal data. The residuals still show seasonality based on different energy usage throughout the months. But the original regression line is the undercurrent of slow, gradual reduction in average energy usage, which could be reduced consumption behavior, or energy efficiency improvements, or both.</p>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="multiple-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "none",
+"scroll_highlight": true
+},
+"toolbar": {
+"position": "fixed"
+},
+"info": false
+});
+});
+</script>
+
+</body>
+
+</html>
