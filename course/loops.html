@@ -32,7 +32,7 @@
   
 <link rel="prev" href="reading-and-saving-files.html"/>
 <link rel="next" href="manipulating-data.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,11 +50,12 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
 <script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
@@ -82,7 +83,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -192,6 +192,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="5.1" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>5.1</b> Simple linear regression</a></li>
 <li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
+<li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
 </ul></li>
 </ul>
 
@@ -214,36 +215,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">1.6</span> Loops</h2>
 <p>Let’s consider the use of for loops, a foundational technique in programming languages, in this case for reading multiple data files. A for loop is useful when, say, loading in the multiple PG&amp;E datasets, which all have a similar naming structure except for systematic changes in a part of the file name, like Q1 to Q2 to Q3 to Q4.</p>
 <p>For loops are written with the structure <code>for(dummy_variable_name in range_of_real_objects) {code_to_execute}</code>. In the example below, I’ll use this structure to loop through <code>quarter in quarters</code>, where <code>quarters &lt;- 1:4</code>, which is just a vector of the integers 1 through 4, and <code>quarter</code> becomes a variable that holds each integer consecutively as the script within the for loop is executed 4 times. I then paste this changing variable into an otherwise fixed set of text fragments to create a string in the variable <code>filename</code> that represents the full file path to retrieve one of the PG&amp;E CSVs we’ve downloaded into the working directory (note that I put them in a sub-folder called “pge”). Then I <code>read_csv(filename)</code> in a similar way as we’ve practiced before into a variable called <code>temp</code>, for “temporary”. Lastly, I use <code>rbind()</code> to “stack like pancakes” two dataframes that share the same column names. So by the end of the for loop, four separate CSVs are read into R and then stacked together.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="loops.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb14-2"><a href="loops.html#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="loops.html#cb14-3" aria-hidden="true" tabindex="-1"></a>year <span class="ot">&lt;-</span> <span class="dv">2020</span></span>
-<span id="cb14-4"><a href="loops.html#cb14-4" aria-hidden="true" tabindex="-1"></a>quarters <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span></span>
-<span id="cb14-5"><a href="loops.html#cb14-5" aria-hidden="true" tabindex="-1"></a>type <span class="ot">&lt;-</span> <span class="st">&quot;Electric&quot;</span></span>
-<span id="cb14-6"><a href="loops.html#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="loops.html#cb14-7" aria-hidden="true" tabindex="-1"></a>pge_20_elec <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb14-8"><a href="loops.html#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="loops.html#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
-<span id="cb14-10"><a href="loops.html#cb14-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-11"><a href="loops.html#cb14-11" aria-hidden="true" tabindex="-1"></a>  filename <span class="ot">&lt;-</span> </span>
-<span id="cb14-12"><a href="loops.html#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
-<span id="cb14-13"><a href="loops.html#cb14-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;pge/PGE_&quot;</span>,</span>
-<span id="cb14-14"><a href="loops.html#cb14-14" aria-hidden="true" tabindex="-1"></a>      year,</span>
-<span id="cb14-15"><a href="loops.html#cb14-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;_Q&quot;</span>,</span>
-<span id="cb14-16"><a href="loops.html#cb14-16" aria-hidden="true" tabindex="-1"></a>      quarter,</span>
-<span id="cb14-17"><a href="loops.html#cb14-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;_&quot;</span>,</span>
-<span id="cb14-18"><a href="loops.html#cb14-18" aria-hidden="true" tabindex="-1"></a>      type,</span>
-<span id="cb14-19"><a href="loops.html#cb14-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;UsageByZip.csv&quot;</span></span>
-<span id="cb14-20"><a href="loops.html#cb14-20" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-21"><a href="loops.html#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-22"><a href="loops.html#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(filename)</span>
-<span id="cb14-23"><a href="loops.html#cb14-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-24"><a href="loops.html#cb14-24" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(filename)</span>
-<span id="cb14-25"><a href="loops.html#cb14-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-26"><a href="loops.html#cb14-26" aria-hidden="true" tabindex="-1"></a>  pge_20_elec <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pge_20_elec,temp)</span>
-<span id="cb14-27"><a href="loops.html#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Note rbind requires field names to be consistent for every new thing that you add.</span></span>
-<span id="cb14-28"><a href="loops.html#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-29"><a href="loops.html#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(pge_20_elec, <span class="st">&quot;pge_20_elec.rds&quot;</span>)</span>
-<span id="cb14-30"><a href="loops.html#cb14-30" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="loops.html#cb14-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb14-2"><a href="loops.html#cb14-2"></a></span>
+<span id="cb14-3"><a href="loops.html#cb14-3"></a>year &lt;-<span class="st"> </span><span class="dv">2020</span></span>
+<span id="cb14-4"><a href="loops.html#cb14-4"></a>quarters &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span></span>
+<span id="cb14-5"><a href="loops.html#cb14-5"></a>type &lt;-<span class="st"> &quot;Electric&quot;</span></span>
+<span id="cb14-6"><a href="loops.html#cb14-6"></a></span>
+<span id="cb14-7"><a href="loops.html#cb14-7"></a>pge_<span class="dv">20</span>_elec &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb14-8"><a href="loops.html#cb14-8"></a></span>
+<span id="cb14-9"><a href="loops.html#cb14-9"></a><span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
+<span id="cb14-10"><a href="loops.html#cb14-10"></a>  </span>
+<span id="cb14-11"><a href="loops.html#cb14-11"></a>  filename &lt;-<span class="st"> </span></span>
+<span id="cb14-12"><a href="loops.html#cb14-12"></a><span class="st">    </span><span class="kw">paste0</span>(</span>
+<span id="cb14-13"><a href="loops.html#cb14-13"></a>      <span class="st">&quot;pge/PGE_&quot;</span>,</span>
+<span id="cb14-14"><a href="loops.html#cb14-14"></a>      year,</span>
+<span id="cb14-15"><a href="loops.html#cb14-15"></a>      <span class="st">&quot;_Q&quot;</span>,</span>
+<span id="cb14-16"><a href="loops.html#cb14-16"></a>      quarter,</span>
+<span id="cb14-17"><a href="loops.html#cb14-17"></a>      <span class="st">&quot;_&quot;</span>,</span>
+<span id="cb14-18"><a href="loops.html#cb14-18"></a>      type,</span>
+<span id="cb14-19"><a href="loops.html#cb14-19"></a>      <span class="st">&quot;UsageByZip.csv&quot;</span></span>
+<span id="cb14-20"><a href="loops.html#cb14-20"></a>    )</span>
+<span id="cb14-21"><a href="loops.html#cb14-21"></a></span>
+<span id="cb14-22"><a href="loops.html#cb14-22"></a>  <span class="kw">print</span>(filename)</span>
+<span id="cb14-23"><a href="loops.html#cb14-23"></a>  </span>
+<span id="cb14-24"><a href="loops.html#cb14-24"></a>  temp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(filename)</span>
+<span id="cb14-25"><a href="loops.html#cb14-25"></a>  </span>
+<span id="cb14-26"><a href="loops.html#cb14-26"></a>  pge_<span class="dv">20</span>_elec &lt;-<span class="st"> </span><span class="kw">rbind</span>(pge_<span class="dv">20</span>_elec,temp)</span>
+<span id="cb14-27"><a href="loops.html#cb14-27"></a>  <span class="co"># Note rbind requires field names to be consistent for every new thing that you add.</span></span>
+<span id="cb14-28"><a href="loops.html#cb14-28"></a></span>
+<span id="cb14-29"><a href="loops.html#cb14-29"></a>  <span class="kw">saveRDS</span>(pge_<span class="dv">20</span>_elec, <span class="st">&quot;pge_20_elec.rds&quot;</span>)</span>
+<span id="cb14-30"><a href="loops.html#cb14-30"></a>}</span></code></pre></div>
 <p>Additional notes:</p>
 <ul>
 <li>When running a for loop in RStudio, just place your cursor on the line with the <code>for</code> and <code>Ctrl+Enter</code>, which will then run through the entire loop. Starting inside the for loop will only run individual lines. To troubleshoot inside of a for loop, you can always manually set a value for <code>quarter</code>, like <code>quarter &lt;- 1</code>, then start running individual lines within the for loop. Note that before doing this, <code>quarter</code> existed only within the for loop operation and not as a variable in your Environment.</li>

@@ -32,7 +32,7 @@
   
 <link rel="prev" href="rstudio-interface.html"/>
 <link rel="next" href="github.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,11 +50,12 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
 <script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
@@ -82,7 +83,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -192,6 +192,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="5.1" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>5.1</b> Simple linear regression</a></li>
 <li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
+<li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
 </ul></li>
 </ul>
 
@@ -220,17 +221,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>You should specify your date based on when you last edited this code. As an advanced technique, you can type the following inside of the quotation marks: <code>`r format(Sys.Date(), '%B %d, %Y')`</code>. This will automatically update the date based on when you “knit”. There are three important concepts here. First, if you are not inside of a “chunk”, which we’ll get to soon, then generally you can’t execute code. But if you do a pair of backticks, and include “r” right after the first backtick, then it’s like you’ve created a “mini chunk” that lets you run one line of code (as if you were typing it directly into the Console). So what you’ve put right into the YAML is the text output of the following code: <code>format(Sys.Date(), '%B %d, %Y')</code>, which you are free to try typing directly into the Console. Now this code itself is a function within a function. <code>Sys.Date()</code> is a standard function in base R (which means you have access to it anytime) which does exactly what you think it does; try it directly in the Console on its own. Nothing is required between the parentheses for certain self-evident functions like this. Finally, <code>format()</code> can do a lot of generally useful formatting things depending on what you feed in as parameters (it’ll do nothing on its own). When <code>format()</code> is given a Date object, which is what <code>Sys.Date()</code> produces, as its first parameter, followed by a string in which you specify how you’d like to format the date, then it can convert something like “2020-09-14” into “September 14, 2020”. The exact schema itself is something you have to find guidance on; try Googling “r date format” and typing <code>?format</code> in the Console.</li>
 </ul>
 <p>Now we’ll explain chunks which are a special formatting in .Rmd files to contain code you want to execute. Below I’m copying the first chunk you get in the template. A chunk is created by a pair of three backticks, and a bracketed set of parameters right after the first pair. Note that you can quickly create a chunk using <code>Ctrl+Alt+I</code>, one of the most common shortcuts I use.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="r-markdown-files.html#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="r-markdown-files.html#cb1-1"></a>knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p>Note that on this web page, you don’t see the pair of three backticks, but if you were to view the .Rmd file that created this webpage, you’d see the backticks and bracketed parameters. So one of the nice features of an .Rmd file is that you can publish documents with chunks nicely rendered to display code, and if there are outputs to the code (which these don’t have), you can easily choose to display them right below the chunk.</p>
 <p>I’ll now show a second chunk that has the same effect but a different formatting choice:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="r-markdown-files.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb2-2"><a href="r-markdown-files.html#cb2-2" aria-hidden="true" tabindex="-1"></a>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> T)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="r-markdown-files.html#cb2-1"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb2-2"><a href="r-markdown-files.html#cb2-2"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> T)</span></code></pre></div>
 <p>The first chunk has one line of code while the second has 2 lines. The first example is basically a shortcut of the second which is the more general approach. <code>knitr</code> is what’s called a “package”, and packages contain functions; in this case, <code>opts_chunk()</code> is a function of <code>knitr</code> (note that this function has sub-functions via a $ sign which is rare). If you have used <code>library()</code> to load a package, then you don’t need to put <code>knitr::</code> before the function call (the only situation in which this might be needed is if two loaded packages both have a function of the same name, in which case you need to specify which one you’re using; sometimes I need to do this for <code>dplyr::select()</code>). Generally, you’ll load a bunch of functions with <code>library()</code> calls in your first chunk, which I’ll demonstrate soon.</p>
 <p>In this case, <code>opts_chunk$set()</code> does something generally important for .Rmd files and relates to “knitting”. Its functionality is also something built into the structure of .Rmd files. I’ll now show the same chunk above, but with the full formatting that you would see in the .Rmd file:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="r-markdown-files.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb3-2"><a href="r-markdown-files.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="in">library(knitr)</span></span>
-<span id="cb3-3"><a href="r-markdown-files.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="in">opts_chunk$set(echo = T)</span></span>
-<span id="cb3-4"><a href="r-markdown-files.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="r-markdown-files.html#cb3-1"></a><span class="bn">```{r}</span></span>
+<span id="cb3-2"><a href="r-markdown-files.html#cb3-2"></a><span class="bn">library(knitr)</span></span>
+<span id="cb3-3"><a href="r-markdown-files.html#cb3-3"></a><span class="bn">opts_chunk$set(echo = T)</span></span>
+<span id="cb3-4"><a href="r-markdown-files.html#cb3-4"></a><span class="bn">```</span></span></code></pre></div>
 <p>I have to do some extra-special formatting of my own .Rmd file to get the pairs of triple backticks to show on this page, because the whole point of .Rmd files is that it converts that kind of information into backend information to then render web content. But it’s important to show you what the .Rmd formatting looks like.</p>
 <p>For a chunk to be a chunk, you need the pairs of triple backticks and you need the bracket with an “r”. But you can add some parameters right after the “r” which affect that specific chunk. And these include the parameters you can feed into <code>opts_chunk$set()</code>; for example, you could add <code>, echo = T</code> after the “r” in the chunk above. The difference is that putting these parameters in the brackets affects only the one chunk, while <code>opts_chunk$set()</code> sets defaults for all subsequent chunks. Here are the most common parameters you would likely want to set:</p>
 <ul>
@@ -240,19 +241,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>eval = F</code> prevents the code from being evaluated, but the code is still visible on the web page. Sometimes you’ll have some chunk that takes hours to run, and you don’t want to have to run it again when you knit, so you’ll end up saving the output of that long process as a file in your working directory and following up the first chunk with a second smaller chunk that just loads the completed file into your Environment. In this case, you might decide to show the first chunk on a web page but set it as <code>eval=F</code>, then hide the second chunk with <code>include = F</code>, but it is the one that actually retrieves the relevant output to continue using in the rest of your script.</li>
 </ul>
 <p>As you can see, most of these details basically have to do with how the resultant web page looks, and don’t have much to do with the code itself, but it’s useful to understand these parameters now and get into the practice of having something like the following always as your first chunk (feel free to copy and paste this into your own .Rmd file):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="r-markdown-files.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include = F}</span></span>
-<span id="cb4-2"><a href="r-markdown-files.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = F, message = F)</span></span>
-<span id="cb4-3"><a href="r-markdown-files.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="r-markdown-files.html#cb4-1"></a><span class="bn">```{r setup, include = F}</span></span>
+<span id="cb4-2"><a href="r-markdown-files.html#cb4-2"></a><span class="bn">knitr::opts_chunk$set(warning = F, message = F)</span></span>
+<span id="cb4-3"><a href="r-markdown-files.html#cb4-3"></a><span class="bn">```</span></span></code></pre></div>
 <p>Note that the chunk itself won’t display in a web page because of <code>include = F</code>, but it will evaluate, and it specifically sets <code>warning = F</code> and <code>message = F</code> to apply to all future chunks. You can still apply other parameters individually to subsequent chunks as desired. Note also that I went back to using <code>knitr::</code> since there’s basically no other need for <code>knitr</code> package functions in most cases. Lastly, note the label <code>setup</code> written after <code>r</code> but before a comma. The word you put right after <code>r</code> basically just names the chunk. This basically helps with quick navigation using a small drop-down menu you can find on the bottom of the Source window. There’s also value in doing this if you want to add automatically numbered captions to your plots, which won’t be taught in this curriculum. Otherwise I usually don’t name my chunks because I find it easier and more user-friendly to organize my document using hashtag headers in the non-chunk areas, as you can see done in your template. <code>Ctrl+Shift+O</code> opens a Google Doc style outline on the right side of the Source window which is useful for navigating your document.</p>
 <p>After that first setup chunk, next you would usually have a “loading libraries” chunk. Mine typically looks something like this (note I am no longer forcing the triple backticks portion to show, so you’ll just see the code within the chunk):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="r-markdown-files.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb5-2"><a href="r-markdown-files.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
-<span id="cb5-3"><a href="r-markdown-files.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb5-4"><a href="r-markdown-files.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tigris)</span>
-<span id="cb5-5"><a href="r-markdown-files.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
-<span id="cb5-6"><a href="r-markdown-files.html#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(censusapi)</span>
-<span id="cb5-7"><a href="r-markdown-files.html#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="r-markdown-files.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="r-markdown-files.html#cb5-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb5-2"><a href="r-markdown-files.html#cb5-2"></a><span class="kw">library</span>(plotly)</span>
+<span id="cb5-3"><a href="r-markdown-files.html#cb5-3"></a><span class="kw">library</span>(sf)</span>
+<span id="cb5-4"><a href="r-markdown-files.html#cb5-4"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb5-5"><a href="r-markdown-files.html#cb5-5"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb5-6"><a href="r-markdown-files.html#cb5-6"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb5-7"><a href="r-markdown-files.html#cb5-7"></a></span>
+<span id="cb5-8"><a href="r-markdown-files.html#cb5-8"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
 <p>All the <code>library()</code> calls are loading packages that you know you need to run the code in the rest of the script. Generally you’ll have some idea of the essential ones you always use, but as you are working on a novel problem, you may discover a new special package you want to use, and you’d scroll up and add it to this chunk. The list above happens to be the “essential” packages I’ll cover later in this chapter.</p>
 <p>You have to install packages before you can <code>library()</code> load them, and generally you just install once and you’re good to go. Packages can be installed (and updated) using the toolbar options (<code>Tools &gt; Install Packages</code>), or by typing <code>install.packages("name_of_package")</code> in the console.</p>
 <p>Usually after the <code>library()</code> calls, you would set other kinds of environmental "settings’’ that are relevant to specific code you’ll use later on; setting them here merely provides the benefit of having all these settings in one place, but they could go anywhere as long as they are executed before the relevant code they affect. Here I am calling <code>Sys.setenv()</code> which relates to the <code>censusapi</code> package, which I’ll explain in the next chapter. Other common settings you might put in this chunk:</p>
