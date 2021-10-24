@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5.4 Survey regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="5.4 Survey regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5.4 Survey regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5.4 Survey regression | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  
+  
+  
+
+<meta name="author" content="Stanford Future Bay Initiative" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="autocorrelation.html"/>
+
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.4.1/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.4.1/leaflet-providers-plugin.js"></script>
+<link href="libs/HomeButton-0.0.1/home-button.css" rel="stylesheet" />
+<script src="libs/HomeButton-0.0.1/home-button.js"></script>
+<script src="libs/HomeButton-0.0.1/easy-button-src.min.js"></script>
+<script src="libs/clipboard-0.0.1/setClipboardText.js"></script>
+<link href="libs/mapviewCSS-0.0.1/mapview-popup.css" rel="stylesheet" />
+<link href="libs/mapviewCSS-0.0.1/mapview.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>2.1</b> Geospatial data</a></li>
+<li class="chapter" data-level="2.2" data-path="acs-data.html"><a href="acs-data.html"><i class="fa fa-check"></i><b>2.2</b> ACS data</a></li>
+<li class="chapter" data-level="2.3" data-path="decennial-data.html"><a href="decennial-data.html"><i class="fa fa-check"></i><b>2.3</b> Decennial Data</a></li>
+<li class="chapter" data-level="2.4" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.4</b> Spatial subsets</a></li>
+<li class="chapter" data-level="2.5" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.5</b> Migration</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="surveys.html"><a href="surveys.html"><i class="fa fa-check"></i><b>3</b> Surveys</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>3.1</b> Microdata</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>4</b> Distributions</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>4.1</b> Equity analysis</a></li>
+<li class="chapter" data-level="4.2" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>4.2</b> Probability distributions</a></li>
+<li class="chapter" data-level="4.3" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo simulations</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression.html"><a href="regression.html"><i class="fa fa-check"></i><b>5</b> Regression</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>5.1</b> Simple linear regression</a></li>
+<li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
+<li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
+<li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="survey-regression" class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> Survey regression</h2>
+<p>Besides autocorrelation, another problem with the regression we’ve been performing so far is <a href="https://en.wikipedia.org/wiki/Ecological_fallacy">ecological inference</a>, where the aggregation of measures at the census tract level could be masking the underlying relationships at the individual level. For example, it’s possible that a positive relationship between education and income at the census tract level is masking an even stronger positive relationship at the individual level, or a less positive or even negative relationship. To explore such individual relationships, we can switch to running a previous linear regression (income vs. other factors) with PUMS data, as we first encountered in Chapter 3.1. The analysis has some structural differences because now we are working with individual-level data. The <code>y</code> values will be the exact income reported by our sample of PUMS individuals on the ACS questionnaire. As for the <code>x</code> value, we will no longer be working with a variable like “% with college or higher” for all households in a Census tract; instead, we will have a categorical “yes” or “no” for whether the individual has college or higher. The previous scatter plots had continuous variables for both the <code>x</code> and <code>y</code> axis, but generally, you can code binary categories as <code>0</code> or <code>1</code>, which won’t make much sense when viewed as a scatter plot, but can still be interpreted via <code>lm()</code>.</p>
+<p>Similar to in Chapter 3.1, let’s use <code>censusapi</code> to load the PUMS data, picking specific variables for our purposes. Using the <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2019.txt">official codebook</a>, we can grab a variety of variables we may find useful in our analysis:</p>
+<ul>
+<li><code>SERIALNO</code>, <code>SPORDER</code>, <code>PWGTP</code>, and <code>WGTP</code>, as we have seen before, are foundational variables that help us understand the relationship between individuals in a household, and apply potential weights to scale the survey sample to the population (though as we’ll see in this chapter, they aren’t what we need for regression analysis). I would generally recommend you always load these when doing PUMS analysis, just to have handy.</li>
+<li><code>AGEP</code> to consider age, as appropriate.</li>
+<li><code>SCHL</code> holds educational attainment; specifically, we can take coded values 18 or greater to represent college or higher.</li>
+<li><code>PINCP</code> is personal income, in contrast to <code>HINCP</code> which we used before for household income.</li>
+<li><code>RAC1P</code> will provide the race of each individual, which we’ll use in an upcoming example. Note that if you were separately interested in the race provided in ACS datasets for “households”, that is based on the race of the “head of household”, who would be the individual with <code>SPORDER == 1</code> within the household (i.e., unique <code>SERIALNO</code>).</li>
+<li><code>HISP</code> provides detailed Hispanic origin, and <code>LANX</code> lets us know whether a language other than English is spoken at home. We’ll use these for a later example.</li>
+</ul>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="survey-regression.html#cb225-1"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb225-2"><a href="survey-regression.html#cb225-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb225-3"><a href="survey-regression.html#cb225-3"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb225-4"><a href="survey-regression.html#cb225-4"></a><span class="kw">library</span>(sf)</span>
+<span id="cb225-5"><a href="survey-regression.html#cb225-5"></a><span class="kw">library</span>(leaflet)</span>
+<span id="cb225-6"><a href="survey-regression.html#cb225-6"></a></span>
+<span id="cb225-7"><a href="survey-regression.html#cb225-7"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="survey-regression.html#cb226-1"></a>pums_<span class="dv">2019</span>_1yr &lt;-<span class="st"> </span><span class="kw">getCensus</span>(</span>
+<span id="cb226-2"><a href="survey-regression.html#cb226-2"></a>  <span class="dt">name =</span> <span class="st">&quot;acs/acs1/pums&quot;</span>,</span>
+<span id="cb226-3"><a href="survey-regression.html#cb226-3"></a>  <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
+<span id="cb226-4"><a href="survey-regression.html#cb226-4"></a>  <span class="dt">region =</span> <span class="st">&quot;public use microdata area:*&quot;</span>, </span>
+<span id="cb226-5"><a href="survey-regression.html#cb226-5"></a>  <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
+<span id="cb226-6"><a href="survey-regression.html#cb226-6"></a>  <span class="dt">vars =</span> <span class="kw">c</span>(</span>
+<span id="cb226-7"><a href="survey-regression.html#cb226-7"></a>    <span class="st">&quot;SERIALNO&quot;</span>,</span>
+<span id="cb226-8"><a href="survey-regression.html#cb226-8"></a>    <span class="st">&quot;SPORDER&quot;</span>,</span>
+<span id="cb226-9"><a href="survey-regression.html#cb226-9"></a>    <span class="st">&quot;PWGTP&quot;</span>,</span>
+<span id="cb226-10"><a href="survey-regression.html#cb226-10"></a>    <span class="st">&quot;WGTP&quot;</span>,</span>
+<span id="cb226-11"><a href="survey-regression.html#cb226-11"></a>    <span class="st">&quot;AGEP&quot;</span>,</span>
+<span id="cb226-12"><a href="survey-regression.html#cb226-12"></a>    <span class="st">&quot;SCHL&quot;</span>,</span>
+<span id="cb226-13"><a href="survey-regression.html#cb226-13"></a>    <span class="st">&quot;PINCP&quot;</span>,</span>
+<span id="cb226-14"><a href="survey-regression.html#cb226-14"></a>    <span class="st">&quot;RAC1P&quot;</span>,</span>
+<span id="cb226-15"><a href="survey-regression.html#cb226-15"></a>    <span class="st">&quot;HISP&quot;</span>,</span>
+<span id="cb226-16"><a href="survey-regression.html#cb226-16"></a>    <span class="st">&quot;LANX&quot;</span></span>
+<span id="cb226-17"><a href="survey-regression.html#cb226-17"></a>  )</span>
+<span id="cb226-18"><a href="survey-regression.html#cb226-18"></a>)</span></code></pre></div>
+<p>We’ll also be able to use the technique from Chapter 3.1 to filter down to just Bay Area PUMAs.</p>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="survey-regression.html#cb227-1"></a>ca_pumas &lt;-</span>
+<span id="cb227-2"><a href="survey-regression.html#cb227-2"></a><span class="st">  </span><span class="kw">pumas</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">cb =</span> T, <span class="dt">progress_bar =</span> F)</span>
+<span id="cb227-3"><a href="survey-regression.html#cb227-3"></a></span>
+<span id="cb227-4"><a href="survey-regression.html#cb227-4"></a>bay_county_names &lt;-</span>
+<span id="cb227-5"><a href="survey-regression.html#cb227-5"></a><span class="st">  </span><span class="kw">c</span>(</span>
+<span id="cb227-6"><a href="survey-regression.html#cb227-6"></a>    <span class="st">&quot;Alameda&quot;</span>,</span>
+<span id="cb227-7"><a href="survey-regression.html#cb227-7"></a>    <span class="st">&quot;Contra Costa&quot;</span>,</span>
+<span id="cb227-8"><a href="survey-regression.html#cb227-8"></a>    <span class="st">&quot;Marin&quot;</span>,</span>
+<span id="cb227-9"><a href="survey-regression.html#cb227-9"></a>    <span class="st">&quot;Napa&quot;</span>,</span>
+<span id="cb227-10"><a href="survey-regression.html#cb227-10"></a>    <span class="st">&quot;San Francisco&quot;</span>,</span>
+<span id="cb227-11"><a href="survey-regression.html#cb227-11"></a>    <span class="st">&quot;San Mateo&quot;</span>,</span>
+<span id="cb227-12"><a href="survey-regression.html#cb227-12"></a>    <span class="st">&quot;Santa Clara&quot;</span>,</span>
+<span id="cb227-13"><a href="survey-regression.html#cb227-13"></a>    <span class="st">&quot;Solano&quot;</span>,</span>
+<span id="cb227-14"><a href="survey-regression.html#cb227-14"></a>    <span class="st">&quot;Sonoma&quot;</span></span>
+<span id="cb227-15"><a href="survey-regression.html#cb227-15"></a>  )</span>
+<span id="cb227-16"><a href="survey-regression.html#cb227-16"></a></span>
+<span id="cb227-17"><a href="survey-regression.html#cb227-17"></a>bay_counties &lt;-</span>
+<span id="cb227-18"><a href="survey-regression.html#cb227-18"></a><span class="st">  </span><span class="kw">counties</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">cb =</span> T, <span class="dt">progress_bar =</span> F) <span class="op">%&gt;%</span></span>
+<span id="cb227-19"><a href="survey-regression.html#cb227-19"></a><span class="st">  </span><span class="kw">filter</span>(NAME <span class="op">%in%</span><span class="st"> </span>bay_county_names)</span>
+<span id="cb227-20"><a href="survey-regression.html#cb227-20"></a></span>
+<span id="cb227-21"><a href="survey-regression.html#cb227-21"></a>bay_pumas &lt;-</span>
+<span id="cb227-22"><a href="survey-regression.html#cb227-22"></a><span class="st">  </span>ca_pumas <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-23"><a href="survey-regression.html#cb227-23"></a><span class="st">  </span><span class="kw">st_centroid</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-24"><a href="survey-regression.html#cb227-24"></a><span class="st">  </span>.[bay_counties, ] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-25"><a href="survey-regression.html#cb227-25"></a><span class="st">  </span><span class="kw">st_drop_geometry</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-26"><a href="survey-regression.html#cb227-26"></a><span class="st">  </span><span class="kw">left_join</span>(ca_pumas <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(GEOID10)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-27"><a href="survey-regression.html#cb227-27"></a><span class="st">  </span><span class="kw">st_as_sf</span>()</span>
+<span id="cb227-28"><a href="survey-regression.html#cb227-28"></a></span>
+<span id="cb227-29"><a href="survey-regression.html#cb227-29"></a>bay_pums &lt;-</span>
+<span id="cb227-30"><a href="survey-regression.html#cb227-30"></a><span class="st">  </span>pums_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-31"><a href="survey-regression.html#cb227-31"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb227-32"><a href="survey-regression.html#cb227-32"></a>    <span class="dt">PUMA =</span> <span class="kw">str_pad</span>(public_use_microdata_area,<span class="dv">5</span>,<span class="st">&quot;left&quot;</span>,<span class="st">&quot;0&quot;</span>)</span>
+<span id="cb227-33"><a href="survey-regression.html#cb227-33"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb227-34"><a href="survey-regression.html#cb227-34"></a><span class="st">  </span><span class="kw">filter</span>(PUMA <span class="op">%in%</span><span class="st"> </span>bay_pumas<span class="op">$</span>PUMACE10)</span></code></pre></div>
+<p>Now, we can clean and “recode” our variables. Recall that some variables we want to understand as numbers may currently be characters. We also can convert the multiple categories of <code>SCHL</code> into a binary “0” for less than college, and “1” for college or more. We’ll also filter to the population 25 and older, and restrict our analysis to positive incomes.</p>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="survey-regression.html#cb228-1"></a>bay_pums_regression &lt;-<span class="st"> </span>bay_pums <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb228-2"><a href="survey-regression.html#cb228-2"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb228-3"><a href="survey-regression.html#cb228-3"></a>    <span class="dt">college =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb228-4"><a href="survey-regression.html#cb228-4"></a>      <span class="kw">as.numeric</span>(SCHL) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">18</span>,</span>
+<span id="cb228-5"><a href="survey-regression.html#cb228-5"></a>      <span class="dv">1</span>,</span>
+<span id="cb228-6"><a href="survey-regression.html#cb228-6"></a>      <span class="dv">0</span></span>
+<span id="cb228-7"><a href="survey-regression.html#cb228-7"></a>    ),</span>
+<span id="cb228-8"><a href="survey-regression.html#cb228-8"></a>    <span class="dt">income =</span> <span class="kw">as.numeric</span>(PINCP)</span>
+<span id="cb228-9"><a href="survey-regression.html#cb228-9"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb228-10"><a href="survey-regression.html#cb228-10"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb228-11"><a href="survey-regression.html#cb228-11"></a>    <span class="kw">as.numeric</span>(AGEP) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">25</span>,</span>
+<span id="cb228-12"><a href="survey-regression.html#cb228-12"></a>    income <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span></span>
+<span id="cb228-13"><a href="survey-regression.html#cb228-13"></a>  )</span></code></pre></div>
+<p>There are a variety of insights to gain by exploring what regression results for this dataset. Let’s first see what happens if we plot the binary variable <code>college</code> on the x-axis, and the continuous variable <code>income</code> on the y-axis:</p>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="survey-regression.html#cb229-1"></a>bay_pums_regression <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb229-2"><a href="survey-regression.html#cb229-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
+<span id="cb229-3"><a href="survey-regression.html#cb229-3"></a>    <span class="kw">aes</span>(</span>
+<span id="cb229-4"><a href="survey-regression.html#cb229-4"></a>      <span class="dt">x =</span> college,</span>
+<span id="cb229-5"><a href="survey-regression.html#cb229-5"></a>      <span class="dt">y =</span> income</span>
+<span id="cb229-6"><a href="survey-regression.html#cb229-6"></a>    )</span>
+<span id="cb229-7"><a href="survey-regression.html#cb229-7"></a>  ) <span class="op">+</span></span>
+<span id="cb229-8"><a href="survey-regression.html#cb229-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb229-9"><a href="survey-regression.html#cb229-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-233-1.png" width="672" /></p>
+<p>The points are too smashed together given the <code>y-axis</code> spread for us to see where the center of gravity (mean) of each vertical distribution of data is, but the blue line points out the two locations. You might recognize that the essence of this analysis is a comparison of the average income for those without college (<code>college = 0</code>) vs. those with college (<code>college = 1</code>), and the regression line simply connects the dots between these two averages to minimize the sum square of residuals. Let’s see what <code>lm()</code> gets us:</p>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="survey-regression.html#cb230-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(income <span class="op">~</span><span class="st"> </span>college, bay_pums_regression)</span>
+<span id="cb230-2"><a href="survey-regression.html#cb230-2"></a></span>
+<span id="cb230-3"><a href="survey-regression.html#cb230-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = income ~ college, data = bay_pums_regression)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -105797  -61801  -24005   19286 1221199 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    39005       1016   38.40   &lt;2e-16 ***
+## college        66796       1148   58.21   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 107900 on 52080 degrees of freedom
+## Multiple R-squared:  0.06108,    Adjusted R-squared:  0.06106 
+## F-statistic:  3388 on 1 and 52080 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The regression coefficient is 66796, which is the slope of the blue line (rise of 66796, run of 1), or the difference in dollars between the two averages. We would have gotten the same result using <code>group_by()</code> and <code>summarize()</code> and plotting two bars on a bar chart.</p>
+<p>The bar chart comparison is also instructive as we reconsider the <code>college</code> variable and, instead of converting it into a binary, keep all the original 24 attainment categories, from “No schooling completed” to “Doctorate degree”. We’ll treat the <code>SCHL</code> variable not as a numeric field but a factor, and make sure that the factor’s <code>levels</code> are numerically ordered (using <code>sort()</code>).</p>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="survey-regression.html#cb232-1"></a>bay_pums_education &lt;-<span class="st"> </span>bay_pums <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb232-2"><a href="survey-regression.html#cb232-2"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb232-3"><a href="survey-regression.html#cb232-3"></a>    <span class="dt">education =</span> SCHL <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb232-4"><a href="survey-regression.html#cb232-4"></a><span class="st">      </span><span class="kw">factor</span>(</span>
+<span id="cb232-5"><a href="survey-regression.html#cb232-5"></a>        <span class="dt">levels =</span> bay_pums<span class="op">$</span>SCHL <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb232-6"><a href="survey-regression.html#cb232-6"></a><span class="st">          </span><span class="kw">unique</span>() <span class="op">%&gt;%</span></span>
+<span id="cb232-7"><a href="survey-regression.html#cb232-7"></a><span class="st">          </span><span class="kw">as.numeric</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb232-8"><a href="survey-regression.html#cb232-8"></a><span class="st">          </span><span class="kw">sort</span>()</span>
+<span id="cb232-9"><a href="survey-regression.html#cb232-9"></a>      ),</span>
+<span id="cb232-10"><a href="survey-regression.html#cb232-10"></a>    <span class="dt">income =</span> <span class="kw">as.numeric</span>(PINCP)</span>
+<span id="cb232-11"><a href="survey-regression.html#cb232-11"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb232-12"><a href="survey-regression.html#cb232-12"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb232-13"><a href="survey-regression.html#cb232-13"></a>    <span class="kw">as.numeric</span>(AGEP) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">25</span>,</span>
+<span id="cb232-14"><a href="survey-regression.html#cb232-14"></a>    income <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span></span>
+<span id="cb232-15"><a href="survey-regression.html#cb232-15"></a>  )</span></code></pre></div>
+<p>Now let’s plot the average income of these 24 cohorts on a bar chart:</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="survey-regression.html#cb233-1"></a>bay_pums_education <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb233-2"><a href="survey-regression.html#cb233-2"></a><span class="st">  </span><span class="kw">group_by</span>(education) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb233-3"><a href="survey-regression.html#cb233-3"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
+<span id="cb233-4"><a href="survey-regression.html#cb233-4"></a>    <span class="dt">income =</span> <span class="kw">mean</span>(income, <span class="dt">na.rm =</span> T)</span>
+<span id="cb233-5"><a href="survey-regression.html#cb233-5"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb233-6"><a href="survey-regression.html#cb233-6"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
+<span id="cb233-7"><a href="survey-regression.html#cb233-7"></a>    <span class="kw">aes</span>(</span>
+<span id="cb233-8"><a href="survey-regression.html#cb233-8"></a>      <span class="dt">x =</span> education,</span>
+<span id="cb233-9"><a href="survey-regression.html#cb233-9"></a>      <span class="dt">y =</span> income</span>
+<span id="cb233-10"><a href="survey-regression.html#cb233-10"></a>    )</span>
+<span id="cb233-11"><a href="survey-regression.html#cb233-11"></a>  ) <span class="op">+</span></span>
+<span id="cb233-12"><a href="survey-regression.html#cb233-12"></a><span class="st">  </span><span class="kw">geom_bar</span>(</span>
+<span id="cb233-13"><a href="survey-regression.html#cb233-13"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span></span>
+<span id="cb233-14"><a href="survey-regression.html#cb233-14"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-236-1.png" width="672" /></p>
+<p>As expected, the higher the educational attainment, the higher the income. And let’s compare this with <code>lm()</code>:</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="survey-regression.html#cb234-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(income <span class="op">~</span><span class="st"> </span>education, bay_pums_education)</span>
+<span id="cb234-2"><a href="survey-regression.html#cb234-2"></a></span>
+<span id="cb234-3"><a href="survey-regression.html#cb234-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = income ~ education, data = bay_pums_education)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -178153  -49416  -18421   18248 1188579 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  25476.7     3156.6   8.071 7.12e-16 ***
+## education2   13693.3    23249.5   0.589   0.5559    
+## education3     311.3    26784.3   0.012   0.9907    
+## education4   -4869.6    22699.6  -0.215   0.8301    
+## education5   -8232.6    15847.2  -0.519   0.6034    
+## education6    2111.3    10402.8   0.203   0.8392    
+## education7   -4631.5    11674.4  -0.397   0.6916    
+## education8   -1269.7     9994.6  -0.127   0.8989    
+## education9    3522.5     5961.0   0.591   0.5546    
+## education10   3949.8    10725.1   0.368   0.7127    
+## education11   4079.4     7060.9   0.578   0.5634    
+## education12   5534.1     6102.7   0.907   0.3645    
+## education13   2575.6     6664.6   0.386   0.6992    
+## education14  10003.8     6438.3   1.554   0.1202    
+## education15   8315.8     4578.2   1.816   0.0693 .  
+## education16  19297.6     3416.8   5.648 1.63e-08 ***
+## education17  19621.3     4784.2   4.101 4.12e-05 ***
+## education18  30456.7     3747.9   8.126 4.52e-16 ***
+## education19  37275.5     3422.8  10.890  &lt; 2e-16 ***
+## education20  38718.4     3577.1  10.824  &lt; 2e-16 ***
+## education21  78911.1     3262.7  24.186  &lt; 2e-16 ***
+## education22 112944.2     3348.2  33.733  &lt; 2e-16 ***
+## education23 152726.3     3855.5  39.612  &lt; 2e-16 ***
+## education24 142612.5     3860.3  36.944  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 103000 on 52058 degrees of freedom
+## Multiple R-squared:  0.1442, Adjusted R-squared:  0.1438 
+## F-statistic: 381.4 on 23 and 52058 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Notice how the “y-intercept” is actually just the height of the first bar from the bar chart, and all the other “slopes” are equivalent to the relative difference in height of that bar (<code>education2</code>, <code>education3</code>, etc., as automatically named by <code>lm()</code>) to the first bar. So, you can think of categorical predictors in a regression model as operating similar to the comparison of averages in the bar chart with each other. This regression analysis would seem to be not much more useful than a bar chart, but notice that the standard errors and “p-value” reported point out that the difference between each category vs. the first category does not become “statistically significant” until <code>education16</code>, or a “Regular high school diploma”, in part because of the sample sizes in the survey, and in part because of the actual underlying results. This would not have been as apparent through just a bar chart. Also, <code>lm()</code> allows you to represent categorical predictors in this way, and combine one dimension like education with many others in a larger multiple regression, which we’ll do next by incorporating race.</p>
+<p>For simplicity, we’ll now represent education in the original two categories, and race as four: White, Black, Asian, and Other.</p>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="survey-regression.html#cb236-1"></a>bay_pums_multiple &lt;-<span class="st"> </span>bay_pums <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb236-2"><a href="survey-regression.html#cb236-2"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb236-3"><a href="survey-regression.html#cb236-3"></a>    <span class="dt">college =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb236-4"><a href="survey-regression.html#cb236-4"></a>      <span class="kw">as.numeric</span>(SCHL) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">18</span>,</span>
+<span id="cb236-5"><a href="survey-regression.html#cb236-5"></a>      <span class="st">&quot;yes&quot;</span>,</span>
+<span id="cb236-6"><a href="survey-regression.html#cb236-6"></a>      <span class="st">&quot;no&quot;</span></span>
+<span id="cb236-7"><a href="survey-regression.html#cb236-7"></a>    ),</span>
+<span id="cb236-8"><a href="survey-regression.html#cb236-8"></a>    <span class="dt">race =</span> <span class="kw">case_when</span>(</span>
+<span id="cb236-9"><a href="survey-regression.html#cb236-9"></a>      RAC1P <span class="op">==</span><span class="st"> &quot;1&quot;</span> <span class="op">~</span><span class="st"> &quot;white&quot;</span>,</span>
+<span id="cb236-10"><a href="survey-regression.html#cb236-10"></a>      RAC1P <span class="op">==</span><span class="st"> &quot;2&quot;</span> <span class="op">~</span><span class="st"> &quot;black&quot;</span>,</span>
+<span id="cb236-11"><a href="survey-regression.html#cb236-11"></a>      RAC1P <span class="op">==</span><span class="st"> &quot;6&quot;</span> <span class="op">~</span><span class="st"> &quot;asian&quot;</span>,</span>
+<span id="cb236-12"><a href="survey-regression.html#cb236-12"></a>      <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;other&quot;</span></span>
+<span id="cb236-13"><a href="survey-regression.html#cb236-13"></a>    ),</span>
+<span id="cb236-14"><a href="survey-regression.html#cb236-14"></a>    <span class="dt">income =</span> <span class="kw">as.numeric</span>(PINCP)</span>
+<span id="cb236-15"><a href="survey-regression.html#cb236-15"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb236-16"><a href="survey-regression.html#cb236-16"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb236-17"><a href="survey-regression.html#cb236-17"></a>    <span class="kw">as.numeric</span>(AGEP) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">25</span>,</span>
+<span id="cb236-18"><a href="survey-regression.html#cb236-18"></a>    income <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span></span>
+<span id="cb236-19"><a href="survey-regression.html#cb236-19"></a>  )</span>
+<span id="cb236-20"><a href="survey-regression.html#cb236-20"></a>  </span>
+<span id="cb236-21"><a href="survey-regression.html#cb236-21"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(income <span class="op">~</span><span class="st"> </span>college <span class="op">+</span><span class="st"> </span>race, bay_pums_multiple)</span>
+<span id="cb236-22"><a href="survey-regression.html#cb236-22"></a></span>
+<span id="cb236-23"><a href="survey-regression.html#cb236-23"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = income ~ college + race, data = bay_pums_multiple)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -111129  -61133  -23208   20469 1215867 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    41506       1284  32.323  &lt; 2e-16 ***
+## collegeyes     63025       1164  54.158  &lt; 2e-16 ***
+## raceblack     -32292       2370 -13.624  &lt; 2e-16 ***
+## raceother     -17283       1730  -9.992  &lt; 2e-16 ***
+## racewhite       6602       1079   6.117 9.61e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 107400 on 52077 degrees of freedom
+## Multiple R-squared:  0.0692, Adjusted R-squared:  0.06913 
+## F-statistic: 967.9 on 4 and 52077 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>First, notice that we are given the rows <code>collegeyes</code>, <code>raceblack</code>, <code>raceother</code>, and <code>racewhite</code>. Treating these categories alphabetically, it has taken <code>collegeno</code> and <code>raceasian</code> to be the “baselines” by which the other categories are compared. Next, notice that the regression coefficient for <code>collegeyes</code> has changed from the earlier 66796 to 63025, which, similar to our previous experience, reflects our “controlling” for the explanatory power of race. Next, notice that the regression coefficients for the three listed race categories can be interpreted as differences in average income relative to Asian individuals, while controlling for college attainment. Finally, notice that while each of these associations appears statistically significant, overall, these variables only explain about 7% of the variation in individual income. In other words, individual incomes vary a lot, and while education and race have something to do with it, they wouldn’t help you much in making a precise prediction.</p>
+<p>Let’s now briefly consider a different kind of y-axis variable. So far, while we’ve explored binary options in our independent variables of regression, such as White vs. non-White for individuals, we have not considered how to construct a regression analysis if the outcome (dependent) variable is a binary outcome, like an individual going to college or not. In this case, we can frame that binary outcome as a percent likelihood (between 0 and 1) of the outcome happening; that essentially turns our binary outcome back into a continuous variable. However, we cannot use simple linear regression as we used in the previous chapter, because the nature of the outcomes here is quite different. Instead of the relationship between <code>x</code> and <code>y</code> being best represented by a straight line (with the residuals being normally distributed), our possible outcomes here are often represented by an <a href="https://en.wikipedia.org/wiki/Logistic_regression#Definition_of_the_logistic_function">S-shaped curve</a> that is constrained to 0 and 1 as minimum and maximum likelihoods, with some direction of <code>x</code> (or multiple <code>x</code> values) leading to an increasingly likely outcome, and vice versa (you could design your own Galton Board -style experiment to convince yourself that this curve is a good approximation of real-world phenomena). This curve seems to be a completely different model of <code>x</code> and <code>y</code> relationships from what we’ve dealt with before, but manipulating the <code>y</code> axis into a “logit” (log odds, as explained in the link above) turns the S-curve back into a linear relationship between <code>x</code> and <code>y</code>, which we can use our previous regression method to evaluate. Again, all of this still depends on the assumption that such a logit model is an appropriate representation for our observed data, which involves a similar type of pre-analysis inspection and experience as simple linear regression requires. But a logit (or logistic) regression is a powerful and generalizable technique for using linear combinations of one or more independent variables to (non-causally) predict a categorical outcome. The simplest version, which we’ll cover in this section, involves a binary outcome that can be coded as having 0 to 1 likelihood of occurring, but logistic regression can be expanded to predict from a set of multiple outcomes.</p>
+<p>For our example, let’s use PUMS data, specifically information about age, race, and ethnicity, to predict primary language spoken (English or other). We’ll use <code>AGEP</code>, age, as a continuous variable (and filter to individuals 5 or older), but for race and ethnicity, we’ll code <code>white</code> and <code>hispanic</code> as binary “yes” or “no” variables. We’ll do the same for the dependent variable whose probability we’d like to predict, <code>english</code> (1 being “speaks only English”), though you should consider this 0 to 1 numeric coding to be used quite distinctly in the logistic regression as it will be treated as “odds” and converted to a log value.</p>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="survey-regression.html#cb238-1"></a>bay_pums_language &lt;-</span>
+<span id="cb238-2"><a href="survey-regression.html#cb238-2"></a><span class="st">  </span>bay_pums <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb238-3"><a href="survey-regression.html#cb238-3"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb238-4"><a href="survey-regression.html#cb238-4"></a>    <span class="dt">AGEP =</span> <span class="kw">as.numeric</span>(AGEP),</span>
+<span id="cb238-5"><a href="survey-regression.html#cb238-5"></a>    <span class="dt">white =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb238-6"><a href="survey-regression.html#cb238-6"></a>      RAC1P <span class="op">==</span><span class="st"> &quot;1&quot;</span>,</span>
+<span id="cb238-7"><a href="survey-regression.html#cb238-7"></a>      <span class="st">&quot;yes&quot;</span>,</span>
+<span id="cb238-8"><a href="survey-regression.html#cb238-8"></a>      <span class="st">&quot;no&quot;</span></span>
+<span id="cb238-9"><a href="survey-regression.html#cb238-9"></a>    ),</span>
+<span id="cb238-10"><a href="survey-regression.html#cb238-10"></a>    <span class="dt">hispanic =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb238-11"><a href="survey-regression.html#cb238-11"></a>      HISP <span class="op">==</span><span class="st"> &quot;1&quot;</span>,</span>
+<span id="cb238-12"><a href="survey-regression.html#cb238-12"></a>      <span class="st">&quot;no&quot;</span>,</span>
+<span id="cb238-13"><a href="survey-regression.html#cb238-13"></a>      <span class="st">&quot;yes&quot;</span></span>
+<span id="cb238-14"><a href="survey-regression.html#cb238-14"></a>    ),</span>
+<span id="cb238-15"><a href="survey-regression.html#cb238-15"></a>    <span class="dt">english =</span> <span class="kw">ifelse</span>(</span>
+<span id="cb238-16"><a href="survey-regression.html#cb238-16"></a>      LANX <span class="op">==</span><span class="st"> &quot;1&quot;</span>,</span>
+<span id="cb238-17"><a href="survey-regression.html#cb238-17"></a>      <span class="dv">0</span>,</span>
+<span id="cb238-18"><a href="survey-regression.html#cb238-18"></a>      <span class="dv">1</span></span>
+<span id="cb238-19"><a href="survey-regression.html#cb238-19"></a>    )</span>
+<span id="cb238-20"><a href="survey-regression.html#cb238-20"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb238-21"><a href="survey-regression.html#cb238-21"></a><span class="st">  </span><span class="kw">filter</span>(AGEP <span class="op">&gt;=</span><span class="st"> </span><span class="dv">5</span>)</span></code></pre></div>
+<p>Now, instead of <code>lm()</code>, we will use a more generalized function called <code>glm()</code> which can be used to do the simple linear regression from the last chapter, but can also receive different arguments under <code>family=</code> which change the “type” of regression to be performed (i.e. what kind of error distribution to expect in the data). Here, we’ll indicate <code>family = quasibinomial()</code> to let the function know that the function should be interpreted like a logit function.</p>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="survey-regression.html#cb239-1"></a>logit_model &lt;-<span class="st"> </span><span class="kw">glm</span>(</span>
+<span id="cb239-2"><a href="survey-regression.html#cb239-2"></a>  english <span class="op">~</span><span class="st"> </span>AGEP <span class="op">+</span><span class="st"> </span>white <span class="op">+</span><span class="st"> </span>hispanic,</span>
+<span id="cb239-3"><a href="survey-regression.html#cb239-3"></a>  <span class="dt">family =</span> <span class="kw">binomial</span>(),</span>
+<span id="cb239-4"><a href="survey-regression.html#cb239-4"></a>  <span class="dt">data =</span> bay_pums_language</span>
+<span id="cb239-5"><a href="survey-regression.html#cb239-5"></a>)</span>
+<span id="cb239-6"><a href="survey-regression.html#cb239-6"></a></span>
+<span id="cb239-7"><a href="survey-regression.html#cb239-7"></a><span class="kw">summary</span>(logit_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = english ~ AGEP + white + hispanic, family = binomial(), 
+##     data = bay_pums_language)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1094  -1.0469   0.5351   0.6358   2.2017  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  0.1373157  0.0206438   6.652  2.9e-11 ***
+## AGEP        -0.0085323  0.0004108 -20.769  &lt; 2e-16 ***
+## whiteyes     2.0157503  0.0183222 110.017  &lt; 2e-16 ***
+## hispanicyes -1.6662209  0.0235453 -70.767  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 98736  on 73571  degrees of freedom
+## Residual deviance: 79943  on 73568  degrees of freedom
+## AIC: 79951
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Note that because of <code>family = quasibinomial()</code>, <code>glm()</code> interprets the dependent and independent variables in the appropriate way for logistic regression. If you wanted to use <code>glm()</code> for simple linear regression (“ordinary least squares”), you could specify <code>family = gaussian()</code>. The interpretation of the <code>glm()</code> is not immediately intuitive because the <code>y</code> value is the “log odds” of speaking English. If we take the <code>exp()</code> of all regression coefficients, the <code>y</code> value becomes “odds”.</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="survey-regression.html#cb241-1"></a><span class="kw">exp</span>(<span class="kw">coef</span>(logit_model))</span></code></pre></div>
+<pre><code>## (Intercept)        AGEP    whiteyes hispanicyes 
+##   1.1471903   0.9915040   7.5063570   0.1889598</code></pre>
+<p><code>Odds</code> divided by <code>1 + odds</code> yields probability of occurring, as most are more likely to intuitively understand.</p>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="survey-regression.html#cb243-1"></a><span class="kw">exp</span>(<span class="kw">coef</span>(logit_model))<span class="op">/</span>(<span class="kw">exp</span>(<span class="kw">coef</span>(logit_model))<span class="op">+</span><span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## (Intercept)        AGEP    whiteyes hispanicyes 
+##   0.5342751   0.4978669   0.8824409   0.1589287</code></pre>
+<p>At face value, the negative and positive signs in the <code>glm()</code> original coefficients, and the final probabilities being less than or greater than 50/50 indicate:</p>
+<ul>
+<li>As age increases, holding other variables constant, probability of speaking English slightly decreases</li>
+<li>If the individual is white, holding other variables constant, probability of speaking English increases</li>
+<li>If the individual is Hispanic, holding other variables constant, probability of speaking English decreases</li>
+</ul>
+<p>The exact probabilities can be computed, or predicted, for specific combinations of independent variables using <code>predict()</code> with the extra argument <code>type = “response”</code> to convert the result into probability of occurrence:</p>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="survey-regression.html#cb245-1"></a><span class="kw">predict</span>(logit_model, <span class="kw">data.frame</span>(<span class="dt">AGEP =</span> <span class="dv">40</span>, <span class="dt">white =</span> <span class="st">&quot;yes&quot;</span>, <span class="dt">hispanic =</span> <span class="st">&quot;no&quot;</span>), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<pre><code>##         1 
+## 0.8595762</code></pre>
+<p>Now, one last important correction to all the results we’ve produced so far. We’ve been using the PUMS respondents as the sample, but as you recall from Chapter 3.1, each respondent can have a different weight (<code>PWGTP</code>) if we want to extrapolate from survey respondents to the full population. Whatever relationships we’ve seen so far may not hold true once we are trying to represent the full population in an area. So how can we make use of the information in <code>PWGTP</code>? There appears to be a <code>weights</code> parameter in <code>lm()</code>, but this has the effect of changing the “weight” of each record without changing the sample size, which means that our standard errors, which are critical for interpreting the statistical significance of our results, are circumspect. Ultimately, we can only do so much with the results of a complex sampling technique as used by the Census Bureau, but they do provide a solution in the form of “replicate weights”. These are a statistical construct of their own that let you essentially run a Monte Carlo-like 80 simulations of the full population, using 80 replicate versions of <code>PWGTP</code> and <code>WGTP</code> (depending on whether you’re doing person-level or household-level analysis). You would still use the primary <code>PWGTP</code>/<code>WGTP</code> weights to get mean estimates, but to compute the standard error of a mean estimate, you can produce the 80 replicate results (using <code>PWGTP1</code>, <code>PWGTP2</code>, etc.), and the standard error of the sample of 80 is the standard error you seek.</p>
+<p>This is tedious but doable in R, to obtain correct regression coefficients and standard errors for the various results we’ve gotten so far. Fortunately, the <code>survey</code> package includes the functions <code>svylm()</code> and <code>svyglm()</code> which can specifically handle PUMS replicate weights for us. You just need to first create a particular kind of input object using <code>svrepdesign()</code>, where you can specify replicate weights. Let’s first grab the 80 replicate weights using <code>getCensus()</code>; <code>paste0("PWGTP",1:80)</code> below is a shorthand for “PWGTP1”, “PWGTP2”, etc.</p>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="survey-regression.html#cb247-1"></a><span class="kw">library</span>(survey)</span>
+<span id="cb247-2"><a href="survey-regression.html#cb247-2"></a></span>
+<span id="cb247-3"><a href="survey-regression.html#cb247-3"></a>pums_<span class="dv">2019</span>_1yr_wts &lt;-<span class="st"> </span><span class="kw">getCensus</span>(</span>
+<span id="cb247-4"><a href="survey-regression.html#cb247-4"></a>  <span class="dt">name =</span> <span class="st">&quot;acs/acs1/pums&quot;</span>,</span>
+<span id="cb247-5"><a href="survey-regression.html#cb247-5"></a>  <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
+<span id="cb247-6"><a href="survey-regression.html#cb247-6"></a>  <span class="dt">region =</span> <span class="st">&quot;public use microdata area:*&quot;</span>, </span>
+<span id="cb247-7"><a href="survey-regression.html#cb247-7"></a>  <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
+<span id="cb247-8"><a href="survey-regression.html#cb247-8"></a>  <span class="dt">vars =</span> <span class="kw">c</span>(</span>
+<span id="cb247-9"><a href="survey-regression.html#cb247-9"></a>    <span class="kw">paste0</span>(<span class="st">&quot;PWGTP&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">80</span>)</span>
+<span id="cb247-10"><a href="survey-regression.html#cb247-10"></a>  )</span>
+<span id="cb247-11"><a href="survey-regression.html#cb247-11"></a>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb247-12"><a href="survey-regression.html#cb247-12"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb247-13"><a href="survey-regression.html#cb247-13"></a>    <span class="dt">PUMA =</span> <span class="kw">str_pad</span>(public_use_microdata_area,<span class="dv">5</span>,<span class="st">&quot;left&quot;</span>,<span class="st">&quot;0&quot;</span>)</span>
+<span id="cb247-14"><a href="survey-regression.html#cb247-14"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb247-15"><a href="survey-regression.html#cb247-15"></a><span class="st">  </span><span class="kw">filter</span>(PUMA <span class="op">%in%</span><span class="st"> </span>bay_pumas<span class="op">$</span>PUMACE10)</span>
+<span id="cb247-16"><a href="survey-regression.html#cb247-16"></a></span>
+<span id="cb247-17"><a href="survey-regression.html#cb247-17"></a>bay_pums_language_wts &lt;-<span class="st"> </span>pums_<span class="dv">2019</span>_1yr_wts <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb247-18"><a href="survey-regression.html#cb247-18"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">AGEP =</span> bay_pums<span class="op">$</span>AGEP) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb247-19"><a href="survey-regression.html#cb247-19"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">as.numeric</span>(AGEP) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb247-20"><a href="survey-regression.html#cb247-20"></a><span class="st">  </span><span class="kw">select</span>(<span class="kw">starts_with</span>(<span class="st">&quot;PWGTP&quot;</span>))</span></code></pre></div>
+<p>Note that the last step above allows us to match the number of records we had in <code>bay_pums_language</code>.</p>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="survey-regression.html#cb248-1"></a>logit_survey_design &lt;-<span class="st"> </span><span class="kw">svrepdesign</span>(</span>
+<span id="cb248-2"><a href="survey-regression.html#cb248-2"></a>  <span class="dt">data =</span> bay_pums_language,</span>
+<span id="cb248-3"><a href="survey-regression.html#cb248-3"></a>  <span class="dt">type =</span> <span class="st">&quot;ACS&quot;</span>,</span>
+<span id="cb248-4"><a href="survey-regression.html#cb248-4"></a>  <span class="dt">repweights =</span> bay_pums_language_wts,</span>
+<span id="cb248-5"><a href="survey-regression.html#cb248-5"></a>  <span class="dt">weights =</span> <span class="kw">as.numeric</span>(bay_pums_language<span class="op">$</span>PWGTP)</span>
+<span id="cb248-6"><a href="survey-regression.html#cb248-6"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="survey-regression.html#cb249-1"></a>logit_survey_model &lt;-<span class="st"> </span><span class="kw">svyglm</span>(</span>
+<span id="cb249-2"><a href="survey-regression.html#cb249-2"></a>  <span class="dt">formula =</span> english <span class="op">~</span><span class="st"> </span>AGEP <span class="op">+</span><span class="st"> </span>white <span class="op">+</span><span class="st"> </span>hispanic,</span>
+<span id="cb249-3"><a href="survey-regression.html#cb249-3"></a>  <span class="dt">family =</span> <span class="kw">quasibinomial</span>(),</span>
+<span id="cb249-4"><a href="survey-regression.html#cb249-4"></a>  <span class="dt">design =</span> logit_survey_design</span>
+<span id="cb249-5"><a href="survey-regression.html#cb249-5"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="survey-regression.html#cb250-1"></a><span class="kw">summary</span>(logit_survey_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## svyglm(formula = english ~ AGEP + white + hispanic, family = quasibinomial(), 
+##     design = logit_survey_design)
+## 
+## Survey design:
+## svrepdesign.default(data = bay_pums_language, type = &quot;ACS&quot;, repweights = bay_pums_language_wts, 
+##     weights = as.numeric(bay_pums_language$PWGTP))
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.2601504  0.0297174   8.754 3.95e-13 ***
+## AGEP        -0.0095736  0.0004939 -19.383  &lt; 2e-16 ***
+## whiteyes     1.8600114  0.0287303  64.741  &lt; 2e-16 ***
+## hispanicyes -1.8117239  0.0485835 -37.291  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for quasibinomial family taken to be 75063.79)
+## 
+## Number of Fisher Scoring iterations: 3</code></pre>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="survey-regression.html#cb252-1"></a><span class="kw">exp</span>(<span class="kw">coef</span>(logit_survey_model))</span></code></pre></div>
+<pre><code>## (Intercept)        AGEP    whiteyes hispanicyes 
+##   1.2971252   0.9904720   6.4238097   0.1633723</code></pre>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="survey-regression.html#cb254-1"></a><span class="kw">predict.glm</span>(logit_survey_model, <span class="kw">data.frame</span>(<span class="dt">AGEP =</span> <span class="dv">40</span>, <span class="dt">white =</span> <span class="st">&quot;yes&quot;</span>, <span class="dt">hispanic =</span> <span class="st">&quot;no&quot;</span>), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<pre><code>##         1 
+## 0.8503331</code></pre>
+<p>In this case, all the results are nearly the same, but using this technique ensures that you are accurately accounting for the design of ACS.</p>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="autocorrelation.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "none",
+"scroll_highlight": true
+},
+"toolbar": {
+"position": "fixed"
+},
+"info": false
+});
+});
+</script>
+
+</body>
+
+</html>
