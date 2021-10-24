@@ -194,6 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
 <li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
 <li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
+<li class="chapter" data-level="5.5" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>5.5</b> Training and testing data</a></li>
 </ul></li>
 </ul>
 
@@ -215,51 +216,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="autocorrelation" class="section level2" number="5.3">
 <h2><span class="header-section-number">5.3</span> Autocorrelation</h2>
 <p>In this section we’ll explore one problem with regression: <a href="https://en.wikipedia.org/wiki/Autocorrelation">autocorrelation</a>. This essentially describes “echos” in your data of one form or another, which is to say that there are more similarities between records in your data than you would expect through a truly random sample. For example, if every record in your data were literally duplicated, this would artificially reduce the variation in your data (since there are a lot of unvarying copies). We can quickly examine the effect of this by revisiting a linear regression from before.</p>
-<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="autocorrelation.html#cb192-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb192-2"><a href="autocorrelation.html#cb192-2"></a><span class="kw">library</span>(censusapi)</span>
-<span id="cb192-3"><a href="autocorrelation.html#cb192-3"></a><span class="kw">library</span>(sf)</span>
-<span id="cb192-4"><a href="autocorrelation.html#cb192-4"></a><span class="kw">library</span>(mapview)</span>
-<span id="cb192-5"><a href="autocorrelation.html#cb192-5"></a><span class="kw">library</span>(tigris)</span>
-<span id="cb192-6"><a href="autocorrelation.html#cb192-6"></a></span>
-<span id="cb192-7"><a href="autocorrelation.html#cb192-7"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
-<span id="cb192-8"><a href="autocorrelation.html#cb192-8"></a></span>
-<span id="cb192-9"><a href="autocorrelation.html#cb192-9"></a>acs_vars_<span class="dv">2019</span>_5yr &lt;-</span>
-<span id="cb192-10"><a href="autocorrelation.html#cb192-10"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
-<span id="cb192-11"><a href="autocorrelation.html#cb192-11"></a>    <span class="dt">name =</span> <span class="st">&quot;2019/acs/acs5&quot;</span>,</span>
-<span id="cb192-12"><a href="autocorrelation.html#cb192-12"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
-<span id="cb192-13"><a href="autocorrelation.html#cb192-13"></a>  )</span></code></pre></div>
-<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="autocorrelation.html#cb193-1"></a>bay_multiple_tract &lt;-<span class="st"> </span></span>
-<span id="cb193-2"><a href="autocorrelation.html#cb193-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
-<span id="cb193-3"><a href="autocorrelation.html#cb193-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
-<span id="cb193-4"><a href="autocorrelation.html#cb193-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
-<span id="cb193-5"><a href="autocorrelation.html#cb193-5"></a>    <span class="dt">region =</span> <span class="st">&quot;tract:*&quot;</span>,</span>
-<span id="cb193-6"><a href="autocorrelation.html#cb193-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06+county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
-<span id="cb193-7"><a href="autocorrelation.html#cb193-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(</span>
-<span id="cb193-8"><a href="autocorrelation.html#cb193-8"></a>      <span class="st">&quot;B06009_001E&quot;</span>,</span>
-<span id="cb193-9"><a href="autocorrelation.html#cb193-9"></a>      <span class="st">&quot;B06009_002E&quot;</span>,</span>
-<span id="cb193-10"><a href="autocorrelation.html#cb193-10"></a>      <span class="st">&quot;B06009_003E&quot;</span>,</span>
-<span id="cb193-11"><a href="autocorrelation.html#cb193-11"></a>      <span class="st">&quot;B19001_001E&quot;</span>,</span>
-<span id="cb193-12"><a href="autocorrelation.html#cb193-12"></a>      <span class="st">&quot;B19001_014E&quot;</span>,</span>
-<span id="cb193-13"><a href="autocorrelation.html#cb193-13"></a>      <span class="st">&quot;B19001_015E&quot;</span>,</span>
-<span id="cb193-14"><a href="autocorrelation.html#cb193-14"></a>      <span class="st">&quot;B19001_016E&quot;</span>,</span>
-<span id="cb193-15"><a href="autocorrelation.html#cb193-15"></a>      <span class="st">&quot;B19001_017E&quot;</span>,</span>
-<span id="cb193-16"><a href="autocorrelation.html#cb193-16"></a>      <span class="st">&quot;B19001A_001E&quot;</span></span>
-<span id="cb193-17"><a href="autocorrelation.html#cb193-17"></a>    )</span>
-<span id="cb193-18"><a href="autocorrelation.html#cb193-18"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb193-19"><a href="autocorrelation.html#cb193-19"></a><span class="st">  </span><span class="kw">transmute</span>(</span>
-<span id="cb193-20"><a href="autocorrelation.html#cb193-20"></a>    <span class="dt">tract =</span> <span class="kw">paste0</span>(state, county, tract),</span>
-<span id="cb193-21"><a href="autocorrelation.html#cb193-21"></a>    <span class="dt">perc_college =</span> <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>(B06009_002E <span class="op">+</span><span class="st"> </span>B06009_003E) <span class="op">/</span><span class="st"> </span>B06009_001E,</span>
-<span id="cb193-22"><a href="autocorrelation.html#cb193-22"></a>    <span class="dt">perc_over100k =</span> (B19001_014E <span class="op">+</span><span class="st"> </span>B19001_015E <span class="op">+</span><span class="st"> </span>B19001_016E <span class="op">+</span><span class="st"> </span>B19001_017E) <span class="op">/</span><span class="st"> </span>B19001_001E,</span>
-<span id="cb193-23"><a href="autocorrelation.html#cb193-23"></a>    <span class="dt">perc_white =</span> B19001A_001E <span class="op">/</span><span class="st"> </span>B19001_001E</span>
-<span id="cb193-24"><a href="autocorrelation.html#cb193-24"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb193-25"><a href="autocorrelation.html#cb193-25"></a><span class="st">  </span><span class="kw">filter</span>(</span>
-<span id="cb193-26"><a href="autocorrelation.html#cb193-26"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_college), </span>
-<span id="cb193-27"><a href="autocorrelation.html#cb193-27"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_over100k),</span>
-<span id="cb193-28"><a href="autocorrelation.html#cb193-28"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_white)</span>
-<span id="cb193-29"><a href="autocorrelation.html#cb193-29"></a>  )</span></code></pre></div>
-<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="autocorrelation.html#cb194-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_college, bay_multiple_tract)</span>
-<span id="cb194-2"><a href="autocorrelation.html#cb194-2"></a></span>
-<span id="cb194-3"><a href="autocorrelation.html#cb194-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="autocorrelation.html#cb191-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb191-2"><a href="autocorrelation.html#cb191-2"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb191-3"><a href="autocorrelation.html#cb191-3"></a><span class="kw">library</span>(sf)</span>
+<span id="cb191-4"><a href="autocorrelation.html#cb191-4"></a><span class="kw">library</span>(mapview)</span>
+<span id="cb191-5"><a href="autocorrelation.html#cb191-5"></a><span class="kw">library</span>(tigris)</span>
+<span id="cb191-6"><a href="autocorrelation.html#cb191-6"></a></span>
+<span id="cb191-7"><a href="autocorrelation.html#cb191-7"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
+<span id="cb191-8"><a href="autocorrelation.html#cb191-8"></a></span>
+<span id="cb191-9"><a href="autocorrelation.html#cb191-9"></a>acs_vars_<span class="dv">2019</span>_5yr &lt;-</span>
+<span id="cb191-10"><a href="autocorrelation.html#cb191-10"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
+<span id="cb191-11"><a href="autocorrelation.html#cb191-11"></a>    <span class="dt">name =</span> <span class="st">&quot;2019/acs/acs5&quot;</span>,</span>
+<span id="cb191-12"><a href="autocorrelation.html#cb191-12"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
+<span id="cb191-13"><a href="autocorrelation.html#cb191-13"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="autocorrelation.html#cb192-1"></a>bay_multiple_tract &lt;-<span class="st"> </span></span>
+<span id="cb192-2"><a href="autocorrelation.html#cb192-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
+<span id="cb192-3"><a href="autocorrelation.html#cb192-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs5&quot;</span>,</span>
+<span id="cb192-4"><a href="autocorrelation.html#cb192-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
+<span id="cb192-5"><a href="autocorrelation.html#cb192-5"></a>    <span class="dt">region =</span> <span class="st">&quot;tract:*&quot;</span>,</span>
+<span id="cb192-6"><a href="autocorrelation.html#cb192-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06+county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb192-7"><a href="autocorrelation.html#cb192-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(</span>
+<span id="cb192-8"><a href="autocorrelation.html#cb192-8"></a>      <span class="st">&quot;B06009_001E&quot;</span>,</span>
+<span id="cb192-9"><a href="autocorrelation.html#cb192-9"></a>      <span class="st">&quot;B06009_002E&quot;</span>,</span>
+<span id="cb192-10"><a href="autocorrelation.html#cb192-10"></a>      <span class="st">&quot;B06009_003E&quot;</span>,</span>
+<span id="cb192-11"><a href="autocorrelation.html#cb192-11"></a>      <span class="st">&quot;B19001_001E&quot;</span>,</span>
+<span id="cb192-12"><a href="autocorrelation.html#cb192-12"></a>      <span class="st">&quot;B19001_014E&quot;</span>,</span>
+<span id="cb192-13"><a href="autocorrelation.html#cb192-13"></a>      <span class="st">&quot;B19001_015E&quot;</span>,</span>
+<span id="cb192-14"><a href="autocorrelation.html#cb192-14"></a>      <span class="st">&quot;B19001_016E&quot;</span>,</span>
+<span id="cb192-15"><a href="autocorrelation.html#cb192-15"></a>      <span class="st">&quot;B19001_017E&quot;</span>,</span>
+<span id="cb192-16"><a href="autocorrelation.html#cb192-16"></a>      <span class="st">&quot;B19001A_001E&quot;</span></span>
+<span id="cb192-17"><a href="autocorrelation.html#cb192-17"></a>    )</span>
+<span id="cb192-18"><a href="autocorrelation.html#cb192-18"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb192-19"><a href="autocorrelation.html#cb192-19"></a><span class="st">  </span><span class="kw">transmute</span>(</span>
+<span id="cb192-20"><a href="autocorrelation.html#cb192-20"></a>    <span class="dt">tract =</span> <span class="kw">paste0</span>(state, county, tract),</span>
+<span id="cb192-21"><a href="autocorrelation.html#cb192-21"></a>    <span class="dt">perc_college =</span> <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>(B06009_002E <span class="op">+</span><span class="st"> </span>B06009_003E) <span class="op">/</span><span class="st"> </span>B06009_001E,</span>
+<span id="cb192-22"><a href="autocorrelation.html#cb192-22"></a>    <span class="dt">perc_over100k =</span> (B19001_014E <span class="op">+</span><span class="st"> </span>B19001_015E <span class="op">+</span><span class="st"> </span>B19001_016E <span class="op">+</span><span class="st"> </span>B19001_017E) <span class="op">/</span><span class="st"> </span>B19001_001E,</span>
+<span id="cb192-23"><a href="autocorrelation.html#cb192-23"></a>    <span class="dt">perc_white =</span> B19001A_001E <span class="op">/</span><span class="st"> </span>B19001_001E</span>
+<span id="cb192-24"><a href="autocorrelation.html#cb192-24"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb192-25"><a href="autocorrelation.html#cb192-25"></a><span class="st">  </span><span class="kw">filter</span>(</span>
+<span id="cb192-26"><a href="autocorrelation.html#cb192-26"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_college), </span>
+<span id="cb192-27"><a href="autocorrelation.html#cb192-27"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_over100k),</span>
+<span id="cb192-28"><a href="autocorrelation.html#cb192-28"></a>    <span class="op">!</span><span class="kw">is.na</span>(perc_white)</span>
+<span id="cb192-29"><a href="autocorrelation.html#cb192-29"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="autocorrelation.html#cb193-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_college, bay_multiple_tract)</span>
+<span id="cb193-2"><a href="autocorrelation.html#cb193-2"></a></span>
+<span id="cb193-3"><a href="autocorrelation.html#cb193-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_over100k ~ perc_college, data = bay_multiple_tract)
@@ -279,11 +280,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Multiple R-squared:  0.5334, Adjusted R-squared:  0.5331 
 ## F-statistic:  1801 on 1 and 1575 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Recall that the regression analysis of education and income yielded a regression coefficient of 0.79, with a standard error of 0.019, putting this finding 42 standard errors away from a finding of 0 (i.e., very unlikely). Now let’s create a dataset with duplicates for every record and see what happens:</p>
-<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="autocorrelation.html#cb196-1"></a>bay_multiple_tract_duplicated &lt;-<span class="st"> </span><span class="kw">rbind</span>(bay_multiple_tract,bay_multiple_tract)</span>
-<span id="cb196-2"><a href="autocorrelation.html#cb196-2"></a></span>
-<span id="cb196-3"><a href="autocorrelation.html#cb196-3"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_college, bay_multiple_tract_duplicated)</span>
-<span id="cb196-4"><a href="autocorrelation.html#cb196-4"></a></span>
-<span id="cb196-5"><a href="autocorrelation.html#cb196-5"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="autocorrelation.html#cb195-1"></a>bay_multiple_tract_duplicated &lt;-<span class="st"> </span><span class="kw">rbind</span>(bay_multiple_tract,bay_multiple_tract)</span>
+<span id="cb195-2"><a href="autocorrelation.html#cb195-2"></a></span>
+<span id="cb195-3"><a href="autocorrelation.html#cb195-3"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_over100k <span class="op">~</span><span class="st"> </span>perc_college, bay_multiple_tract_duplicated)</span>
+<span id="cb195-4"><a href="autocorrelation.html#cb195-4"></a></span>
+<span id="cb195-5"><a href="autocorrelation.html#cb195-5"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_over100k ~ perc_college, data = bay_multiple_tract_duplicated)
@@ -305,91 +306,91 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Notice how the regression coefficient is the same, but the standard error has decreased to 0.013, putting this finding 60 standard errors away from 0. Now, the original finding was already very statistically significant, but with the duplicates, it becomes even more so. You can imagine situations where the difference here may have been the tipping point between rejecting the null hypothesis or not.</p>
 <p>Clearly, we wouldn’t expect most data to have literal duplicate copies like this that contribute to autocorrelation, but autocorrelation can more naturally occur in two key dimensions: time and space. If we take a lot of measurements of the same thing in quick succession, then the different measurements in time will have some degree of the same kind of autocorrelation, compared to measurements being randomly taken throughout time.</p>
 <p>Let’s create an example of this using PG&amp;E data:</p>
-<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="autocorrelation.html#cb198-1"></a>years &lt;-<span class="st"> </span><span class="dv">2013</span><span class="op">:</span><span class="dv">2019</span></span>
-<span id="cb198-2"><a href="autocorrelation.html#cb198-2"></a>quarters &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span></span>
-<span id="cb198-3"><a href="autocorrelation.html#cb198-3"></a></span>
-<span id="cb198-4"><a href="autocorrelation.html#cb198-4"></a>pge_data &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
-<span id="cb198-5"><a href="autocorrelation.html#cb198-5"></a></span>
-<span id="cb198-6"><a href="autocorrelation.html#cb198-6"></a><span class="cf">for</span>(year <span class="cf">in</span> years) {</span>
-<span id="cb198-7"><a href="autocorrelation.html#cb198-7"></a>  <span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
-<span id="cb198-8"><a href="autocorrelation.html#cb198-8"></a>      </span>
-<span id="cb198-9"><a href="autocorrelation.html#cb198-9"></a>    filename &lt;-<span class="st"> </span></span>
-<span id="cb198-10"><a href="autocorrelation.html#cb198-10"></a><span class="st">      </span><span class="kw">paste0</span>(</span>
-<span id="cb198-11"><a href="autocorrelation.html#cb198-11"></a>        <span class="st">&quot;pge/PGE_&quot;</span>,</span>
-<span id="cb198-12"><a href="autocorrelation.html#cb198-12"></a>        year,</span>
-<span id="cb198-13"><a href="autocorrelation.html#cb198-13"></a>        <span class="st">&quot;_Q&quot;</span>,</span>
-<span id="cb198-14"><a href="autocorrelation.html#cb198-14"></a>        quarter,</span>
-<span id="cb198-15"><a href="autocorrelation.html#cb198-15"></a>        <span class="st">&quot;_ElectricUsageByZip.csv&quot;</span></span>
-<span id="cb198-16"><a href="autocorrelation.html#cb198-16"></a>      )</span>
-<span id="cb198-17"><a href="autocorrelation.html#cb198-17"></a>    </span>
-<span id="cb198-18"><a href="autocorrelation.html#cb198-18"></a>    temp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(filename)</span>
-<span id="cb198-19"><a href="autocorrelation.html#cb198-19"></a>    </span>
-<span id="cb198-20"><a href="autocorrelation.html#cb198-20"></a>    pge_data &lt;-<span class="st"> </span></span>
-<span id="cb198-21"><a href="autocorrelation.html#cb198-21"></a><span class="st">      </span><span class="kw">rbind</span>(pge_data,temp)</span>
-<span id="cb198-22"><a href="autocorrelation.html#cb198-22"></a>      </span>
-<span id="cb198-23"><a href="autocorrelation.html#cb198-23"></a>  }</span>
-<span id="cb198-24"><a href="autocorrelation.html#cb198-24"></a>}</span>
-<span id="cb198-25"><a href="autocorrelation.html#cb198-25"></a></span>
-<span id="cb198-26"><a href="autocorrelation.html#cb198-26"></a>pge_avg_kwh &lt;-</span>
-<span id="cb198-27"><a href="autocorrelation.html#cb198-27"></a><span class="st">  </span>pge_data <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb198-28"><a href="autocorrelation.html#cb198-28"></a><span class="st">  </span><span class="kw">filter</span>(CUSTOMERCLASS <span class="op">==</span><span class="st"> &quot;Elec- Residential&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb198-29"><a href="autocorrelation.html#cb198-29"></a><span class="st">  </span><span class="kw">group_by</span>(YEAR, MONTH) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb198-30"><a href="autocorrelation.html#cb198-30"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
-<span id="cb198-31"><a href="autocorrelation.html#cb198-31"></a>    <span class="dt">TOTALCUSTOMERS =</span> <span class="kw">sum</span>(TOTALCUSTOMERS, <span class="dt">na.rm =</span> T),</span>
-<span id="cb198-32"><a href="autocorrelation.html#cb198-32"></a>    <span class="dt">TOTALMONTHLYKWH =</span> <span class="kw">sum</span>(TOTALKWH, <span class="dt">na.rm =</span> T)</span>
-<span id="cb198-33"><a href="autocorrelation.html#cb198-33"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb198-34"><a href="autocorrelation.html#cb198-34"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
-<span id="cb198-35"><a href="autocorrelation.html#cb198-35"></a>    <span class="dt">AVGMONTHLYKWH =</span> TOTALMONTHLYKWH<span class="op">/</span>TOTALCUSTOMERS,</span>
-<span id="cb198-36"><a href="autocorrelation.html#cb198-36"></a>    <span class="dt">DATE =</span> </span>
-<span id="cb198-37"><a href="autocorrelation.html#cb198-37"></a>      <span class="kw">paste</span>(</span>
-<span id="cb198-38"><a href="autocorrelation.html#cb198-38"></a>        YEAR,</span>
-<span id="cb198-39"><a href="autocorrelation.html#cb198-39"></a>        MONTH, </span>
-<span id="cb198-40"><a href="autocorrelation.html#cb198-40"></a>        <span class="st">&quot;01&quot;</span>,</span>
-<span id="cb198-41"><a href="autocorrelation.html#cb198-41"></a>        <span class="dt">sep=</span><span class="st">&quot;-&quot;</span></span>
-<span id="cb198-42"><a href="autocorrelation.html#cb198-42"></a>      ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.Date</span>()</span>
-<span id="cb198-43"><a href="autocorrelation.html#cb198-43"></a>  )</span></code></pre></div>
-<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="autocorrelation.html#cb199-1"></a>pge_avg_kwh <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb199-2"><a href="autocorrelation.html#cb199-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
-<span id="cb199-3"><a href="autocorrelation.html#cb199-3"></a>    <span class="kw">aes</span>(</span>
-<span id="cb199-4"><a href="autocorrelation.html#cb199-4"></a>      <span class="dt">x =</span> DATE,</span>
-<span id="cb199-5"><a href="autocorrelation.html#cb199-5"></a>      <span class="dt">y =</span> AVGMONTHLYKWH</span>
-<span id="cb199-6"><a href="autocorrelation.html#cb199-6"></a>    )</span>
-<span id="cb199-7"><a href="autocorrelation.html#cb199-7"></a>  ) <span class="op">+</span></span>
-<span id="cb199-8"><a href="autocorrelation.html#cb199-8"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb199-9"><a href="autocorrelation.html#cb199-9"></a><span class="st">  </span><span class="kw">labs</span>(</span>
-<span id="cb199-10"><a href="autocorrelation.html#cb199-10"></a>    <span class="dt">x =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb199-11"><a href="autocorrelation.html#cb199-11"></a>    <span class="dt">y =</span> <span class="st">&quot;Average kBTU/Customer&quot;</span>,</span>
-<span id="cb199-12"><a href="autocorrelation.html#cb199-12"></a>    <span class="dt">title =</span> <span class="st">&quot;Residential Electricity Consumption in PG&amp;E Territories&quot;</span></span>
-<span id="cb199-13"><a href="autocorrelation.html#cb199-13"></a>  )</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-205-1.png" width="672" /></p>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="autocorrelation.html#cb197-1"></a>years &lt;-<span class="st"> </span><span class="dv">2013</span><span class="op">:</span><span class="dv">2019</span></span>
+<span id="cb197-2"><a href="autocorrelation.html#cb197-2"></a>quarters &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span></span>
+<span id="cb197-3"><a href="autocorrelation.html#cb197-3"></a></span>
+<span id="cb197-4"><a href="autocorrelation.html#cb197-4"></a>pge_data &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb197-5"><a href="autocorrelation.html#cb197-5"></a></span>
+<span id="cb197-6"><a href="autocorrelation.html#cb197-6"></a><span class="cf">for</span>(year <span class="cf">in</span> years) {</span>
+<span id="cb197-7"><a href="autocorrelation.html#cb197-7"></a>  <span class="cf">for</span>(quarter <span class="cf">in</span> quarters) {</span>
+<span id="cb197-8"><a href="autocorrelation.html#cb197-8"></a>      </span>
+<span id="cb197-9"><a href="autocorrelation.html#cb197-9"></a>    filename &lt;-<span class="st"> </span></span>
+<span id="cb197-10"><a href="autocorrelation.html#cb197-10"></a><span class="st">      </span><span class="kw">paste0</span>(</span>
+<span id="cb197-11"><a href="autocorrelation.html#cb197-11"></a>        <span class="st">&quot;pge/PGE_&quot;</span>,</span>
+<span id="cb197-12"><a href="autocorrelation.html#cb197-12"></a>        year,</span>
+<span id="cb197-13"><a href="autocorrelation.html#cb197-13"></a>        <span class="st">&quot;_Q&quot;</span>,</span>
+<span id="cb197-14"><a href="autocorrelation.html#cb197-14"></a>        quarter,</span>
+<span id="cb197-15"><a href="autocorrelation.html#cb197-15"></a>        <span class="st">&quot;_ElectricUsageByZip.csv&quot;</span></span>
+<span id="cb197-16"><a href="autocorrelation.html#cb197-16"></a>      )</span>
+<span id="cb197-17"><a href="autocorrelation.html#cb197-17"></a>    </span>
+<span id="cb197-18"><a href="autocorrelation.html#cb197-18"></a>    temp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(filename)</span>
+<span id="cb197-19"><a href="autocorrelation.html#cb197-19"></a>    </span>
+<span id="cb197-20"><a href="autocorrelation.html#cb197-20"></a>    pge_data &lt;-<span class="st"> </span></span>
+<span id="cb197-21"><a href="autocorrelation.html#cb197-21"></a><span class="st">      </span><span class="kw">rbind</span>(pge_data,temp)</span>
+<span id="cb197-22"><a href="autocorrelation.html#cb197-22"></a>      </span>
+<span id="cb197-23"><a href="autocorrelation.html#cb197-23"></a>  }</span>
+<span id="cb197-24"><a href="autocorrelation.html#cb197-24"></a>}</span>
+<span id="cb197-25"><a href="autocorrelation.html#cb197-25"></a></span>
+<span id="cb197-26"><a href="autocorrelation.html#cb197-26"></a>pge_avg_kwh &lt;-</span>
+<span id="cb197-27"><a href="autocorrelation.html#cb197-27"></a><span class="st">  </span>pge_data <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb197-28"><a href="autocorrelation.html#cb197-28"></a><span class="st">  </span><span class="kw">filter</span>(CUSTOMERCLASS <span class="op">==</span><span class="st"> &quot;Elec- Residential&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb197-29"><a href="autocorrelation.html#cb197-29"></a><span class="st">  </span><span class="kw">group_by</span>(YEAR, MONTH) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb197-30"><a href="autocorrelation.html#cb197-30"></a><span class="st">  </span><span class="kw">summarize</span>(</span>
+<span id="cb197-31"><a href="autocorrelation.html#cb197-31"></a>    <span class="dt">TOTALCUSTOMERS =</span> <span class="kw">sum</span>(TOTALCUSTOMERS, <span class="dt">na.rm =</span> T),</span>
+<span id="cb197-32"><a href="autocorrelation.html#cb197-32"></a>    <span class="dt">TOTALMONTHLYKWH =</span> <span class="kw">sum</span>(TOTALKWH, <span class="dt">na.rm =</span> T)</span>
+<span id="cb197-33"><a href="autocorrelation.html#cb197-33"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb197-34"><a href="autocorrelation.html#cb197-34"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb197-35"><a href="autocorrelation.html#cb197-35"></a>    <span class="dt">AVGMONTHLYKWH =</span> TOTALMONTHLYKWH<span class="op">/</span>TOTALCUSTOMERS,</span>
+<span id="cb197-36"><a href="autocorrelation.html#cb197-36"></a>    <span class="dt">DATE =</span> </span>
+<span id="cb197-37"><a href="autocorrelation.html#cb197-37"></a>      <span class="kw">paste</span>(</span>
+<span id="cb197-38"><a href="autocorrelation.html#cb197-38"></a>        YEAR,</span>
+<span id="cb197-39"><a href="autocorrelation.html#cb197-39"></a>        MONTH, </span>
+<span id="cb197-40"><a href="autocorrelation.html#cb197-40"></a>        <span class="st">&quot;01&quot;</span>,</span>
+<span id="cb197-41"><a href="autocorrelation.html#cb197-41"></a>        <span class="dt">sep=</span><span class="st">&quot;-&quot;</span></span>
+<span id="cb197-42"><a href="autocorrelation.html#cb197-42"></a>      ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.Date</span>()</span>
+<span id="cb197-43"><a href="autocorrelation.html#cb197-43"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="autocorrelation.html#cb198-1"></a>pge_avg_kwh <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb198-2"><a href="autocorrelation.html#cb198-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
+<span id="cb198-3"><a href="autocorrelation.html#cb198-3"></a>    <span class="kw">aes</span>(</span>
+<span id="cb198-4"><a href="autocorrelation.html#cb198-4"></a>      <span class="dt">x =</span> DATE,</span>
+<span id="cb198-5"><a href="autocorrelation.html#cb198-5"></a>      <span class="dt">y =</span> AVGMONTHLYKWH</span>
+<span id="cb198-6"><a href="autocorrelation.html#cb198-6"></a>    )</span>
+<span id="cb198-7"><a href="autocorrelation.html#cb198-7"></a>  ) <span class="op">+</span></span>
+<span id="cb198-8"><a href="autocorrelation.html#cb198-8"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb198-9"><a href="autocorrelation.html#cb198-9"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb198-10"><a href="autocorrelation.html#cb198-10"></a>    <span class="dt">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb198-11"><a href="autocorrelation.html#cb198-11"></a>    <span class="dt">y =</span> <span class="st">&quot;Average kBTU/Customer&quot;</span>,</span>
+<span id="cb198-12"><a href="autocorrelation.html#cb198-12"></a>    <span class="dt">title =</span> <span class="st">&quot;Residential Electricity Consumption in PG&amp;E Territories&quot;</span></span>
+<span id="cb198-13"><a href="autocorrelation.html#cb198-13"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-204-1.png" width="672" /></p>
 <p>To formally measure autocorrelation, we perform regression on each consecutive pair of values in this time series: Jan 2013 vs. Feb 2013, Feb 2013 vs. Mar 2013, etc. Make sure your data is already ordered temporally, and make sure there are no lingering groupings from a previous <code>group_by()</code> that may distort the lag creation.</p>
-<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="autocorrelation.html#cb200-1"></a>pge_avg_kwh &lt;-<span class="st"> </span>pge_avg_kwh <span class="op">%&gt;%</span></span>
-<span id="cb200-2"><a href="autocorrelation.html#cb200-2"></a><span class="st">  </span><span class="kw">arrange</span>(DATE) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb200-3"><a href="autocorrelation.html#cb200-3"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb200-4"><a href="autocorrelation.html#cb200-4"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
-<span id="cb200-5"><a href="autocorrelation.html#cb200-5"></a>    <span class="dt">AVGMONTHLYKWH_lag =</span> <span class="kw">c</span>(AVGMONTHLYKWH[<span class="op">-</span><span class="dv">1</span>],<span class="ot">NA</span>)</span>
-<span id="cb200-6"><a href="autocorrelation.html#cb200-6"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb200-7"><a href="autocorrelation.html#cb200-7"></a><span class="st">  </span><span class="kw">head</span>(<span class="op">-</span><span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="autocorrelation.html#cb199-1"></a>pge_avg_kwh &lt;-<span class="st"> </span>pge_avg_kwh <span class="op">%&gt;%</span></span>
+<span id="cb199-2"><a href="autocorrelation.html#cb199-2"></a><span class="st">  </span><span class="kw">arrange</span>(DATE) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb199-3"><a href="autocorrelation.html#cb199-3"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb199-4"><a href="autocorrelation.html#cb199-4"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb199-5"><a href="autocorrelation.html#cb199-5"></a>    <span class="dt">AVGMONTHLYKWH_lag =</span> <span class="kw">c</span>(AVGMONTHLYKWH[<span class="op">-</span><span class="dv">1</span>],<span class="ot">NA</span>)</span>
+<span id="cb199-6"><a href="autocorrelation.html#cb199-6"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb199-7"><a href="autocorrelation.html#cb199-7"></a><span class="st">  </span><span class="kw">head</span>(<span class="op">-</span><span class="dv">1</span>)</span></code></pre></div>
 <p>Note that we created a “lagged” variable by referring to an existing column, removing the first value with <code>[-1]</code>, and then adding an extra <code>NA</code> at the end to preserve the same total number of values. Then, we used <code>head(-1)</code> to keep the top of the dataset with the exception of 1 row at the very end of the dataset, which we can’t use for regression because it’s not a complete pair. We also needed to <code>ungroup()</code> because the dataframe still had a “grouping” by <code>YEAR</code> leftover from a previous chunk; it’s not always obvious when this occurs, so in general it’s a good idea to <code>ungroup()</code> after a multi-variable grouping.</p>
-<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="autocorrelation.html#cb201-1"></a>pge_avg_kwh <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb201-2"><a href="autocorrelation.html#cb201-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
-<span id="cb201-3"><a href="autocorrelation.html#cb201-3"></a>    <span class="kw">aes</span>(</span>
-<span id="cb201-4"><a href="autocorrelation.html#cb201-4"></a>      <span class="dt">x =</span> AVGMONTHLYKWH,</span>
-<span id="cb201-5"><a href="autocorrelation.html#cb201-5"></a>      <span class="dt">y =</span> AVGMONTHLYKWH_lag</span>
-<span id="cb201-6"><a href="autocorrelation.html#cb201-6"></a>    )</span>
-<span id="cb201-7"><a href="autocorrelation.html#cb201-7"></a>  ) <span class="op">+</span></span>
-<span id="cb201-8"><a href="autocorrelation.html#cb201-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb201-9"><a href="autocorrelation.html#cb201-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-207-1.png" width="672" /></p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="autocorrelation.html#cb200-1"></a>pge_avg_kwh <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb200-2"><a href="autocorrelation.html#cb200-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
+<span id="cb200-3"><a href="autocorrelation.html#cb200-3"></a>    <span class="kw">aes</span>(</span>
+<span id="cb200-4"><a href="autocorrelation.html#cb200-4"></a>      <span class="dt">x =</span> AVGMONTHLYKWH,</span>
+<span id="cb200-5"><a href="autocorrelation.html#cb200-5"></a>      <span class="dt">y =</span> AVGMONTHLYKWH_lag</span>
+<span id="cb200-6"><a href="autocorrelation.html#cb200-6"></a>    )</span>
+<span id="cb200-7"><a href="autocorrelation.html#cb200-7"></a>  ) <span class="op">+</span></span>
+<span id="cb200-8"><a href="autocorrelation.html#cb200-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb200-9"><a href="autocorrelation.html#cb200-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-206-1.png" width="672" /></p>
 <p>Let’s use <code>cor()</code> to get the correlation between these two variables (which you’ll recall is the square root of <code>R-squared</code>, and something we used <code>corrplot()</code> to get previously).</p>
-<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="autocorrelation.html#cb202-1"></a><span class="kw">cor</span>(</span>
-<span id="cb202-2"><a href="autocorrelation.html#cb202-2"></a>  pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH, </span>
-<span id="cb202-3"><a href="autocorrelation.html#cb202-3"></a>  pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH_lag</span>
-<span id="cb202-4"><a href="autocorrelation.html#cb202-4"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="autocorrelation.html#cb201-1"></a><span class="kw">cor</span>(</span>
+<span id="cb201-2"><a href="autocorrelation.html#cb201-2"></a>  pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH, </span>
+<span id="cb201-3"><a href="autocorrelation.html#cb201-3"></a>  pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH_lag</span>
+<span id="cb201-4"><a href="autocorrelation.html#cb201-4"></a>)</span></code></pre></div>
 <pre><code>## [1] 0.5325213</code></pre>
 <p>Keep in mind that the correlation between <code>year</code> and <code>AVGMONTHLYKWH</code> is a different measure from the correlation between <code>AVGMONTHLYKWH</code> and its lag.</p>
 <p>We can get a similar result more simply using the <code>acf()</code> function, which stands for “autocorrelation function”. We can provide the original (ordered) vector of values and get correlations for different amounts of “lag”, which is the time distance between variables.</p>
-<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="autocorrelation.html#cb204-1"></a><span class="kw">acf</span>(pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH, <span class="dt">plot =</span> F)</span></code></pre></div>
+<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb203-1"><a href="autocorrelation.html#cb203-1"></a><span class="kw">acf</span>(pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH, <span class="dt">plot =</span> F)</span></code></pre></div>
 <pre><code>## 
 ## Autocorrelations of series &#39;pge_avg_kwh$AVGMONTHLYKWH&#39;, by lag
 ## 
@@ -397,52 +398,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  1.000  0.533 -0.150 -0.466 -0.311  0.083  0.309  0.119 -0.250 -0.438 -0.205 
 ##     11     12     13     14     15     16     17     18     19 
 ##  0.413  0.780  0.462 -0.105 -0.397 -0.308  0.018  0.242  0.092</code></pre>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="autocorrelation.html#cb206-1"></a><span class="kw">acf</span>(pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH, <span class="dt">plot =</span> T)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-209-1.png" width="672" /></p>
+<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="autocorrelation.html#cb205-1"></a><span class="kw">acf</span>(pge_avg_kwh<span class="op">$</span>AVGMONTHLYKWH, <span class="dt">plot =</span> T)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-208-1.png" width="672" /></p>
 <p>Note that the manual example we did was a lag of “1” time increment between the value and its potential predictor, and the correlation we got closely matches the <code>acf()</code> result for one lag. The very first line, with a lag of 0, represents correlation of a variable directly with itself, which we would expect to always be 1. Note that towards the right, some lags like 6, 11-13, and, in the negative correlation direction, 3, 9, 15, breach the blue lines, which represent the 95% confidence interval around a correlation of 0. This means that any lines that breach this interval can be considered “statistically significant” signals of temporal autocorrelation. These signals seem related to the cyclical nature of the PG&amp;E energy data, following usage trends at different scales, weeks and beyond.</p>
 <p>So, is this autocorrelation a problem? Maybe, if you are directly making use of this PG&amp;E data, along with other data like population characteristics at the ZIP code level, to try to understand the relationship between population characteristics and energy use. In that case, adjacent months begin to take on some of the effect of the “duplicate records”, and artificially increase the closeness of your observations, leading you to more likely make false positive claims about relationships.</p>
 <p>But if you’re instead trying to predict energy use in the future, autocorrelation is very much your friend. The strong correlations above essentially let you create a better estimator of unknown values, since you can build off of some expected relationship between a value and the value 1 day ago, value 2 days ago, value 3 days ago, etc. In general, we can benefit from time fundamentally being a dimension of change, such that states that are closer in time to each other are by their very nature more similar than states that are farther in time from each other.</p>
 <p>Now let’s switch from considering the temporal dimension to considering the spatial dimension. Here we can expect a similar fundamental principle, first penned in 1970: “Everything is related to everything else, but near things are more related than distant things” (Tobler).</p>
 <p>Let’s use the ACS census tract education data we were using before, and come up with a simple way to relate a census tract with its “lag”, which in this case is neighboring census tracts in space. “Neighboring” can be defined a number of ways, but as the simplest version, let’s first identify the nearest census tract to every census tract, based on centroids.</p>
-<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="autocorrelation.html#cb207-1"></a>ca_tracts &lt;-<span class="st"> </span><span class="kw">tracts</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">progress_bar =</span> F)</span>
-<span id="cb207-2"><a href="autocorrelation.html#cb207-2"></a></span>
-<span id="cb207-3"><a href="autocorrelation.html#cb207-3"></a>bay_education_centroid &lt;-<span class="st"> </span>bay_multiple_tract <span class="op">%&gt;%</span></span>
-<span id="cb207-4"><a href="autocorrelation.html#cb207-4"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb207-5"><a href="autocorrelation.html#cb207-5"></a>    ca_tracts,</span>
-<span id="cb207-6"><a href="autocorrelation.html#cb207-6"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;tract&quot;</span> =<span class="st"> &quot;GEOID&quot;</span>)</span>
-<span id="cb207-7"><a href="autocorrelation.html#cb207-7"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb207-8"><a href="autocorrelation.html#cb207-8"></a><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb207-9"><a href="autocorrelation.html#cb207-9"></a><span class="st">  </span><span class="kw">st_centroid</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb207-10"><a href="autocorrelation.html#cb207-10"></a><span class="st">  </span><span class="kw">select</span>(tract, perc_college)</span></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="autocorrelation.html#cb206-1"></a>ca_tracts &lt;-<span class="st"> </span><span class="kw">tracts</span>(<span class="st">&quot;CA&quot;</span>, <span class="dt">progress_bar =</span> F)</span>
+<span id="cb206-2"><a href="autocorrelation.html#cb206-2"></a></span>
+<span id="cb206-3"><a href="autocorrelation.html#cb206-3"></a>bay_education_centroid &lt;-<span class="st"> </span>bay_multiple_tract <span class="op">%&gt;%</span></span>
+<span id="cb206-4"><a href="autocorrelation.html#cb206-4"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
+<span id="cb206-5"><a href="autocorrelation.html#cb206-5"></a>    ca_tracts,</span>
+<span id="cb206-6"><a href="autocorrelation.html#cb206-6"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;tract&quot;</span> =<span class="st"> &quot;GEOID&quot;</span>)</span>
+<span id="cb206-7"><a href="autocorrelation.html#cb206-7"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb206-8"><a href="autocorrelation.html#cb206-8"></a><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb206-9"><a href="autocorrelation.html#cb206-9"></a><span class="st">  </span><span class="kw">st_centroid</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb206-10"><a href="autocorrelation.html#cb206-10"></a><span class="st">  </span><span class="kw">select</span>(tract, perc_college)</span></code></pre></div>
 <p>We can use an <code>sf</code> function, <code>st_nearest_feature()</code>, which will automatically return the index (row number) of the nearest other row. We can use it similar to how we use <code>st_area(.)</code>, with a period to denote the pipeline object itself.</p>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="autocorrelation.html#cb208-1"></a>bay_education_lag &lt;-<span class="st"> </span>bay_education_centroid <span class="op">%&gt;%</span></span>
-<span id="cb208-2"><a href="autocorrelation.html#cb208-2"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
-<span id="cb208-3"><a href="autocorrelation.html#cb208-3"></a>    <span class="dt">nearest =</span> <span class="kw">st_nearest_feature</span>(.)</span>
-<span id="cb208-4"><a href="autocorrelation.html#cb208-4"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb208-5"><a href="autocorrelation.html#cb208-5"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb208-6"><a href="autocorrelation.html#cb208-6"></a>    bay_education_centroid <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb208-7"><a href="autocorrelation.html#cb208-7"></a><span class="st">      </span><span class="kw">st_drop_geometry</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb208-8"><a href="autocorrelation.html#cb208-8"></a><span class="st">      </span><span class="kw">transmute</span>(</span>
-<span id="cb208-9"><a href="autocorrelation.html#cb208-9"></a>        <span class="dt">index =</span> <span class="kw">row_number</span>(),</span>
-<span id="cb208-10"><a href="autocorrelation.html#cb208-10"></a>        <span class="dt">perc_college_lag =</span> perc_college</span>
-<span id="cb208-11"><a href="autocorrelation.html#cb208-11"></a>      ),</span>
-<span id="cb208-12"><a href="autocorrelation.html#cb208-12"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;nearest&quot;</span> =<span class="st"> &quot;index&quot;</span>)</span>
-<span id="cb208-13"><a href="autocorrelation.html#cb208-13"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="autocorrelation.html#cb207-1"></a>bay_education_lag &lt;-<span class="st"> </span>bay_education_centroid <span class="op">%&gt;%</span></span>
+<span id="cb207-2"><a href="autocorrelation.html#cb207-2"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb207-3"><a href="autocorrelation.html#cb207-3"></a>    <span class="dt">nearest =</span> <span class="kw">st_nearest_feature</span>(.)</span>
+<span id="cb207-4"><a href="autocorrelation.html#cb207-4"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb207-5"><a href="autocorrelation.html#cb207-5"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
+<span id="cb207-6"><a href="autocorrelation.html#cb207-6"></a>    bay_education_centroid <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb207-7"><a href="autocorrelation.html#cb207-7"></a><span class="st">      </span><span class="kw">st_drop_geometry</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb207-8"><a href="autocorrelation.html#cb207-8"></a><span class="st">      </span><span class="kw">transmute</span>(</span>
+<span id="cb207-9"><a href="autocorrelation.html#cb207-9"></a>        <span class="dt">index =</span> <span class="kw">row_number</span>(),</span>
+<span id="cb207-10"><a href="autocorrelation.html#cb207-10"></a>        <span class="dt">perc_college_lag =</span> perc_college</span>
+<span id="cb207-11"><a href="autocorrelation.html#cb207-11"></a>      ),</span>
+<span id="cb207-12"><a href="autocorrelation.html#cb207-12"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;nearest&quot;</span> =<span class="st"> &quot;index&quot;</span>)</span>
+<span id="cb207-13"><a href="autocorrelation.html#cb207-13"></a>  )</span></code></pre></div>
 <p>Then, we <code>left_join()</code> the original data, but without geometries, and with a field called <code>index</code> which will hold the original row number, using <code>row_number()</code>. When we join using this index, we are able to associate a census tract with its neighboring census tract’s education (labeled <code>perc_college_lag</code>).</p>
 <p>Now we can create a scatter plot, and formally calculate the slope of the relationship between the educational attainment of neighboring census tracts:</p>
-<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="autocorrelation.html#cb209-1"></a>bay_education_lag <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb209-2"><a href="autocorrelation.html#cb209-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
-<span id="cb209-3"><a href="autocorrelation.html#cb209-3"></a>    <span class="kw">aes</span>(</span>
-<span id="cb209-4"><a href="autocorrelation.html#cb209-4"></a>      <span class="dt">x =</span> perc_college_lag,</span>
-<span id="cb209-5"><a href="autocorrelation.html#cb209-5"></a>      <span class="dt">y =</span> perc_college</span>
-<span id="cb209-6"><a href="autocorrelation.html#cb209-6"></a>    )</span>
-<span id="cb209-7"><a href="autocorrelation.html#cb209-7"></a>  ) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb209-8"><a href="autocorrelation.html#cb209-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb209-9"><a href="autocorrelation.html#cb209-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-214-1.png" width="672" /></p>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="autocorrelation.html#cb210-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_college <span class="op">~</span><span class="st"> </span>perc_college_lag, bay_education_lag)</span>
-<span id="cb210-2"><a href="autocorrelation.html#cb210-2"></a></span>
-<span id="cb210-3"><a href="autocorrelation.html#cb210-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="autocorrelation.html#cb208-1"></a>bay_education_lag <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb208-2"><a href="autocorrelation.html#cb208-2"></a><span class="st">  </span><span class="kw">ggplot</span>(</span>
+<span id="cb208-3"><a href="autocorrelation.html#cb208-3"></a>    <span class="kw">aes</span>(</span>
+<span id="cb208-4"><a href="autocorrelation.html#cb208-4"></a>      <span class="dt">x =</span> perc_college_lag,</span>
+<span id="cb208-5"><a href="autocorrelation.html#cb208-5"></a>      <span class="dt">y =</span> perc_college</span>
+<span id="cb208-6"><a href="autocorrelation.html#cb208-6"></a>    )</span>
+<span id="cb208-7"><a href="autocorrelation.html#cb208-7"></a>  ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb208-8"><a href="autocorrelation.html#cb208-8"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb208-9"><a href="autocorrelation.html#cb208-9"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-213-1.png" width="672" /></p>
+<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="autocorrelation.html#cb209-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_college <span class="op">~</span><span class="st"> </span>perc_college_lag, bay_education_lag)</span>
+<span id="cb209-2"><a href="autocorrelation.html#cb209-2"></a></span>
+<span id="cb209-3"><a href="autocorrelation.html#cb209-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_college ~ perc_college_lag, data = bay_education_lag)
@@ -466,9 +467,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Again, whether this is good or bad depends on your interests. If we are missing data for some census tracts and need to fill it in, high spatial autocorrelation suggests that we can have a higher confidence in using neighboring values to impute the missing value. But if we’re trying to associate different variables, like we’ve been doing in the previous two chapters, then spatial autocorrelation will have the tendency to make relationships more certain than they appear.</p>
 <p>So how might we remove spatial autocorrelation if we think we want to? Building off our simplified example, we could simply try to “control for” the spatial lag variable and see how that rebalances the regression coefficients of our other explanatory variables.</p>
 <p>First, a mutiple regression without considering spatial autocorrelation, this time using income and race to predict education attainment:</p>
-<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="autocorrelation.html#cb212-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_college <span class="op">~</span><span class="st"> </span>perc_over100k <span class="op">+</span><span class="st"> </span>perc_white, bay_multiple_tract)</span>
-<span id="cb212-2"><a href="autocorrelation.html#cb212-2"></a></span>
-<span id="cb212-3"><a href="autocorrelation.html#cb212-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="autocorrelation.html#cb211-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_college <span class="op">~</span><span class="st"> </span>perc_over100k <span class="op">+</span><span class="st"> </span>perc_white, bay_multiple_tract)</span>
+<span id="cb211-2"><a href="autocorrelation.html#cb211-2"></a></span>
+<span id="cb211-3"><a href="autocorrelation.html#cb211-3"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_college ~ perc_over100k + perc_white, data = bay_multiple_tract)
@@ -489,16 +490,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Multiple R-squared:  0.6189, Adjusted R-squared:  0.6185 
 ## F-statistic:  1278 on 2 and 1574 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>The regression coefficient on <code>perc_over100k</code> is 0.59, and on <code>perc_white</code> is 0.23. Now let’s bring in <code>perc_college_lag</code> as an explainer.</p>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="autocorrelation.html#cb214-1"></a>bay_multiple_tract_lag &lt;-<span class="st"> </span></span>
-<span id="cb214-2"><a href="autocorrelation.html#cb214-2"></a><span class="st">  </span>bay_multiple_tract <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb214-3"><a href="autocorrelation.html#cb214-3"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb214-4"><a href="autocorrelation.html#cb214-4"></a>    bay_education_lag <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb214-5"><a href="autocorrelation.html#cb214-5"></a><span class="st">      </span><span class="kw">select</span>(tract, perc_college_lag)</span>
-<span id="cb214-6"><a href="autocorrelation.html#cb214-6"></a>  )</span>
-<span id="cb214-7"><a href="autocorrelation.html#cb214-7"></a></span>
-<span id="cb214-8"><a href="autocorrelation.html#cb214-8"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_college <span class="op">~</span><span class="st"> </span>perc_college_lag <span class="op">+</span><span class="st"> </span>perc_over100k <span class="op">+</span><span class="st"> </span>perc_white, bay_multiple_tract_lag)</span>
-<span id="cb214-9"><a href="autocorrelation.html#cb214-9"></a></span>
-<span id="cb214-10"><a href="autocorrelation.html#cb214-10"></a><span class="kw">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="autocorrelation.html#cb213-1"></a>bay_multiple_tract_lag &lt;-<span class="st"> </span></span>
+<span id="cb213-2"><a href="autocorrelation.html#cb213-2"></a><span class="st">  </span>bay_multiple_tract <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb213-3"><a href="autocorrelation.html#cb213-3"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
+<span id="cb213-4"><a href="autocorrelation.html#cb213-4"></a>    bay_education_lag <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb213-5"><a href="autocorrelation.html#cb213-5"></a><span class="st">      </span><span class="kw">select</span>(tract, perc_college_lag)</span>
+<span id="cb213-6"><a href="autocorrelation.html#cb213-6"></a>  )</span>
+<span id="cb213-7"><a href="autocorrelation.html#cb213-7"></a></span>
+<span id="cb213-8"><a href="autocorrelation.html#cb213-8"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(perc_college <span class="op">~</span><span class="st"> </span>perc_college_lag <span class="op">+</span><span class="st"> </span>perc_over100k <span class="op">+</span><span class="st"> </span>perc_white, bay_multiple_tract_lag)</span>
+<span id="cb213-9"><a href="autocorrelation.html#cb213-9"></a></span>
+<span id="cb213-10"><a href="autocorrelation.html#cb213-10"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = perc_college ~ perc_college_lag + perc_over100k + 
@@ -522,17 +523,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## F-statistic:  1604 on 3 and 1573 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>The regression coefficient on <code>perc_over100k</code> has gone down from 0.59 to 0.37, and on <code>perc_white</code> has gone down from 0.23 to 0.12. In other words, “controlling for the explanatory power of neighbors”, the explanatory power of income and race seems to have decreased. Or, controlling for income and race, having neighbors with high educational attainment seems to have some relationship with your own educational attainment.</p>
 <p>I’ll now demonstrate more formal ways to do the previous three steps. First, to find neighbors, instead of just using the one closest neighbor by centroid distance, we can find all bordering neighbors using <code>poly2nb()</code> from the <code>spdep</code> package, and then derive spatial weights based on how many neighbors there are (i.e., four neighbors would each contribute 25% of their <code>perc_college</code> to the lag variable) using <code>nb2listw()</code>:</p>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="autocorrelation.html#cb216-1"></a><span class="kw">library</span>(spdep)</span></code></pre></div>
-<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="autocorrelation.html#cb217-1"></a>bay_multiple_tract_wts &lt;-<span class="st"> </span>bay_multiple_tract <span class="op">%&gt;%</span></span>
-<span id="cb217-2"><a href="autocorrelation.html#cb217-2"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb217-3"><a href="autocorrelation.html#cb217-3"></a>    ca_tracts,</span>
-<span id="cb217-4"><a href="autocorrelation.html#cb217-4"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;tract&quot;</span> =<span class="st"> &quot;GEOID&quot;</span>)</span>
-<span id="cb217-5"><a href="autocorrelation.html#cb217-5"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb217-6"><a href="autocorrelation.html#cb217-6"></a><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
-<span id="cb217-7"><a href="autocorrelation.html#cb217-7"></a><span class="st">  </span><span class="kw">poly2nb</span>() <span class="op">%&gt;%</span></span>
-<span id="cb217-8"><a href="autocorrelation.html#cb217-8"></a><span class="st">  </span><span class="kw">nb2listw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="autocorrelation.html#cb215-1"></a><span class="kw">library</span>(spdep)</span></code></pre></div>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="autocorrelation.html#cb216-1"></a>bay_multiple_tract_wts &lt;-<span class="st"> </span>bay_multiple_tract <span class="op">%&gt;%</span></span>
+<span id="cb216-2"><a href="autocorrelation.html#cb216-2"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
+<span id="cb216-3"><a href="autocorrelation.html#cb216-3"></a>    ca_tracts,</span>
+<span id="cb216-4"><a href="autocorrelation.html#cb216-4"></a>    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;tract&quot;</span> =<span class="st"> &quot;GEOID&quot;</span>)</span>
+<span id="cb216-5"><a href="autocorrelation.html#cb216-5"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb216-6"><a href="autocorrelation.html#cb216-6"></a><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
+<span id="cb216-7"><a href="autocorrelation.html#cb216-7"></a><span class="st">  </span><span class="kw">poly2nb</span>() <span class="op">%&gt;%</span></span>
+<span id="cb216-8"><a href="autocorrelation.html#cb216-8"></a><span class="st">  </span><span class="kw">nb2listw</span>()</span></code></pre></div>
 <p>Then we can calculate “Moran’s I”, a more formal version of the regression coefficient we did between census tracts and their neighbors, using <code>moran.test()</code>, in which we supply a dataframe variable and the spatial weights we just created:</p>
-<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="autocorrelation.html#cb218-1"></a><span class="kw">moran.test</span>(bay_multiple_tract<span class="op">$</span>perc_college, bay_multiple_tract_wts)</span></code></pre></div>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="autocorrelation.html#cb217-1"></a><span class="kw">moran.test</span>(bay_multiple_tract<span class="op">$</span>perc_college, bay_multiple_tract_wts)</span></code></pre></div>
 <pre><code>## 
 ##  Moran I test under randomisation
 ## 
@@ -546,17 +547,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##      0.7012052501     -0.0006345178      0.0002120552</code></pre>
 <p>The Moran I statistic, 0.70, is similar to the slope of 0.76 we calculated when using just one nearest neighbor.</p>
 <p>Lastly, one formal technique for controlling for spatial autocorrelation is <code>lagsarlm()</code> (“lag, spatial auto-regressive, linear model”) from the <code>spatialreg</code> package. If you accept the demonstrations above, then you can just trust this function to be factoring in the explanatory power of multiple nearest neighbors.</p>
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="autocorrelation.html#cb220-1"></a><span class="kw">library</span>(spatialreg)</span>
-<span id="cb220-2"><a href="autocorrelation.html#cb220-2"></a></span>
-<span id="cb220-3"><a href="autocorrelation.html#cb220-3"></a>lag_model &lt;-<span class="st"> </span><span class="kw">lagsarlm</span>(</span>
-<span id="cb220-4"><a href="autocorrelation.html#cb220-4"></a>  perc_college <span class="op">~</span><span class="st"> </span>perc_over100k <span class="op">+</span><span class="st"> </span>perc_white,</span>
-<span id="cb220-5"><a href="autocorrelation.html#cb220-5"></a>  <span class="dt">data =</span> bay_multiple_tract, </span>
-<span id="cb220-6"><a href="autocorrelation.html#cb220-6"></a>  <span class="dt">listw =</span> bay_multiple_tract_wts</span>
-<span id="cb220-7"><a href="autocorrelation.html#cb220-7"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="autocorrelation.html#cb221-1"></a>lag_model<span class="op">$</span>coefficients</span></code></pre></div>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="autocorrelation.html#cb219-1"></a><span class="kw">library</span>(spatialreg)</span>
+<span id="cb219-2"><a href="autocorrelation.html#cb219-2"></a></span>
+<span id="cb219-3"><a href="autocorrelation.html#cb219-3"></a>lag_model &lt;-<span class="st"> </span><span class="kw">lagsarlm</span>(</span>
+<span id="cb219-4"><a href="autocorrelation.html#cb219-4"></a>  perc_college <span class="op">~</span><span class="st"> </span>perc_over100k <span class="op">+</span><span class="st"> </span>perc_white,</span>
+<span id="cb219-5"><a href="autocorrelation.html#cb219-5"></a>  <span class="dt">data =</span> bay_multiple_tract, </span>
+<span id="cb219-6"><a href="autocorrelation.html#cb219-6"></a>  <span class="dt">listw =</span> bay_multiple_tract_wts</span>
+<span id="cb219-7"><a href="autocorrelation.html#cb219-7"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="autocorrelation.html#cb220-1"></a>lag_model<span class="op">$</span>coefficients</span></code></pre></div>
 <pre><code>##   (Intercept) perc_over100k    perc_white 
 ##    0.03492313    0.33148292    0.10627475</code></pre>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="autocorrelation.html#cb223-1"></a>lag_model<span class="op">$</span>rho</span></code></pre></div>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="autocorrelation.html#cb222-1"></a>lag_model<span class="op">$</span>rho</span></code></pre></div>
 <pre><code>##       rho 
 ## 0.6329347</code></pre>
 <p>You can observe that the regression coefficients for <code>perc_over100k</code> and <code>perc_white</code> are pretty similar to our previous example. The regression coefficient for the “spatial lag” variable is shown here as <code>Rho</code>, 0.63. One’s tract’s educational attainment seems to be strongly explained by the shared variation in income, race, and one’s neighbors’ educational attainment.</p>

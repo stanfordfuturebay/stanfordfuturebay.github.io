@@ -194,6 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
 <li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
 <li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
+<li class="chapter" data-level="5.5" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>5.5</b> Training and testing data</a></li>
 </ul></li>
 </ul>
 
@@ -216,186 +217,186 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.3</span> Monte Carlo simulations</h2>
 <p>It is common for the inputs to some analysis to really be “average” values for some sample or population. Sometimes, you will not have any other information other than the mean, so you’d just work through your analysis, business as usual, and end up with some kind of output based on those input means. But sometimes, you’ll know some measure of variance associated with one or more inputs. In that case, you can set up your R analyses to “propagate” those uncertainties through the analysis and know something about the variance associated with your outputs. The simplest version of this involves “brute force”, i.e. running your analysis thousands of times, each time using <code>rnorm()</code> to introduce some variation to your input values around their means, then measuring the variance of your thousands of different output results. This is often called a “Monte Carlo simulation”, though in some sense, even the Galton experiment from the last section was a kind of Monte Carlo simulation.</p>
 <p>Let’s revisit the American Communities Survey as an example. If we wanted to find the median household income for the 9-County Bay Area in 2019, first without considering uncertainty, we can use <code>censusapi</code> as follows:</p>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="monte-carlo-simulations.html#cb137-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb137-2"><a href="monte-carlo-simulations.html#cb137-2"></a><span class="kw">library</span>(censusapi)</span>
-<span id="cb137-3"><a href="monte-carlo-simulations.html#cb137-3"></a></span>
-<span id="cb137-4"><a href="monte-carlo-simulations.html#cb137-4"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
-<span id="cb137-5"><a href="monte-carlo-simulations.html#cb137-5"></a></span>
-<span id="cb137-6"><a href="monte-carlo-simulations.html#cb137-6"></a>acs_vars_<span class="dv">2019</span>_1yr &lt;-</span>
-<span id="cb137-7"><a href="monte-carlo-simulations.html#cb137-7"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
-<span id="cb137-8"><a href="monte-carlo-simulations.html#cb137-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2019/acs/acs1&quot;</span>,</span>
-<span id="cb137-9"><a href="monte-carlo-simulations.html#cb137-9"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
-<span id="cb137-10"><a href="monte-carlo-simulations.html#cb137-10"></a>  )</span>
-<span id="cb137-11"><a href="monte-carlo-simulations.html#cb137-11"></a></span>
-<span id="cb137-12"><a href="monte-carlo-simulations.html#cb137-12"></a>income_<span class="dv">19</span>_summary &lt;-<span class="st"> </span></span>
-<span id="cb137-13"><a href="monte-carlo-simulations.html#cb137-13"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
-<span id="cb137-14"><a href="monte-carlo-simulations.html#cb137-14"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb137-15"><a href="monte-carlo-simulations.html#cb137-15"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
-<span id="cb137-16"><a href="monte-carlo-simulations.html#cb137-16"></a>    <span class="dt">region =</span> <span class="st">&quot;county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
-<span id="cb137-17"><a href="monte-carlo-simulations.html#cb137-17"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
-<span id="cb137-18"><a href="monte-carlo-simulations.html#cb137-18"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B19001)&quot;</span>)</span>
-<span id="cb137-19"><a href="monte-carlo-simulations.html#cb137-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb137-20"><a href="monte-carlo-simulations.html#cb137-20"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">!</span><span class="kw">c</span>(GEO_ID,state,NAME) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;EA&quot;</span>,<span class="st">&quot;MA&quot;</span>,<span class="st">&quot;M&quot;</span>))) <span class="op">%&gt;%</span></span>
-<span id="cb137-21"><a href="monte-carlo-simulations.html#cb137-21"></a><span class="st">  </span><span class="kw">pivot_longer</span>(</span>
-<span id="cb137-22"><a href="monte-carlo-simulations.html#cb137-22"></a>    <span class="kw">ends_with</span>(<span class="st">&quot;E&quot;</span>),</span>
-<span id="cb137-23"><a href="monte-carlo-simulations.html#cb137-23"></a>    <span class="dt">names_to =</span> <span class="st">&quot;name&quot;</span>,</span>
-<span id="cb137-24"><a href="monte-carlo-simulations.html#cb137-24"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
-<span id="cb137-25"><a href="monte-carlo-simulations.html#cb137-25"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb137-26"><a href="monte-carlo-simulations.html#cb137-26"></a><span class="st">  </span><span class="kw">group_by</span>(name) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb137-27"><a href="monte-carlo-simulations.html#cb137-27"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb137-28"><a href="monte-carlo-simulations.html#cb137-28"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
-<span id="cb137-29"><a href="monte-carlo-simulations.html#cb137-29"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb137-30"><a href="monte-carlo-simulations.html#cb137-30"></a><span class="st">      </span><span class="kw">select</span>(name, label)</span>
-<span id="cb137-31"><a href="monte-carlo-simulations.html#cb137-31"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb137-32"><a href="monte-carlo-simulations.html#cb137-32"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>name)</span>
-<span id="cb137-33"><a href="monte-carlo-simulations.html#cb137-33"></a></span>
-<span id="cb137-34"><a href="monte-carlo-simulations.html#cb137-34"></a>income_<span class="dv">19</span>_summary</span></code></pre></div>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="monte-carlo-simulations.html#cb136-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb136-2"><a href="monte-carlo-simulations.html#cb136-2"></a><span class="kw">library</span>(censusapi)</span>
+<span id="cb136-3"><a href="monte-carlo-simulations.html#cb136-3"></a></span>
+<span id="cb136-4"><a href="monte-carlo-simulations.html#cb136-4"></a><span class="kw">Sys.setenv</span>(<span class="dt">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span>
+<span id="cb136-5"><a href="monte-carlo-simulations.html#cb136-5"></a></span>
+<span id="cb136-6"><a href="monte-carlo-simulations.html#cb136-6"></a>acs_vars_<span class="dv">2019</span>_1yr &lt;-</span>
+<span id="cb136-7"><a href="monte-carlo-simulations.html#cb136-7"></a><span class="st">  </span><span class="kw">listCensusMetadata</span>(</span>
+<span id="cb136-8"><a href="monte-carlo-simulations.html#cb136-8"></a>    <span class="dt">name =</span> <span class="st">&quot;2019/acs/acs1&quot;</span>,</span>
+<span id="cb136-9"><a href="monte-carlo-simulations.html#cb136-9"></a>    <span class="dt">type =</span> <span class="st">&quot;variables&quot;</span></span>
+<span id="cb136-10"><a href="monte-carlo-simulations.html#cb136-10"></a>  )</span>
+<span id="cb136-11"><a href="monte-carlo-simulations.html#cb136-11"></a></span>
+<span id="cb136-12"><a href="monte-carlo-simulations.html#cb136-12"></a>income_<span class="dv">19</span>_summary &lt;-<span class="st"> </span></span>
+<span id="cb136-13"><a href="monte-carlo-simulations.html#cb136-13"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
+<span id="cb136-14"><a href="monte-carlo-simulations.html#cb136-14"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
+<span id="cb136-15"><a href="monte-carlo-simulations.html#cb136-15"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
+<span id="cb136-16"><a href="monte-carlo-simulations.html#cb136-16"></a>    <span class="dt">region =</span> <span class="st">&quot;county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb136-17"><a href="monte-carlo-simulations.html#cb136-17"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
+<span id="cb136-18"><a href="monte-carlo-simulations.html#cb136-18"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B19001)&quot;</span>)</span>
+<span id="cb136-19"><a href="monte-carlo-simulations.html#cb136-19"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb136-20"><a href="monte-carlo-simulations.html#cb136-20"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">!</span><span class="kw">c</span>(GEO_ID,state,NAME) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;EA&quot;</span>,<span class="st">&quot;MA&quot;</span>,<span class="st">&quot;M&quot;</span>))) <span class="op">%&gt;%</span></span>
+<span id="cb136-21"><a href="monte-carlo-simulations.html#cb136-21"></a><span class="st">  </span><span class="kw">pivot_longer</span>(</span>
+<span id="cb136-22"><a href="monte-carlo-simulations.html#cb136-22"></a>    <span class="kw">ends_with</span>(<span class="st">&quot;E&quot;</span>),</span>
+<span id="cb136-23"><a href="monte-carlo-simulations.html#cb136-23"></a>    <span class="dt">names_to =</span> <span class="st">&quot;name&quot;</span>,</span>
+<span id="cb136-24"><a href="monte-carlo-simulations.html#cb136-24"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
+<span id="cb136-25"><a href="monte-carlo-simulations.html#cb136-25"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb136-26"><a href="monte-carlo-simulations.html#cb136-26"></a><span class="st">  </span><span class="kw">group_by</span>(name) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb136-27"><a href="monte-carlo-simulations.html#cb136-27"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sum</span>(estimate)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb136-28"><a href="monte-carlo-simulations.html#cb136-28"></a><span class="st">  </span><span class="kw">left_join</span>(</span>
+<span id="cb136-29"><a href="monte-carlo-simulations.html#cb136-29"></a>    acs_vars_<span class="dv">2019</span>_1yr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb136-30"><a href="monte-carlo-simulations.html#cb136-30"></a><span class="st">      </span><span class="kw">select</span>(name, label)</span>
+<span id="cb136-31"><a href="monte-carlo-simulations.html#cb136-31"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb136-32"><a href="monte-carlo-simulations.html#cb136-32"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>name)</span>
+<span id="cb136-33"><a href="monte-carlo-simulations.html#cb136-33"></a></span>
+<span id="cb136-34"><a href="monte-carlo-simulations.html#cb136-34"></a>income_<span class="dv">19</span>_summary</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["estimate"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["label"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"2754402","2":"Estimate!!Total:"},{"1":"91512","2":"Estimate!!Total:!!Less than $10,000"},{"1":"82338","2":"Estimate!!Total:!!$10,000 to $14,999"},{"1":"55815","2":"Estimate!!Total:!!$15,000 to $19,999"},{"1":"61828","2":"Estimate!!Total:!!$20,000 to $24,999"},{"1":"61788","2":"Estimate!!Total:!!$25,000 to $29,999"},{"1":"66263","2":"Estimate!!Total:!!$30,000 to $34,999"},{"1":"61623","2":"Estimate!!Total:!!$35,000 to $39,999"},{"1":"66533","2":"Estimate!!Total:!!$40,000 to $44,999"},{"1":"59775","2":"Estimate!!Total:!!$45,000 to $49,999"},{"1":"127763","2":"Estimate!!Total:!!$50,000 to $59,999"},{"1":"195713","2":"Estimate!!Total:!!$60,000 to $74,999"},{"1":"297416","2":"Estimate!!Total:!!$75,000 to $99,999"},{"1":"266645","2":"Estimate!!Total:!!$100,000 to $124,999"},{"1":"217907","2":"Estimate!!Total:!!$125,000 to $149,999"},{"1":"338795","2":"Estimate!!Total:!!$150,000 to $199,999"},{"1":"702688","2":"Estimate!!Total:!!$200,000 or more"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="monte-carlo-simulations.html#cb138-1"></a>income_tiers &lt;-<span class="st"> </span></span>
-<span id="cb138-2"><a href="monte-carlo-simulations.html#cb138-2"></a><span class="st">  </span><span class="kw">data.frame</span>(</span>
-<span id="cb138-3"><a href="monte-carlo-simulations.html#cb138-3"></a>    <span class="dt">lower_end =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">0</span>, <span class="dv">10000</span>, <span class="dv">15000</span>, <span class="dv">20000</span>, <span class="dv">25000</span>, <span class="dv">30000</span>, <span class="dv">35000</span>, <span class="dv">40000</span>, <span class="dv">45000</span>, <span class="dv">50000</span>, <span class="dv">60000</span>, <span class="dv">75000</span>, <span class="dv">100000</span>, <span class="dv">125000</span>, <span class="dv">150000</span>, <span class="dv">200000</span>),</span>
-<span id="cb138-4"><a href="monte-carlo-simulations.html#cb138-4"></a>    <span class="dt">width =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">10000</span>, <span class="kw">rep</span>(<span class="dv">5000</span>, <span class="dv">8</span>), <span class="dv">10000</span>, <span class="dv">15000</span>, <span class="kw">rep</span>(<span class="dv">25000</span>, <span class="dv">3</span>), <span class="dv">50000</span>, <span class="ot">NA</span>)</span>
-<span id="cb138-5"><a href="monte-carlo-simulations.html#cb138-5"></a>  )</span>
-<span id="cb138-6"><a href="monte-carlo-simulations.html#cb138-6"></a></span>
-<span id="cb138-7"><a href="monte-carlo-simulations.html#cb138-7"></a>income_tiers</span></code></pre></div>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="monte-carlo-simulations.html#cb137-1"></a>income_tiers &lt;-<span class="st"> </span></span>
+<span id="cb137-2"><a href="monte-carlo-simulations.html#cb137-2"></a><span class="st">  </span><span class="kw">data.frame</span>(</span>
+<span id="cb137-3"><a href="monte-carlo-simulations.html#cb137-3"></a>    <span class="dt">lower_end =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">0</span>, <span class="dv">10000</span>, <span class="dv">15000</span>, <span class="dv">20000</span>, <span class="dv">25000</span>, <span class="dv">30000</span>, <span class="dv">35000</span>, <span class="dv">40000</span>, <span class="dv">45000</span>, <span class="dv">50000</span>, <span class="dv">60000</span>, <span class="dv">75000</span>, <span class="dv">100000</span>, <span class="dv">125000</span>, <span class="dv">150000</span>, <span class="dv">200000</span>),</span>
+<span id="cb137-4"><a href="monte-carlo-simulations.html#cb137-4"></a>    <span class="dt">width =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">10000</span>, <span class="kw">rep</span>(<span class="dv">5000</span>, <span class="dv">8</span>), <span class="dv">10000</span>, <span class="dv">15000</span>, <span class="kw">rep</span>(<span class="dv">25000</span>, <span class="dv">3</span>), <span class="dv">50000</span>, <span class="ot">NA</span>)</span>
+<span id="cb137-5"><a href="monte-carlo-simulations.html#cb137-5"></a>  )</span>
+<span id="cb137-6"><a href="monte-carlo-simulations.html#cb137-6"></a></span>
+<span id="cb137-7"><a href="monte-carlo-simulations.html#cb137-7"></a>income_tiers</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["lower_end"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["width"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"NA","2":"NA"},{"1":"0","2":"10000"},{"1":"10000","2":"5000"},{"1":"15000","2":"5000"},{"1":"20000","2":"5000"},{"1":"25000","2":"5000"},{"1":"30000","2":"5000"},{"1":"35000","2":"5000"},{"1":"40000","2":"5000"},{"1":"45000","2":"5000"},{"1":"50000","2":"10000"},{"1":"60000","2":"15000"},{"1":"75000","2":"25000"},{"1":"100000","2":"25000"},{"1":"125000","2":"25000"},{"1":"150000","2":"50000"},{"1":"200000","2":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="monte-carlo-simulations.html#cb139-1"></a>total &lt;-<span class="st"> </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[<span class="dv">1</span>]</span>
-<span id="cb139-2"><a href="monte-carlo-simulations.html#cb139-2"></a>  </span>
-<span id="cb139-3"><a href="monte-carlo-simulations.html#cb139-3"></a>row &lt;-<span class="st"> </span><span class="dv">2</span> </span>
-<span id="cb139-4"><a href="monte-carlo-simulations.html#cb139-4"></a>  </span>
-<span id="cb139-5"><a href="monte-carlo-simulations.html#cb139-5"></a>cumulative &lt;-<span class="st"> </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[row]</span>
-<span id="cb139-6"><a href="monte-carlo-simulations.html#cb139-6"></a>  </span>
-<span id="cb139-7"><a href="monte-carlo-simulations.html#cb139-7"></a>proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
-<span id="cb139-8"><a href="monte-carlo-simulations.html#cb139-8"></a>  </span>
-<span id="cb139-9"><a href="monte-carlo-simulations.html#cb139-9"></a><span class="cf">while</span> (proportion <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.5</span>) {</span>
-<span id="cb139-10"><a href="monte-carlo-simulations.html#cb139-10"></a>    </span>
-<span id="cb139-11"><a href="monte-carlo-simulations.html#cb139-11"></a>  cumulative_lag &lt;-<span class="st"> </span>cumulative</span>
-<span id="cb139-12"><a href="monte-carlo-simulations.html#cb139-12"></a>  </span>
-<span id="cb139-13"><a href="monte-carlo-simulations.html#cb139-13"></a>  row &lt;-<span class="st"> </span>row <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
-<span id="cb139-14"><a href="monte-carlo-simulations.html#cb139-14"></a>  </span>
-<span id="cb139-15"><a href="monte-carlo-simulations.html#cb139-15"></a>  cumulative &lt;-<span class="st"> </span>cumulative <span class="op">+</span><span class="st"> </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[row]</span>
-<span id="cb139-16"><a href="monte-carlo-simulations.html#cb139-16"></a>  </span>
-<span id="cb139-17"><a href="monte-carlo-simulations.html#cb139-17"></a>  proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
-<span id="cb139-18"><a href="monte-carlo-simulations.html#cb139-18"></a>  </span>
-<span id="cb139-19"><a href="monte-carlo-simulations.html#cb139-19"></a>}</span>
-<span id="cb139-20"><a href="monte-carlo-simulations.html#cb139-20"></a>  </span>
-<span id="cb139-21"><a href="monte-carlo-simulations.html#cb139-21"></a>median &lt;-<span class="st"> </span></span>
-<span id="cb139-22"><a href="monte-carlo-simulations.html#cb139-22"></a><span class="st">  </span>income_tiers<span class="op">$</span>lower_end[row] <span class="op">+</span><span class="st"> </span></span>
-<span id="cb139-23"><a href="monte-carlo-simulations.html#cb139-23"></a><span class="st">  </span>(total<span class="op">/</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span>cumulative_lag) <span class="op">/</span></span>
-<span id="cb139-24"><a href="monte-carlo-simulations.html#cb139-24"></a><span class="st">  </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[row] <span class="op">*</span></span>
-<span id="cb139-25"><a href="monte-carlo-simulations.html#cb139-25"></a><span class="st">  </span>income_tiers<span class="op">$</span>width[row]</span>
-<span id="cb139-26"><a href="monte-carlo-simulations.html#cb139-26"></a></span>
-<span id="cb139-27"><a href="monte-carlo-simulations.html#cb139-27"></a><span class="kw">prettyNum</span>(<span class="kw">round</span>(median), <span class="st">&quot;,&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="monte-carlo-simulations.html#cb138-1"></a>total &lt;-<span class="st"> </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[<span class="dv">1</span>]</span>
+<span id="cb138-2"><a href="monte-carlo-simulations.html#cb138-2"></a>  </span>
+<span id="cb138-3"><a href="monte-carlo-simulations.html#cb138-3"></a>row &lt;-<span class="st"> </span><span class="dv">2</span> </span>
+<span id="cb138-4"><a href="monte-carlo-simulations.html#cb138-4"></a>  </span>
+<span id="cb138-5"><a href="monte-carlo-simulations.html#cb138-5"></a>cumulative &lt;-<span class="st"> </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[row]</span>
+<span id="cb138-6"><a href="monte-carlo-simulations.html#cb138-6"></a>  </span>
+<span id="cb138-7"><a href="monte-carlo-simulations.html#cb138-7"></a>proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
+<span id="cb138-8"><a href="monte-carlo-simulations.html#cb138-8"></a>  </span>
+<span id="cb138-9"><a href="monte-carlo-simulations.html#cb138-9"></a><span class="cf">while</span> (proportion <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.5</span>) {</span>
+<span id="cb138-10"><a href="monte-carlo-simulations.html#cb138-10"></a>    </span>
+<span id="cb138-11"><a href="monte-carlo-simulations.html#cb138-11"></a>  cumulative_lag &lt;-<span class="st"> </span>cumulative</span>
+<span id="cb138-12"><a href="monte-carlo-simulations.html#cb138-12"></a>  </span>
+<span id="cb138-13"><a href="monte-carlo-simulations.html#cb138-13"></a>  row &lt;-<span class="st"> </span>row <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb138-14"><a href="monte-carlo-simulations.html#cb138-14"></a>  </span>
+<span id="cb138-15"><a href="monte-carlo-simulations.html#cb138-15"></a>  cumulative &lt;-<span class="st"> </span>cumulative <span class="op">+</span><span class="st"> </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[row]</span>
+<span id="cb138-16"><a href="monte-carlo-simulations.html#cb138-16"></a>  </span>
+<span id="cb138-17"><a href="monte-carlo-simulations.html#cb138-17"></a>  proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
+<span id="cb138-18"><a href="monte-carlo-simulations.html#cb138-18"></a>  </span>
+<span id="cb138-19"><a href="monte-carlo-simulations.html#cb138-19"></a>}</span>
+<span id="cb138-20"><a href="monte-carlo-simulations.html#cb138-20"></a>  </span>
+<span id="cb138-21"><a href="monte-carlo-simulations.html#cb138-21"></a>median &lt;-<span class="st"> </span></span>
+<span id="cb138-22"><a href="monte-carlo-simulations.html#cb138-22"></a><span class="st">  </span>income_tiers<span class="op">$</span>lower_end[row] <span class="op">+</span><span class="st"> </span></span>
+<span id="cb138-23"><a href="monte-carlo-simulations.html#cb138-23"></a><span class="st">  </span>(total<span class="op">/</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span>cumulative_lag) <span class="op">/</span></span>
+<span id="cb138-24"><a href="monte-carlo-simulations.html#cb138-24"></a><span class="st">  </span>income_<span class="dv">19</span>_summary<span class="op">$</span>estimate[row] <span class="op">*</span></span>
+<span id="cb138-25"><a href="monte-carlo-simulations.html#cb138-25"></a><span class="st">  </span>income_tiers<span class="op">$</span>width[row]</span>
+<span id="cb138-26"><a href="monte-carlo-simulations.html#cb138-26"></a></span>
+<span id="cb138-27"><a href="monte-carlo-simulations.html#cb138-27"></a><span class="kw">prettyNum</span>(<span class="kw">round</span>(median), <span class="st">&quot;,&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] &quot;113,954&quot;</code></pre>
 <p>In the while loop above, a cumulative sum of households is aggregated income tier by income tier until the cumulative percent of households has breached 50%, meaning that the current <code>row</code> of the dataframe is the income tier that contains the median household income. From there, a linear interpolation is performed between, in this case, $100,000 and $125,000 as book-end income values and the rank order of households who are positioned at those book-end income values (in this case the 1,228,367th household and the 1,495,012th household from lowest to highest income). By assuming that each household between these households has equal increments of additional income from $100,000 to $125,000, then with some simple math we can estimate the income of the “median household”, which is the 1,377,201th household out of a total 2,754,402. The result from the above chunk is a median household income for that median household of $113,954. So to apply a Monte Carlo simulation, we need to functionalize the steps above, and then run thousands of simulations through that function. Notice, by the way, the use of <code>prettyNum()</code> to enable rendering of the numeric variable with a comma where we would expect it.</p>
 <p>So to apply a Monte Carlo simulation, we need to functionalize the steps we’ve just done to the single set of inputs, and then run thousands of simulations through that function. First, let’s inspect the “margins of error” (MOE) that, till now, we’ve removed in our <code>getCensus()</code> pipelines. Because the American Community Survey is answered by a sample of households in the U.S. as opposed to the full population, the Census Bureau conducts additional research and analysis to produce a measure of uncertainty associated with the sample data. The margin of error reported in the Census data is, by definition, 1.645 * standard error (equates to the 90% confidence band), so we can easily convert MOEs to standard deviations by dividing MOEs by 1.645. First we need to produce the MOEs for each aggregated Bay Area income tier, just like we produced the mean household counts for each aggregated Bay Area income tier previously. Instead of summing, we take the square root of the sum of squares when adding MOEs together, as per <a href="https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020.pdf">Ch. 8 of the ACS Handbook</a>.</p>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="monte-carlo-simulations.html#cb141-1"></a>income_<span class="dv">19</span>_summary_moe &lt;-<span class="st"> </span></span>
-<span id="cb141-2"><a href="monte-carlo-simulations.html#cb141-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
-<span id="cb141-3"><a href="monte-carlo-simulations.html#cb141-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
-<span id="cb141-4"><a href="monte-carlo-simulations.html#cb141-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
-<span id="cb141-5"><a href="monte-carlo-simulations.html#cb141-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
-<span id="cb141-6"><a href="monte-carlo-simulations.html#cb141-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
-<span id="cb141-7"><a href="monte-carlo-simulations.html#cb141-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B19001)&quot;</span>)</span>
-<span id="cb141-8"><a href="monte-carlo-simulations.html#cb141-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb141-9"><a href="monte-carlo-simulations.html#cb141-9"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">!</span><span class="kw">c</span>(GEO_ID,state,NAME) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;EA&quot;</span>,<span class="st">&quot;MA&quot;</span>,<span class="st">&quot;E&quot;</span>))) <span class="op">%&gt;%</span></span>
-<span id="cb141-10"><a href="monte-carlo-simulations.html#cb141-10"></a><span class="st">  </span><span class="kw">pivot_longer</span>(</span>
-<span id="cb141-11"><a href="monte-carlo-simulations.html#cb141-11"></a>    <span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;M&quot;</span>)),</span>
-<span id="cb141-12"><a href="monte-carlo-simulations.html#cb141-12"></a>    <span class="dt">names_to =</span> <span class="st">&quot;name&quot;</span>,</span>
-<span id="cb141-13"><a href="monte-carlo-simulations.html#cb141-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
-<span id="cb141-14"><a href="monte-carlo-simulations.html#cb141-14"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb141-15"><a href="monte-carlo-simulations.html#cb141-15"></a><span class="st">  </span><span class="kw">group_by</span>(name) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb141-16"><a href="monte-carlo-simulations.html#cb141-16"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sqrt</span>(<span class="kw">sum</span>(estimate<span class="op">^</span><span class="dv">2</span>)))</span>
-<span id="cb141-17"><a href="monte-carlo-simulations.html#cb141-17"></a></span>
-<span id="cb141-18"><a href="monte-carlo-simulations.html#cb141-18"></a>income_<span class="dv">19</span>_summary_moe</span></code></pre></div>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="monte-carlo-simulations.html#cb140-1"></a>income_<span class="dv">19</span>_summary_moe &lt;-<span class="st"> </span></span>
+<span id="cb140-2"><a href="monte-carlo-simulations.html#cb140-2"></a><span class="st">  </span><span class="kw">getCensus</span>(</span>
+<span id="cb140-3"><a href="monte-carlo-simulations.html#cb140-3"></a>    <span class="dt">name =</span> <span class="st">&quot;acs/acs1&quot;</span>,</span>
+<span id="cb140-4"><a href="monte-carlo-simulations.html#cb140-4"></a>    <span class="dt">vintage =</span> <span class="dv">2019</span>,</span>
+<span id="cb140-5"><a href="monte-carlo-simulations.html#cb140-5"></a>    <span class="dt">region =</span> <span class="st">&quot;county:001,013,041,055,075,081,085,095,097&quot;</span>,</span>
+<span id="cb140-6"><a href="monte-carlo-simulations.html#cb140-6"></a>    <span class="dt">regionin =</span> <span class="st">&quot;state:06&quot;</span>,</span>
+<span id="cb140-7"><a href="monte-carlo-simulations.html#cb140-7"></a>    <span class="dt">vars =</span> <span class="kw">c</span>(<span class="st">&quot;group(B19001)&quot;</span>)</span>
+<span id="cb140-8"><a href="monte-carlo-simulations.html#cb140-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb140-9"><a href="monte-carlo-simulations.html#cb140-9"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">!</span><span class="kw">c</span>(GEO_ID,state,NAME) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;EA&quot;</span>,<span class="st">&quot;MA&quot;</span>,<span class="st">&quot;E&quot;</span>))) <span class="op">%&gt;%</span></span>
+<span id="cb140-10"><a href="monte-carlo-simulations.html#cb140-10"></a><span class="st">  </span><span class="kw">pivot_longer</span>(</span>
+<span id="cb140-11"><a href="monte-carlo-simulations.html#cb140-11"></a>    <span class="kw">ends_with</span>(<span class="kw">c</span>(<span class="st">&quot;M&quot;</span>)),</span>
+<span id="cb140-12"><a href="monte-carlo-simulations.html#cb140-12"></a>    <span class="dt">names_to =</span> <span class="st">&quot;name&quot;</span>,</span>
+<span id="cb140-13"><a href="monte-carlo-simulations.html#cb140-13"></a>    <span class="dt">values_to =</span> <span class="st">&quot;estimate&quot;</span></span>
+<span id="cb140-14"><a href="monte-carlo-simulations.html#cb140-14"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb140-15"><a href="monte-carlo-simulations.html#cb140-15"></a><span class="st">  </span><span class="kw">group_by</span>(name) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb140-16"><a href="monte-carlo-simulations.html#cb140-16"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">estimate =</span> <span class="kw">sqrt</span>(<span class="kw">sum</span>(estimate<span class="op">^</span><span class="dv">2</span>)))</span>
+<span id="cb140-17"><a href="monte-carlo-simulations.html#cb140-17"></a></span>
+<span id="cb140-18"><a href="monte-carlo-simulations.html#cb140-18"></a>income_<span class="dv">19</span>_summary_moe</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"B19001_001M","2":"9277.997"},{"1":"B19001_002M","2":"5143.526"},{"1":"B19001_003M","2":"5555.183"},{"1":"B19001_004M","2":"4307.031"},{"1":"B19001_005M","2":"4306.273"},{"1":"B19001_006M","2":"4597.007"},{"1":"B19001_007M","2":"4637.120"},{"1":"B19001_008M","2":"4272.855"},{"1":"B19001_009M","2":"4519.033"},{"1":"B19001_010M","2":"4125.256"},{"1":"B19001_011M","2":"6194.473"},{"1":"B19001_012M","2":"7836.480"},{"1":"B19001_013M","2":"8678.040"},{"1":"B19001_014M","2":"8322.292"},{"1":"B19001_015M","2":"7611.756"},{"1":"B19001_016M","2":"8922.061"},{"1":"B19001_017M","2":"10901.286"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>At this point, <code>income_19_summary</code> contains all the mean inputs that are necessary to calculate the median household income, as done previously, while <code>income_19_summary_moe</code> contains the MOEs of each of these inputs. The next step is to generate many copies of <code>income_19_summary</code>, but with the potential for each individual value to vary based on a normal distribution. We’ve used one of the mapping functions before in Chapter 2.1 and 4.1 from the <code>purrr</code> package within <code>tidyverse</code>, <code>map_dfr()</code>, which functions like a for loop and conveniently <code>rbind()</code>s the results together into a dataframe. <code>map()</code> would perform the same looping function but provide the output as a list of elements (this, for example, may be a more convenient format to pipe directly into another <code>map()</code>, since the input format should be a list; remember that a list is basically a class-agnostic combination of objects). In this case, we want to pass two different lists of inputs into the mapping function, so we use <code>map2()</code>:</p>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="monte-carlo-simulations.html#cb142-1"></a>income_<span class="dv">19</span>_summary_montecarlo &lt;-</span>
-<span id="cb142-2"><a href="monte-carlo-simulations.html#cb142-2"></a><span class="st">  </span><span class="kw">map2</span>(</span>
-<span id="cb142-3"><a href="monte-carlo-simulations.html#cb142-3"></a>    income_<span class="dv">19</span>_summary<span class="op">$</span>estimate,</span>
-<span id="cb142-4"><a href="monte-carlo-simulations.html#cb142-4"></a>    income_<span class="dv">19</span>_summary_moe<span class="op">$</span>estimate<span class="op">/</span><span class="fl">1.645</span>,</span>
-<span id="cb142-5"><a href="monte-carlo-simulations.html#cb142-5"></a>    <span class="cf">function</span>(x,y) <span class="kw">rnorm</span>(<span class="dv">10000</span>, x, y)</span>
-<span id="cb142-6"><a href="monte-carlo-simulations.html#cb142-6"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="monte-carlo-simulations.html#cb141-1"></a>income_<span class="dv">19</span>_summary_montecarlo &lt;-</span>
+<span id="cb141-2"><a href="monte-carlo-simulations.html#cb141-2"></a><span class="st">  </span><span class="kw">map2</span>(</span>
+<span id="cb141-3"><a href="monte-carlo-simulations.html#cb141-3"></a>    income_<span class="dv">19</span>_summary<span class="op">$</span>estimate,</span>
+<span id="cb141-4"><a href="monte-carlo-simulations.html#cb141-4"></a>    income_<span class="dv">19</span>_summary_moe<span class="op">$</span>estimate<span class="op">/</span><span class="fl">1.645</span>,</span>
+<span id="cb141-5"><a href="monte-carlo-simulations.html#cb141-5"></a>    <span class="cf">function</span>(x,y) <span class="kw">rnorm</span>(<span class="dv">10000</span>, x, y)</span>
+<span id="cb141-6"><a href="monte-carlo-simulations.html#cb141-6"></a>  )</span></code></pre></div>
 <p>Use <code>View(income_19_summary_montecarlo)</code> in your Console to inspect the structure of this output, which will look like an object that contains a list of 17 double-bracket items within it, and each of those items is a vector of 10,000 numbers. Actually, we’d prefer to have the transposed version of this data, with 10,000 list items, each with a vector of 17 numbers, as that would better match our notion of 10,000 simulations of the 17 income tier household counts. <code>transpose()</code> from <code>purrr</code> is designed to do this to map outputs:</p>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="monte-carlo-simulations.html#cb143-1"></a>income_<span class="dv">19</span>_summary_montecarlo &lt;-</span>
-<span id="cb143-2"><a href="monte-carlo-simulations.html#cb143-2"></a><span class="st">  </span>income_<span class="dv">19</span>_summary_montecarlo <span class="op">%&gt;%</span></span>
-<span id="cb143-3"><a href="monte-carlo-simulations.html#cb143-3"></a><span class="st">  </span><span class="kw">transpose</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="monte-carlo-simulations.html#cb142-1"></a>income_<span class="dv">19</span>_summary_montecarlo &lt;-</span>
+<span id="cb142-2"><a href="monte-carlo-simulations.html#cb142-2"></a><span class="st">  </span>income_<span class="dv">19</span>_summary_montecarlo <span class="op">%&gt;%</span></span>
+<span id="cb142-3"><a href="monte-carlo-simulations.html#cb142-3"></a><span class="st">  </span><span class="kw">transpose</span>()</span></code></pre></div>
 <p>Use <code>View(income_19_summary_montecarlo)</code> again in your Console to see how the data structure has changed. Now, we can pass this directly into a <code>map()</code>, in which our mapping function takes an individual simulation (held in the dummy variable <code>income</code>), <code>unlist()</code>s the contents of this object into a vector version of the same contents (which itself was a list of the 17 variables as a result of <code>transpose()</code>), and then performs a median household income calculation in exactly the same way as we did before (with just cosmetic changes given the different data structure). Note that if the function within <code>map()</code> has multiple steps, it will assume that the final data object created, in this case <code>median</code>, is the “output” desired; if not, you would use <code>return()</code> to specify the desired output. Also note the use of <code>unlist()</code> one last time at the end of the pipeline. This is there so that the list of 10,000 simulation outputs is turned into a vector of numbers that can be plotted using <code>hist()</code>.</p>
-<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="monte-carlo-simulations.html#cb144-1"></a>montecarlo_result &lt;-</span>
-<span id="cb144-2"><a href="monte-carlo-simulations.html#cb144-2"></a><span class="st">  </span>income_<span class="dv">19</span>_summary_montecarlo <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb144-3"><a href="monte-carlo-simulations.html#cb144-3"></a><span class="st">  </span><span class="kw">map</span>(<span class="cf">function</span>(income){</span>
-<span id="cb144-4"><a href="monte-carlo-simulations.html#cb144-4"></a>    </span>
-<span id="cb144-5"><a href="monte-carlo-simulations.html#cb144-5"></a>    income &lt;-<span class="st"> </span>income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
-<span id="cb144-6"><a href="monte-carlo-simulations.html#cb144-6"></a>    total &lt;-<span class="st"> </span>income[<span class="dv">1</span>]</span>
-<span id="cb144-7"><a href="monte-carlo-simulations.html#cb144-7"></a>    row &lt;-<span class="st"> </span><span class="dv">2</span> </span>
-<span id="cb144-8"><a href="monte-carlo-simulations.html#cb144-8"></a>    cumulative &lt;-<span class="st"> </span>income[row]</span>
-<span id="cb144-9"><a href="monte-carlo-simulations.html#cb144-9"></a>    proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
-<span id="cb144-10"><a href="monte-carlo-simulations.html#cb144-10"></a>      </span>
-<span id="cb144-11"><a href="monte-carlo-simulations.html#cb144-11"></a>    <span class="cf">while</span> (proportion <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.5</span>) {</span>
-<span id="cb144-12"><a href="monte-carlo-simulations.html#cb144-12"></a>      cumulative_lag &lt;-<span class="st"> </span>cumulative</span>
-<span id="cb144-13"><a href="monte-carlo-simulations.html#cb144-13"></a>      row &lt;-<span class="st"> </span>row <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
-<span id="cb144-14"><a href="monte-carlo-simulations.html#cb144-14"></a>      cumulative &lt;-<span class="st"> </span>cumulative <span class="op">+</span><span class="st"> </span>income[row]</span>
-<span id="cb144-15"><a href="monte-carlo-simulations.html#cb144-15"></a>      proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
-<span id="cb144-16"><a href="monte-carlo-simulations.html#cb144-16"></a>    }</span>
-<span id="cb144-17"><a href="monte-carlo-simulations.html#cb144-17"></a>      </span>
-<span id="cb144-18"><a href="monte-carlo-simulations.html#cb144-18"></a>    median &lt;-<span class="st"> </span></span>
-<span id="cb144-19"><a href="monte-carlo-simulations.html#cb144-19"></a><span class="st">      </span>income_tiers<span class="op">$</span>lower_end[row] <span class="op">+</span><span class="st"> </span></span>
-<span id="cb144-20"><a href="monte-carlo-simulations.html#cb144-20"></a><span class="st">      </span>(total<span class="op">/</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span>cumulative_lag) <span class="op">/</span></span>
-<span id="cb144-21"><a href="monte-carlo-simulations.html#cb144-21"></a><span class="st">      </span>income[row] <span class="op">*</span></span>
-<span id="cb144-22"><a href="monte-carlo-simulations.html#cb144-22"></a><span class="st">      </span>income_tiers<span class="op">$</span>width[row]</span>
-<span id="cb144-23"><a href="monte-carlo-simulations.html#cb144-23"></a>    </span>
-<span id="cb144-24"><a href="monte-carlo-simulations.html#cb144-24"></a>  }) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb144-25"><a href="monte-carlo-simulations.html#cb144-25"></a><span class="st">  </span><span class="kw">unlist</span>()</span>
-<span id="cb144-26"><a href="monte-carlo-simulations.html#cb144-26"></a></span>
-<span id="cb144-27"><a href="monte-carlo-simulations.html#cb144-27"></a><span class="kw">hist</span>(montecarlo_result)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-160-1.png" width="672" /></p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="monte-carlo-simulations.html#cb143-1"></a>montecarlo_result &lt;-</span>
+<span id="cb143-2"><a href="monte-carlo-simulations.html#cb143-2"></a><span class="st">  </span>income_<span class="dv">19</span>_summary_montecarlo <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb143-3"><a href="monte-carlo-simulations.html#cb143-3"></a><span class="st">  </span><span class="kw">map</span>(<span class="cf">function</span>(income){</span>
+<span id="cb143-4"><a href="monte-carlo-simulations.html#cb143-4"></a>    </span>
+<span id="cb143-5"><a href="monte-carlo-simulations.html#cb143-5"></a>    income &lt;-<span class="st"> </span>income <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
+<span id="cb143-6"><a href="monte-carlo-simulations.html#cb143-6"></a>    total &lt;-<span class="st"> </span>income[<span class="dv">1</span>]</span>
+<span id="cb143-7"><a href="monte-carlo-simulations.html#cb143-7"></a>    row &lt;-<span class="st"> </span><span class="dv">2</span> </span>
+<span id="cb143-8"><a href="monte-carlo-simulations.html#cb143-8"></a>    cumulative &lt;-<span class="st"> </span>income[row]</span>
+<span id="cb143-9"><a href="monte-carlo-simulations.html#cb143-9"></a>    proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
+<span id="cb143-10"><a href="monte-carlo-simulations.html#cb143-10"></a>      </span>
+<span id="cb143-11"><a href="monte-carlo-simulations.html#cb143-11"></a>    <span class="cf">while</span> (proportion <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.5</span>) {</span>
+<span id="cb143-12"><a href="monte-carlo-simulations.html#cb143-12"></a>      cumulative_lag &lt;-<span class="st"> </span>cumulative</span>
+<span id="cb143-13"><a href="monte-carlo-simulations.html#cb143-13"></a>      row &lt;-<span class="st"> </span>row <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb143-14"><a href="monte-carlo-simulations.html#cb143-14"></a>      cumulative &lt;-<span class="st"> </span>cumulative <span class="op">+</span><span class="st"> </span>income[row]</span>
+<span id="cb143-15"><a href="monte-carlo-simulations.html#cb143-15"></a>      proportion &lt;-<span class="st"> </span>cumulative<span class="op">/</span>total</span>
+<span id="cb143-16"><a href="monte-carlo-simulations.html#cb143-16"></a>    }</span>
+<span id="cb143-17"><a href="monte-carlo-simulations.html#cb143-17"></a>      </span>
+<span id="cb143-18"><a href="monte-carlo-simulations.html#cb143-18"></a>    median &lt;-<span class="st"> </span></span>
+<span id="cb143-19"><a href="monte-carlo-simulations.html#cb143-19"></a><span class="st">      </span>income_tiers<span class="op">$</span>lower_end[row] <span class="op">+</span><span class="st"> </span></span>
+<span id="cb143-20"><a href="monte-carlo-simulations.html#cb143-20"></a><span class="st">      </span>(total<span class="op">/</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span>cumulative_lag) <span class="op">/</span></span>
+<span id="cb143-21"><a href="monte-carlo-simulations.html#cb143-21"></a><span class="st">      </span>income[row] <span class="op">*</span></span>
+<span id="cb143-22"><a href="monte-carlo-simulations.html#cb143-22"></a><span class="st">      </span>income_tiers<span class="op">$</span>width[row]</span>
+<span id="cb143-23"><a href="monte-carlo-simulations.html#cb143-23"></a>    </span>
+<span id="cb143-24"><a href="monte-carlo-simulations.html#cb143-24"></a>  }) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb143-25"><a href="monte-carlo-simulations.html#cb143-25"></a><span class="st">  </span><span class="kw">unlist</span>()</span>
+<span id="cb143-26"><a href="monte-carlo-simulations.html#cb143-26"></a></span>
+<span id="cb143-27"><a href="monte-carlo-simulations.html#cb143-27"></a><span class="kw">hist</span>(montecarlo_result)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-159-1.png" width="672" /></p>
 <p>We can find statistical measures such as the mean and MOE with a 90% confidence interval of this vector of 10,000 numbers, as desired.</p>
-<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="monte-carlo-simulations.html#cb145-1"></a><span class="kw">mean</span>(montecarlo_result)</span></code></pre></div>
-<pre><code>## [1] 113979.7</code></pre>
-<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="monte-carlo-simulations.html#cb147-1"></a><span class="kw">sd</span>(montecarlo_result)<span class="op">*</span><span class="fl">1.645</span></span></code></pre></div>
-<pre><code>## [1] 1893.98</code></pre>
-<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="monte-carlo-simulations.html#cb149-1"></a>upper &lt;-<span class="st"> </span><span class="kw">mean</span>(montecarlo_result) <span class="op">+</span><span class="st"> </span><span class="fl">1.645</span><span class="op">*</span><span class="kw">sd</span>(montecarlo_result)</span>
-<span id="cb149-2"><a href="monte-carlo-simulations.html#cb149-2"></a>lower &lt;-<span class="st"> </span><span class="kw">mean</span>(montecarlo_result) <span class="op">-</span><span class="st"> </span><span class="fl">1.645</span><span class="op">*</span><span class="kw">sd</span>(montecarlo_result)</span>
-<span id="cb149-3"><a href="monte-carlo-simulations.html#cb149-3"></a></span>
-<span id="cb149-4"><a href="monte-carlo-simulations.html#cb149-4"></a><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb149-5"><a href="monte-carlo-simulations.html#cb149-5"></a><span class="st">  </span><span class="kw">geom_histogram</span>(</span>
-<span id="cb149-6"><a href="monte-carlo-simulations.html#cb149-6"></a>    <span class="kw">aes</span>(montecarlo_result)</span>
-<span id="cb149-7"><a href="monte-carlo-simulations.html#cb149-7"></a>  ) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb149-8"><a href="monte-carlo-simulations.html#cb149-8"></a><span class="st">  </span><span class="kw">geom_vline</span>(</span>
-<span id="cb149-9"><a href="monte-carlo-simulations.html#cb149-9"></a>    <span class="kw">aes</span>(</span>
-<span id="cb149-10"><a href="monte-carlo-simulations.html#cb149-10"></a>      <span class="dt">xintercept =</span> <span class="kw">mean</span>(montecarlo_result)</span>
-<span id="cb149-11"><a href="monte-carlo-simulations.html#cb149-11"></a>    ), </span>
-<span id="cb149-12"><a href="monte-carlo-simulations.html#cb149-12"></a>    <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span></span>
-<span id="cb149-13"><a href="monte-carlo-simulations.html#cb149-13"></a>  ) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb149-14"><a href="monte-carlo-simulations.html#cb149-14"></a><span class="st">  </span><span class="kw">geom_vline</span>(</span>
-<span id="cb149-15"><a href="monte-carlo-simulations.html#cb149-15"></a>    <span class="kw">aes</span>(</span>
-<span id="cb149-16"><a href="monte-carlo-simulations.html#cb149-16"></a>      <span class="dt">xintercept =</span> lower</span>
-<span id="cb149-17"><a href="monte-carlo-simulations.html#cb149-17"></a>    ), </span>
-<span id="cb149-18"><a href="monte-carlo-simulations.html#cb149-18"></a>    <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span></span>
-<span id="cb149-19"><a href="monte-carlo-simulations.html#cb149-19"></a>  ) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb149-20"><a href="monte-carlo-simulations.html#cb149-20"></a><span class="st">  </span><span class="kw">geom_vline</span>(</span>
-<span id="cb149-21"><a href="monte-carlo-simulations.html#cb149-21"></a>    <span class="kw">aes</span>(</span>
-<span id="cb149-22"><a href="monte-carlo-simulations.html#cb149-22"></a>      <span class="dt">xintercept =</span> upper</span>
-<span id="cb149-23"><a href="monte-carlo-simulations.html#cb149-23"></a>    ), </span>
-<span id="cb149-24"><a href="monte-carlo-simulations.html#cb149-24"></a>    <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span></span>
-<span id="cb149-25"><a href="monte-carlo-simulations.html#cb149-25"></a>  ) <span class="op">+</span></span>
-<span id="cb149-26"><a href="monte-carlo-simulations.html#cb149-26"></a><span class="st">  </span><span class="kw">labs</span>(</span>
-<span id="cb149-27"><a href="monte-carlo-simulations.html#cb149-27"></a>    <span class="dt">x =</span> <span class="st">&quot;Median Household Income ($)&quot;</span>,</span>
-<span id="cb149-28"><a href="monte-carlo-simulations.html#cb149-28"></a>    <span class="dt">y =</span> <span class="st">&quot;# of Simulations&quot;</span>,</span>
-<span id="cb149-29"><a href="monte-carlo-simulations.html#cb149-29"></a>    <span class="dt">title =</span> <span class="st">&quot;Monte Carlo simulation, Bay Area households&quot;</span></span>
-<span id="cb149-30"><a href="monte-carlo-simulations.html#cb149-30"></a>  )</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-161-1.png" width="672" /></p>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="monte-carlo-simulations.html#cb144-1"></a><span class="kw">mean</span>(montecarlo_result)</span></code></pre></div>
+<pre><code>## [1] 113955.9</code></pre>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="monte-carlo-simulations.html#cb146-1"></a><span class="kw">sd</span>(montecarlo_result)<span class="op">*</span><span class="fl">1.645</span></span></code></pre></div>
+<pre><code>## [1] 1891.27</code></pre>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="monte-carlo-simulations.html#cb148-1"></a>upper &lt;-<span class="st"> </span><span class="kw">mean</span>(montecarlo_result) <span class="op">+</span><span class="st"> </span><span class="fl">1.645</span><span class="op">*</span><span class="kw">sd</span>(montecarlo_result)</span>
+<span id="cb148-2"><a href="monte-carlo-simulations.html#cb148-2"></a>lower &lt;-<span class="st"> </span><span class="kw">mean</span>(montecarlo_result) <span class="op">-</span><span class="st"> </span><span class="fl">1.645</span><span class="op">*</span><span class="kw">sd</span>(montecarlo_result)</span>
+<span id="cb148-3"><a href="monte-carlo-simulations.html#cb148-3"></a></span>
+<span id="cb148-4"><a href="monte-carlo-simulations.html#cb148-4"></a><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb148-5"><a href="monte-carlo-simulations.html#cb148-5"></a><span class="st">  </span><span class="kw">geom_histogram</span>(</span>
+<span id="cb148-6"><a href="monte-carlo-simulations.html#cb148-6"></a>    <span class="kw">aes</span>(montecarlo_result)</span>
+<span id="cb148-7"><a href="monte-carlo-simulations.html#cb148-7"></a>  ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb148-8"><a href="monte-carlo-simulations.html#cb148-8"></a><span class="st">  </span><span class="kw">geom_vline</span>(</span>
+<span id="cb148-9"><a href="monte-carlo-simulations.html#cb148-9"></a>    <span class="kw">aes</span>(</span>
+<span id="cb148-10"><a href="monte-carlo-simulations.html#cb148-10"></a>      <span class="dt">xintercept =</span> <span class="kw">mean</span>(montecarlo_result)</span>
+<span id="cb148-11"><a href="monte-carlo-simulations.html#cb148-11"></a>    ), </span>
+<span id="cb148-12"><a href="monte-carlo-simulations.html#cb148-12"></a>    <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span></span>
+<span id="cb148-13"><a href="monte-carlo-simulations.html#cb148-13"></a>  ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb148-14"><a href="monte-carlo-simulations.html#cb148-14"></a><span class="st">  </span><span class="kw">geom_vline</span>(</span>
+<span id="cb148-15"><a href="monte-carlo-simulations.html#cb148-15"></a>    <span class="kw">aes</span>(</span>
+<span id="cb148-16"><a href="monte-carlo-simulations.html#cb148-16"></a>      <span class="dt">xintercept =</span> lower</span>
+<span id="cb148-17"><a href="monte-carlo-simulations.html#cb148-17"></a>    ), </span>
+<span id="cb148-18"><a href="monte-carlo-simulations.html#cb148-18"></a>    <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span></span>
+<span id="cb148-19"><a href="monte-carlo-simulations.html#cb148-19"></a>  ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb148-20"><a href="monte-carlo-simulations.html#cb148-20"></a><span class="st">  </span><span class="kw">geom_vline</span>(</span>
+<span id="cb148-21"><a href="monte-carlo-simulations.html#cb148-21"></a>    <span class="kw">aes</span>(</span>
+<span id="cb148-22"><a href="monte-carlo-simulations.html#cb148-22"></a>      <span class="dt">xintercept =</span> upper</span>
+<span id="cb148-23"><a href="monte-carlo-simulations.html#cb148-23"></a>    ), </span>
+<span id="cb148-24"><a href="monte-carlo-simulations.html#cb148-24"></a>    <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span></span>
+<span id="cb148-25"><a href="monte-carlo-simulations.html#cb148-25"></a>  ) <span class="op">+</span></span>
+<span id="cb148-26"><a href="monte-carlo-simulations.html#cb148-26"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb148-27"><a href="monte-carlo-simulations.html#cb148-27"></a>    <span class="dt">x =</span> <span class="st">&quot;Median Household Income ($)&quot;</span>,</span>
+<span id="cb148-28"><a href="monte-carlo-simulations.html#cb148-28"></a>    <span class="dt">y =</span> <span class="st">&quot;# of Simulations&quot;</span>,</span>
+<span id="cb148-29"><a href="monte-carlo-simulations.html#cb148-29"></a>    <span class="dt">title =</span> <span class="st">&quot;Monte Carlo simulation, Bay Area households&quot;</span></span>
+<span id="cb148-30"><a href="monte-carlo-simulations.html#cb148-30"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-160-1.png" width="672" /></p>
 <p>The “MOE” derived through this Monte Carlo method should be similar to the MOE you could compute using formal mathematical functions, but now this R technique can be used, and generally can get you faster results than “working out the math”, and is especially handy for complex, nonlinear analyses where “working out the math” would be impossible.</p>
 </div>
 <!-- </div> -->

@@ -194,6 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
 <li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
 <li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
+<li class="chapter" data-level="5.5" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>5.5</b> Training and testing data</a></li>
 </ul></li>
 </ul>
 
@@ -215,66 +216,66 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="probability-distributions" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Probability distributions</h2>
 <p>Let’s first play with a basic random number generator function in R to create the kinds of probability distributions we might expect in urban phenomena. If you provide <code>runif()</code> (which standards for “uniform”, by the way) a single number as an argument, that will be the number of random numbers generated between, by default, 0 and 1. Let’s pair this with <code>hist()</code> which makes a simple histogram; a histogram is doable with <code>ggplot()</code> too, but <code>hist()</code> is built into base R and is easier to quickly deploy.</p>
-<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="probability-distributions.html#cb130-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb130-2"><a href="probability-distributions.html#cb130-2"></a></span>
-<span id="cb130-3"><a href="probability-distributions.html#cb130-3"></a>sample &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>)</span>
-<span id="cb130-4"><a href="probability-distributions.html#cb130-4"></a></span>
-<span id="cb130-5"><a href="probability-distributions.html#cb130-5"></a><span class="kw">hist</span>(sample)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-151-1.png" width="672" /></p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="probability-distributions.html#cb129-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb129-2"><a href="probability-distributions.html#cb129-2"></a></span>
+<span id="cb129-3"><a href="probability-distributions.html#cb129-3"></a>sample &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>)</span>
+<span id="cb129-4"><a href="probability-distributions.html#cb129-4"></a></span>
+<span id="cb129-5"><a href="probability-distributions.html#cb129-5"></a><span class="kw">hist</span>(sample)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-150-1.png" width="672" /></p>
 <p>You can run this over and over again to demonstrate to yourself that the sample is constantly changing with each run, and that if you change 1000 to higher and higher numbers, the distribution gets flatter and flatter across the different automatic histogram bins (up to 20). Feel free to test the limits of your machine doing this basic kind of sampling on more and more numbers. In fact, let’s go ahead and demonstrate how to test exactly how long your machine takes to do this by wrapping the <code>sample()</code> line with two other lines.</p>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="probability-distributions.html#cb131-1"></a>start &lt;-<span class="st"> </span><span class="kw">proc.time</span>()</span>
-<span id="cb131-2"><a href="probability-distributions.html#cb131-2"></a>sample &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">10000000</span>)</span>
-<span id="cb131-3"><a href="probability-distributions.html#cb131-3"></a>time &lt;-<span class="st"> </span><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>start</span>
-<span id="cb131-4"><a href="probability-distributions.html#cb131-4"></a></span>
-<span id="cb131-5"><a href="probability-distributions.html#cb131-5"></a>time</span></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="probability-distributions.html#cb130-1"></a>start &lt;-<span class="st"> </span><span class="kw">proc.time</span>()</span>
+<span id="cb130-2"><a href="probability-distributions.html#cb130-2"></a>sample &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">10000000</span>)</span>
+<span id="cb130-3"><a href="probability-distributions.html#cb130-3"></a>time &lt;-<span class="st"> </span><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>start</span>
+<span id="cb130-4"><a href="probability-distributions.html#cb130-4"></a></span>
+<span id="cb130-5"><a href="probability-distributions.html#cb130-5"></a>time</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.78    0.06    0.86</code></pre>
-<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="probability-distributions.html#cb133-1"></a><span class="kw">hist</span>(sample)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-152-1.png" width="672" /></p>
+##    0.75    0.00    0.89</code></pre>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="probability-distributions.html#cb132-1"></a><span class="kw">hist</span>(sample)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-151-1.png" width="672" /></p>
 <p>Notice that <code>proc.time()</code> has three named numeric values. <code>user</code> and <code>system</code> are more “machine-speak” and refer to different kinds of raw compute time that have accrued since you started your R session, while <code>elapsed</code> is what we would understand as seconds of experienced time. So when we run <code>proc.time()</code> at two different instances and get the difference, it’s the difference in <code>elapsed</code> that likely matters to us, and <code>time[3]</code> would give you that specific value. You can always use this technique to check how long any stretch of code takes; just make sure to run the code in its entirety, either the full chunk or by selecting all lines including <code>start</code> and <code>time</code> and hitting <code>Ctrl+Enter</code>.</p>
 <p>Anyway, it should be clear from the histogram that <code>runif()</code> is a uniform distribution between 0 and 1. We can theoretically make use of this most basic of random number generators to generate any other distribution of interest. You should already know that many things in nature appear to be normally distributed instead of uniformly distributed across a range, which means the histogram would look more like a bell curve. The <a href="https://en.wikipedia.org/wiki/Bean_machine">Galton Board</a> is a classic device designed to demonstrate this phenomenon using a series of successive binary outcomes (moving left or right when hitting a pin) on a large population (this could, for example, approximate certain phenomena in genetics, physics, or social interactions). Let’s simulate something similar to what the Galton Board is doing, where a bunch of individuals are subject to a few rounds of random binary outcomes, where either outcome is some direction of deviation from the starting point.</p>
 <p>We could choose to “hack” <code>runif()</code> so as to convert the random numbers to just two options (say, below 0.5 and above 0.5), yielding binary outcomes. Or, we can use <code>sample()</code> which gets the job done in a more straightforward manner; the code below yields a vector of 100 elements, each with 50% probability of being <code>-0.5</code> or <code>0.5</code>.</p>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="probability-distributions.html#cb134-1"></a>round &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
-<span id="cb134-2"><a href="probability-distributions.html#cb134-2"></a>  <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>), </span>
-<span id="cb134-3"><a href="probability-distributions.html#cb134-3"></a>  <span class="dt">size =</span> <span class="dv">100</span>, </span>
-<span id="cb134-4"><a href="probability-distributions.html#cb134-4"></a>  <span class="dt">replace =</span> T, </span>
-<span id="cb134-5"><a href="probability-distributions.html#cb134-5"></a>  <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)</span>
-<span id="cb134-6"><a href="probability-distributions.html#cb134-6"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="probability-distributions.html#cb133-1"></a>round &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
+<span id="cb133-2"><a href="probability-distributions.html#cb133-2"></a>  <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>), </span>
+<span id="cb133-3"><a href="probability-distributions.html#cb133-3"></a>  <span class="dt">size =</span> <span class="dv">100</span>, </span>
+<span id="cb133-4"><a href="probability-distributions.html#cb133-4"></a>  <span class="dt">replace =</span> T, </span>
+<span id="cb133-5"><a href="probability-distributions.html#cb133-5"></a>  <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)</span>
+<span id="cb133-6"><a href="probability-distributions.html#cb133-6"></a>)</span></code></pre></div>
 <p>The following chunk takes a <code>sample</code> of <code>1000000</code> elements and runs them through <code>20</code> <code>rounds</code>, in which each round subjects each element to plus or minus <code>0.5</code> (all of these numbers are arbitrary but will allow us to simulate the Galton Board). Actually, what’s happening below is that we are creating a dataframe of one million columns and 20 rows, in which each cell is either <code>-0.5</code> or <code>0.5</code>; these are then all summed together, as if each column were an element that implicitly started as <code>0</code> and was then subject to 20 rounds of binary outcomes. We make use of three new functions, <code>rerun()</code>, <code>reduce()</code>, and <code>colSums()</code>, which aren’t necessarily commonly used functions but get the job done particularly efficiently in this case. I’ll leave you to look up documentation online about these functions, as well as explore many other possible ways you could have manipulated data to produce a similar simulation.</p>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="probability-distributions.html#cb135-1"></a>sample &lt;-<span class="st"> </span><span class="dv">1000000</span></span>
-<span id="cb135-2"><a href="probability-distributions.html#cb135-2"></a>rounds &lt;-<span class="st"> </span><span class="dv">20</span></span>
-<span id="cb135-3"><a href="probability-distributions.html#cb135-3"></a></span>
-<span id="cb135-4"><a href="probability-distributions.html#cb135-4"></a>galton &lt;-</span>
-<span id="cb135-5"><a href="probability-distributions.html#cb135-5"></a><span class="st">  </span>rounds <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb135-6"><a href="probability-distributions.html#cb135-6"></a><span class="st">  </span><span class="kw">rerun</span>(</span>
-<span id="cb135-7"><a href="probability-distributions.html#cb135-7"></a>    <span class="kw">sample</span>(</span>
-<span id="cb135-8"><a href="probability-distributions.html#cb135-8"></a>      <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>), </span>
-<span id="cb135-9"><a href="probability-distributions.html#cb135-9"></a>      <span class="dt">size =</span> sample, </span>
-<span id="cb135-10"><a href="probability-distributions.html#cb135-10"></a>      <span class="dt">replace =</span> T, </span>
-<span id="cb135-11"><a href="probability-distributions.html#cb135-11"></a>      <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)</span>
-<span id="cb135-12"><a href="probability-distributions.html#cb135-12"></a>    )</span>
-<span id="cb135-13"><a href="probability-distributions.html#cb135-13"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb135-14"><a href="probability-distributions.html#cb135-14"></a><span class="st">  </span><span class="kw">reduce</span>(rbind) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb135-15"><a href="probability-distributions.html#cb135-15"></a><span class="st">  </span><span class="kw">colSums</span>()</span>
-<span id="cb135-16"><a href="probability-distributions.html#cb135-16"></a></span>
-<span id="cb135-17"><a href="probability-distributions.html#cb135-17"></a><span class="kw">hist</span>(galton)</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-154-1.png" width="672" /></p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="probability-distributions.html#cb134-1"></a>sample &lt;-<span class="st"> </span><span class="dv">1000000</span></span>
+<span id="cb134-2"><a href="probability-distributions.html#cb134-2"></a>rounds &lt;-<span class="st"> </span><span class="dv">20</span></span>
+<span id="cb134-3"><a href="probability-distributions.html#cb134-3"></a></span>
+<span id="cb134-4"><a href="probability-distributions.html#cb134-4"></a>galton &lt;-</span>
+<span id="cb134-5"><a href="probability-distributions.html#cb134-5"></a><span class="st">  </span>rounds <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb134-6"><a href="probability-distributions.html#cb134-6"></a><span class="st">  </span><span class="kw">rerun</span>(</span>
+<span id="cb134-7"><a href="probability-distributions.html#cb134-7"></a>    <span class="kw">sample</span>(</span>
+<span id="cb134-8"><a href="probability-distributions.html#cb134-8"></a>      <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>), </span>
+<span id="cb134-9"><a href="probability-distributions.html#cb134-9"></a>      <span class="dt">size =</span> sample, </span>
+<span id="cb134-10"><a href="probability-distributions.html#cb134-10"></a>      <span class="dt">replace =</span> T, </span>
+<span id="cb134-11"><a href="probability-distributions.html#cb134-11"></a>      <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)</span>
+<span id="cb134-12"><a href="probability-distributions.html#cb134-12"></a>    )</span>
+<span id="cb134-13"><a href="probability-distributions.html#cb134-13"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb134-14"><a href="probability-distributions.html#cb134-14"></a><span class="st">  </span><span class="kw">reduce</span>(rbind) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb134-15"><a href="probability-distributions.html#cb134-15"></a><span class="st">  </span><span class="kw">colSums</span>()</span>
+<span id="cb134-16"><a href="probability-distributions.html#cb134-16"></a></span>
+<span id="cb134-17"><a href="probability-distributions.html#cb134-17"></a><span class="kw">hist</span>(galton)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-153-1.png" width="672" /></p>
 <p>This histogram should now look familiar to you as a bell-shaped curve. A more formal exploration of the mathematics here would yield the principles of a binomial distribution, which is the specific kind of normal distribution at play here, and how the arbitrary parameters we used would relate to a more familiar concept such as standard deviation (which turns out to be the square root of 5 for our specific example). But for our purposes, let’s leave this simply as a reminder that the normal distribution can be discovered through the simplest of data experiments, and move on to using the normal distribution more directly via <code>rnorm()</code>, which takes as a first argument the total number of sampled outcomes desired, similar to <code>runif()</code>. By default it will provide samples with a mean of <code>0</code> and a standard deviation of <code>1</code>. If you need a refresher on the formal mathematical definition of standard deviation, you’re encouraged to review any number of resources online. Below, we combine our Galton Board example’s histogram with our normal distribution sample, which can also be plotted as a histogram, but is plotted here instead as a density curve using <code>geom_density()</code>.</p>
-<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="probability-distributions.html#cb136-1"></a>normal_test &lt;-</span>
-<span id="cb136-2"><a href="probability-distributions.html#cb136-2"></a><span class="st">  </span><span class="kw">rnorm</span>(sample, <span class="dt">sd =</span> <span class="kw">sqrt</span>(<span class="dv">5</span>))</span>
-<span id="cb136-3"><a href="probability-distributions.html#cb136-3"></a></span>
-<span id="cb136-4"><a href="probability-distributions.html#cb136-4"></a><span class="kw">ggplot</span>() <span class="op">+</span></span>
-<span id="cb136-5"><a href="probability-distributions.html#cb136-5"></a><span class="st">  </span><span class="kw">geom_histogram</span>(</span>
-<span id="cb136-6"><a href="probability-distributions.html#cb136-6"></a>    <span class="kw">aes</span>(galton),</span>
-<span id="cb136-7"><a href="probability-distributions.html#cb136-7"></a>    <span class="dt">binwidth =</span> <span class="dv">1</span></span>
-<span id="cb136-8"><a href="probability-distributions.html#cb136-8"></a>  ) <span class="op">+</span></span>
-<span id="cb136-9"><a href="probability-distributions.html#cb136-9"></a><span class="st">  </span><span class="kw">geom_density</span>(</span>
-<span id="cb136-10"><a href="probability-distributions.html#cb136-10"></a>    <span class="kw">aes</span>(</span>
-<span id="cb136-11"><a href="probability-distributions.html#cb136-11"></a>      normal_test,</span>
-<span id="cb136-12"><a href="probability-distributions.html#cb136-12"></a>      <span class="kw">after_stat</span>(count)</span>
-<span id="cb136-13"><a href="probability-distributions.html#cb136-13"></a>    )</span>
-<span id="cb136-14"><a href="probability-distributions.html#cb136-14"></a>  )</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-155-1.png" width="672" /></p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="probability-distributions.html#cb135-1"></a>normal_test &lt;-</span>
+<span id="cb135-2"><a href="probability-distributions.html#cb135-2"></a><span class="st">  </span><span class="kw">rnorm</span>(sample, <span class="dt">sd =</span> <span class="kw">sqrt</span>(<span class="dv">5</span>))</span>
+<span id="cb135-3"><a href="probability-distributions.html#cb135-3"></a></span>
+<span id="cb135-4"><a href="probability-distributions.html#cb135-4"></a><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb135-5"><a href="probability-distributions.html#cb135-5"></a><span class="st">  </span><span class="kw">geom_histogram</span>(</span>
+<span id="cb135-6"><a href="probability-distributions.html#cb135-6"></a>    <span class="kw">aes</span>(galton),</span>
+<span id="cb135-7"><a href="probability-distributions.html#cb135-7"></a>    <span class="dt">binwidth =</span> <span class="dv">1</span></span>
+<span id="cb135-8"><a href="probability-distributions.html#cb135-8"></a>  ) <span class="op">+</span></span>
+<span id="cb135-9"><a href="probability-distributions.html#cb135-9"></a><span class="st">  </span><span class="kw">geom_density</span>(</span>
+<span id="cb135-10"><a href="probability-distributions.html#cb135-10"></a>    <span class="kw">aes</span>(</span>
+<span id="cb135-11"><a href="probability-distributions.html#cb135-11"></a>      normal_test,</span>
+<span id="cb135-12"><a href="probability-distributions.html#cb135-12"></a>      <span class="kw">after_stat</span>(count)</span>
+<span id="cb135-13"><a href="probability-distributions.html#cb135-13"></a>    )</span>
+<span id="cb135-14"><a href="probability-distributions.html#cb135-14"></a>  )</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-154-1.png" width="672" /></p>
 </div>
             </section>
 
