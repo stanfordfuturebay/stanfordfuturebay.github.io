@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","4100","0",NA,NA
-"2","Age Group 10-19","5952","0",NA,NA
-"3","Age Group 20-29","10083","1",NA,NA
-"4","Age Group 30-39","9505","8",NA,NA
-"5","Age Group 40-49","8004","22",NA,NA
-"6","Age Group 50-59","6913","44",NA,NA
-"7","Age Group 60-69","4458","90",NA,NA
-"8","Age Group 70-79","2096","135",NA,NA
+"1","Age Group 0-9","4140","0",NA,NA
+"2","Age Group 10-19","5974","0",NA,NA
+"3","Age Group 20-29","10106","1",NA,NA
+"4","Age Group 30-39","9531","8",NA,NA
+"5","Age Group 40-49","8030","22",NA,NA
+"6","Age Group 50-59","6940","44",NA,NA
+"7","Age Group 60-69","4475","90",NA,NA
+"8","Age Group 70-79","2113","135",NA,NA
 "9","Age Group 80-89","1201","175",NA,NA
-"10","Age Group 90+","534","150",NA,NA
+"10","Age Group 90+","535","150",NA,NA
 "11","Age Group Unknown","6",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","73","2",NA,NA
-"13","Race/Ethnicity  Asian","6476","176",NA,NA
-"14","Race/Ethnicity  Black","978","28",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","20717","148",NA,NA
-"16","Race/Ethnicity  Pacific Islander","1135","16",NA,NA
-"17","Race/Ethnicity  White","9654","249",NA,NA
-"18","Race/Ethnicity Multirace","1100",NA,NA,NA
-"19","Race/Ethnicity Other","1173","0",NA,NA
-"20","Race/Ethnicity Unknown","11546","6",NA,NA
-"21",NA,NA,NA,"data up to and including october 28, 2021","death data last updated october 28, 2021."
+"12","Race/Ethnicity  American Indian/Alaska Native","74","2",NA,NA
+"13","Race/Ethnicity  Asian","6504","176",NA,NA
+"14","Race/Ethnicity  Black","983","28",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","20768","148",NA,NA
+"16","Race/Ethnicity  Pacific Islander","1137","16",NA,NA
+"17","Race/Ethnicity  White","9722","249",NA,NA
+"18","Race/Ethnicity Multirace","1101",NA,NA,NA
+"19","Race/Ethnicity Other","1186","0",NA,NA
+"20","Race/Ethnicity Unknown","11576","6",NA,NA
+"21",NA,NA,NA,"data up to and including november 1, 2021 as of 5:00pmselect time frame for case data","death data last updated october 28, 2021."
