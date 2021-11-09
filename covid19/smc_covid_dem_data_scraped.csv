@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","4162","0",NA,NA
-"2","Age Group 10-19","5996","0",NA,NA
-"3","Age Group 20-29","10127","1",NA,NA
-"4","Age Group 30-39","9559","8",NA,NA
-"5","Age Group 40-49","8046","22",NA,NA
-"6","Age Group 50-59","6954","44",NA,NA
-"7","Age Group 60-69","4491","90",NA,NA
-"8","Age Group 70-79","2121","135",NA,NA
-"9","Age Group 80-89","1202","175",NA,NA
+"1","Age Group 0-9","4190","0",NA,NA
+"2","Age Group 10-19","6020","0",NA,NA
+"3","Age Group 20-29","10158","1",NA,NA
+"4","Age Group 30-39","9591","8",NA,NA
+"5","Age Group 40-49","8072","22",NA,NA
+"6","Age Group 50-59","6978","44",NA,NA
+"7","Age Group 60-69","4508","90",NA,NA
+"8","Age Group 70-79","2126","135",NA,NA
+"9","Age Group 80-89","1205","175",NA,NA
 "10","Age Group 90+","536","151",NA,NA
 "11","Age Group Unknown","7",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","74","2",NA,NA
-"13","Race/Ethnicity  Asian","6519","176",NA,NA
-"14","Race/Ethnicity  Black","985","28",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","20823","148",NA,NA
-"16","Race/Ethnicity  Pacific Islander","1142","16",NA,NA
-"17","Race/Ethnicity  White","9760","250",NA,NA
-"18","Race/Ethnicity Multirace","1103",NA,NA,NA
-"19","Race/Ethnicity Other","1194","0",NA,NA
-"20","Race/Ethnicity Unknown","11601","6",NA,NA
-"21",NA,NA,NA,"data up to and including november 4, 2021 as of 5:00pmselect time frame for case data","death data last updated november 4, 2021."
+"12","Race/Ethnicity  American Indian/Alaska Native","76","2",NA,NA
+"13","Race/Ethnicity  Asian","6546","176",NA,NA
+"14","Race/Ethnicity  Black","988","28",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","20875","148",NA,NA
+"16","Race/Ethnicity  Pacific Islander","1151","16",NA,NA
+"17","Race/Ethnicity  White","9817","250",NA,NA
+"18","Race/Ethnicity Multirace","1105",NA,NA,NA
+"19","Race/Ethnicity Other","1204","0",NA,NA
+"20","Race/Ethnicity Unknown","11629","6",NA,NA
+"21",NA,NA,NA,"data up to and including november 8, 2021 as of 5:00pmselect time frame for case data","death data last updated november 4, 2021."
