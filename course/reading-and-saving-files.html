@@ -32,7 +32,7 @@
   
 <link rel="prev" href="github.html"/>
 <link rel="next" href="loops.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,12 +50,11 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
 <script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
@@ -83,6 +82,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -196,6 +196,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
 <li class="chapter" data-level="5.5" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>5.5</b> Training and testing data</a></li>
 </ul></li>
+<li class="chapter" data-level="6" data-path="causality.html"><a href="causality.html"><i class="fa fa-check"></i><b>6</b> Causality</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>6.1</b> Matching</a></li>
+<li class="chapter" data-level="6.2" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>6.2</b> Difference-in-differences</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -229,33 +234,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>In an earlier chunk, I’ve already loaded <code>library(tidyverse)</code>. <code>tidyverse</code> uniquely brings in multiple <a href="https://www.tidyverse.org/packages/">core packages</a> when you call it with <code>library()</code>, but in principle you could load <code>library(readr)</code> on its own.</p>
 <p>The <code>tidyverse</code> packages have great documentation, so it’s worth generally reviewing what information is available for <a href="https://readr.tidyverse.org/">readr</a>. Since CSVs are one of the most common types of data format you’d find online, <code>read_csv()</code> is the most common function you’d use, along with its exporting equivalent, <code>write_csv()</code>.</p>
 <p>For our example, let’s look at a large health dataset provided by the Centers for Disease Control and Prevention (CDC) called <a href="https://chronicdata.cdc.gov/500-Cities-Places/PLACES-Local-Data-for-Better-Health-Census-Tract-D/cwsq-ngmh">PLACES</a>. Without going into the full background of this data project which you can read about, I’ll simply note that this dataset provides modeled estimates of many health outcomes that typically are difficult to find public data on at the census tract level (more on geographies soon). The dataset is fairly large so is also a good test of your personal machine and its ability to handle the kinds of datasets you would expect to be handling in R. On the CDC website, if you were looking for how to grab the data directly from R, you’d be looking for a direct link to .csv data, which requires manual searching. In this case, this can be found in the “Export” button, and copying the link address yields <code>https://chronicdata.cdc.gov/api/views/cwsq-ngmh/rows.csv?accessType=DOWNLOAD</code> (the <code>?accessType=DOWNLOAD</code> portion is not necessary). <code>read_csv()</code> has a straightforward schema, as shown below:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="reading-and-saving-files.html#cb6-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb6-2"><a href="reading-and-saving-files.html#cb6-2"></a></span>
-<span id="cb6-3"><a href="reading-and-saving-files.html#cb6-3"></a>health_full &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;https://chronicdata.cdc.gov/api/views/cwsq-ngmh/rows.csv?accessType=DOWNLOAD&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="reading-and-saving-files.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb6-2"><a href="reading-and-saving-files.html#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="reading-and-saving-files.html#cb6-3" aria-hidden="true" tabindex="-1"></a>health_full <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;https://chronicdata.cdc.gov/api/views/cwsq-ngmh/rows.csv?accessType=DOWNLOAD&quot;</span>)</span></code></pre></div>
 <p><code>&lt;-</code> is used to assign the result of functions to a variable in your Environment. You can supply a variable name of your choice on the left side. There are some general rules around this, like having no spaces, not leading with a number, and not using certain special characters. You should also develop the habit of using understandable variable names while keeping them relatively short.</p>
 <p>Running the line above may take a minute or more to load. In your version of RStudio, you should see a progress counter in the Console, and a stop sign at the top right which lets you know that something is processing. When it’s complete, you’ll see a <code>&gt;</code> show up again in the Console, and you’ll see the newly created variable in your Environment. You can click on it (or type <code>View(health_full)</code>) which will create a new tab in the Source window to view tabular data. As noted previously, <code>names(health_full)</code> in the Console quickly shows the names of the column headers (which matches the data dictionary you can find on the CDC site).</p>
 <p>Reading files can introduce lots of unique challenges, so part of getting good at R is learning how to troubleshoot the unexpected problems you’ll face when interfacing with web pages and different file types. We’ll encounter some more complicated situations throughout this curriculum and revisit advanced reading methods as appropriate.</p>
 <p>We’ll be able to manipulate this data in a variety of ways, and generally with such large datasets you’d be interested in filtering to just the data you need, saving that locally, and then removing the larger original file. I’ll go ahead and demonstrate <code>filter()</code> which is from the <code>dplyr</code> package in <code>tidyverse</code> (more <code>dplyr</code> functions will be showcased soon):</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="reading-and-saving-files.html#cb7-1"></a>health_ca &lt;-<span class="st"> </span><span class="kw">filter</span>(health_full, StateAbbr <span class="op">==</span><span class="st"> &quot;CA&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="reading-and-saving-files.html#cb7-1" aria-hidden="true" tabindex="-1"></a>health_ca <span class="ot">&lt;-</span> <span class="fu">filter</span>(health_full, StateAbbr <span class="sc">==</span> <span class="st">&quot;CA&quot;</span>)</span></code></pre></div>
 <p><code>filter()</code> takes as its first parameter some existing data object, and as its second parameter a logical condition. Here I’m referencing an existing field name, <code>StateAbbr</code>, which I know is spelled that way because I’ve reviewed the data structure, and I’m filtering to only rows of <code>health_full</code> that have “CA” in the <code>StateAbbr</code> field. The result goes from 2M to 224K rows.</p>
 <p>Note that in this particular instance, the PLACES data is available through a Socrata platform, which provides you with some programmatic abilities to filter in the query process itself (i.e., using SQL, or Structured Query Language, techniques). On the web page, instructions for this approach can be found at API &gt; API Docs. Essentially, a filter like we just did above can also be achieved as part of the <code>read_csv()</code> step by using the URL <code>https://chronicdata.cdc.gov/resource/cwsq-ngmh.csv?&amp;stateabbr=CA&amp;$limit=1000000</code>. If the full file took too long to load, then this approach is more efficient because it prevents you from loading more than you need. But the webpage you’re reading data from doesn’t always provide this type of convenience.</p>
 <p>For Bay Area work we could further filter to find just the cities in the Bay Area, but for now we’ll go ahead and move on to other examples.</p>
 <p>Now let’s try an example that uses a local file path. PG&amp;E is the local energy utility for the Bay Area, and it provides some ZIP code level data to the public <a href="https://pge-energydatarequest.com/public_datasets">online</a>. Because this provides a ZIP file, this site would be a good example of Option 3 presented before. But for our purposes, this is a good opportunity to first try Option 2, which involves manually downloading data directly to your local machine. Go ahead and download 2020 electricity usage for four quarters, and make sure to unzip the CSV contents of the zip folders directly into your “working directory”, which you should have created at the end of the last section. You should see these CSVs immediately in your Files window.</p>
 <p>Since we are using the working directory, then you can use relative file paths as follows:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="reading-and-saving-files.html#cb8-1"></a>pge_<span class="dv">20</span>_q1_elec &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;PGE_2020_Q1_ElectricUsageByZip.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="reading-and-saving-files.html#cb8-1" aria-hidden="true" tabindex="-1"></a>pge_20_q1_elec <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;PGE_2020_Q1_ElectricUsageByZip.csv&quot;</span>)</span></code></pre></div>
 <p>No additional file path information is required; RStudio will by default look inside the working directory for a “PGE_2020_Q1_ElectricUsageByZip.csv” unless you specify otherwise. This means it’s generally the easiest to put input data as well as output contents directly in the working directory, but since this is likely also a cloned repo, you will have constraints on file size if you are syncing to GitHub (100MB per file). So as you start working with bigger files, then generally you’d be interfacing instead with a server location (e.g. Google Drive File Stream) and providing a longer file path.</p>
 <p>Now let’s practice saving some outputs. If you want to create a CSV, then <code>write_csv()</code> is your best bet. Here’s what it would look like to save your California-filtered version of the CDC dataset:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="reading-and-saving-files.html#cb9-1"></a><span class="kw">write_csv</span>(health_ca, <span class="st">&quot;health_ca.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="reading-and-saving-files.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(health_ca, <span class="st">&quot;health_ca.csv&quot;</span>)</span></code></pre></div>
 <p>Note that in this case, no <code>&lt;-</code> is needed. <code>write_csv()</code> requires the data object you’re interested in, and a file path destination, which in this case we provided as a relative file path into the working directory (we could have supplied any name for this CSV). This should be ~56MB.</p>
 <p>If you don’t need the output to be a CSV for reading into Excel or Google Sheets, and just want to save an output that can be loaded back into R in the future, then the best choice is R’s own data format, .rds. RDS files are more compact than CSVs, and you can hold any kind of data in .rds, as long as it’s “one” data object. <code>saveRDS()</code> can be used very similarly to <code>write_csv()</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="reading-and-saving-files.html#cb10-1"></a><span class="kw">saveRDS</span>(health_ca, <span class="st">&quot;health_ca.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="reading-and-saving-files.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(health_ca, <span class="st">&quot;health_ca.rds&quot;</span>)</span></code></pre></div>
 <p>Notice how the .rds file is a tenth the size of the CSV, even though it holds the same information. So if you’re trying to conserve storage space and allow for quick saving/loading, RDS files are the way to go.</p>
 <p>Reading RDS files, by the way, looks like this:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="reading-and-saving-files.html#cb11-1"></a>health_ca &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;health_ca.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="reading-and-saving-files.html#cb11-1" aria-hidden="true" tabindex="-1"></a>health_ca <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;health_ca.rds&quot;</span>)</span></code></pre></div>
 <p>In this case, you’ll just be overwriting the existing <code>health_ca</code> data object in your Environment. Note that, like <code>read_csv()</code>, you get to pick whatever name you want on the left side for your variable.</p>
 <p>There are of course many other possible formats you can output data in, which we’ll encounter as we go. The last point I’ll make in this section is that a set of variables from your Environment can be saved together in an .rda file, which you can think of as similar to .rds but able to hold more than one object at a time. For example, you could run:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="reading-and-saving-files.html#cb12-1"></a><span class="kw">save</span>(health_ca, pge_<span class="dv">20</span>_q1_elec, <span class="dt">file =</span> <span class="st">&quot;working_datasets.rda&quot;</span>)</span>
-<span id="cb12-2"><a href="reading-and-saving-files.html#cb12-2"></a><span class="kw">load</span>(“working_datasets.rda”)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="reading-and-saving-files.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(health_ca, pge_20_q1_elec, <span class="at">file =</span> <span class="st">&quot;working_datasets.rda&quot;</span>)</span>
+<span id="cb12-2"><a href="reading-and-saving-files.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(“working_datasets.rda”)</span></code></pre></div>
 <p>Note:</p>
 <ul>
 <li>The relevant function is now <code>save()</code>.</li>
@@ -264,9 +269,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>To read in an .rda file, you need to use <code>load()</code>. One key difference between <code>readRDS()</code> and <code>load()</code> is that you can’t specify a variable name, since there might be multiple variables incoming.</li>
 </ul>
 <p>If you just wanted to save the entire Environment, then you could do:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="reading-and-saving-files.html#cb13-1"></a><span class="co"># SAVE POINT</span></span>
-<span id="cb13-2"><a href="reading-and-saving-files.html#cb13-2"></a><span class="kw">save.image</span>(<span class="st">&quot;progress1.rda&quot;</span>)</span>
-<span id="cb13-3"><a href="reading-and-saving-files.html#cb13-3"></a><span class="kw">load</span>(“progress1.rda”)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="reading-and-saving-files.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SAVE POINT</span></span>
+<span id="cb13-2"><a href="reading-and-saving-files.html#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save.image</span>(<span class="st">&quot;progress1.rda&quot;</span>)</span>
+<span id="cb13-3"><a href="reading-and-saving-files.html#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(“progress1.rda”)</span></code></pre></div>
 <p>I like using this like a “save” button in a video game, designed as specific checkpoints throughout a long script. If you don’t want to lose the contents of “progress1.rda”, you’d generally leave the <code>save.image()</code> line commented out using <code>Ctrl+Shift+C</code>, and only un-comment it if you want to change the contents of the .rda file.</p>
 </div>
             </section>

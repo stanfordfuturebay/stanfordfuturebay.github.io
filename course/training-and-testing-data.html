@@ -31,8 +31,8 @@
   
   
 <link rel="prev" href="survey-regression.html"/>
-
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<link rel="next" href="causality.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,12 +50,11 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
 <script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
@@ -83,6 +82,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -196,6 +196,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
 <li class="chapter" data-level="5.5" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>5.5</b> Training and testing data</a></li>
 </ul></li>
+<li class="chapter" data-level="6" data-path="causality.html"><a href="causality.html"><i class="fa fa-check"></i><b>6</b> Causality</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>6.1</b> Matching</a></li>
+<li class="chapter" data-level="6.2" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>6.2</b> Difference-in-differences</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -216,29 +221,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="training-and-testing-data" class="section level2" number="5.5">
 <h2><span class="header-section-number">5.5</span> Training and testing data</h2>
 <p>As an extension of the logistic regression technique, let’s use a logistic model “trained” on a portion of our PUMS data to try to predict the language of some other “testing” portion of our data, and explicitly evaluate how well the model performs in this test, relative to the actual values from the PUMS data. First, let’s use <code>sample()</code> in a similar way to how we used it in Chapter 4.2 to split our PUMS data. We’ll pick an arbitrary 80% of the PUMS data to use as “training” data and the other 20% to “test” our model.</p>
-<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="training-and-testing-data.html#cb255-1"></a>sample &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
-<span id="cb255-2"><a href="training-and-testing-data.html#cb255-2"></a>  <span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), </span>
-<span id="cb255-3"><a href="training-and-testing-data.html#cb255-3"></a>  <span class="kw">nrow</span>(bay_pums_language), </span>
-<span id="cb255-4"><a href="training-and-testing-data.html#cb255-4"></a>  <span class="dt">replace =</span> T, </span>
-<span id="cb255-5"><a href="training-and-testing-data.html#cb255-5"></a>  <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>)</span>
-<span id="cb255-6"><a href="training-and-testing-data.html#cb255-6"></a>)</span>
-<span id="cb255-7"><a href="training-and-testing-data.html#cb255-7"></a></span>
-<span id="cb255-8"><a href="training-and-testing-data.html#cb255-8"></a>train &lt;-<span class="st"> </span>bay_pums_language[sample, ]</span>
-<span id="cb255-9"><a href="training-and-testing-data.html#cb255-9"></a>test &lt;-<span class="st"> </span>bay_pums_language[<span class="op">!</span>sample, ]</span></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="training-and-testing-data.html#cb254-1" aria-hidden="true" tabindex="-1"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(</span>
+<span id="cb254-2"><a href="training-and-testing-data.html#cb254-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), </span>
+<span id="cb254-3"><a href="training-and-testing-data.html#cb254-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>(bay_pums_language), </span>
+<span id="cb254-4"><a href="training-and-testing-data.html#cb254-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">replace =</span> T, </span>
+<span id="cb254-5"><a href="training-and-testing-data.html#cb254-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>)</span>
+<span id="cb254-6"><a href="training-and-testing-data.html#cb254-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb254-7"><a href="training-and-testing-data.html#cb254-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb254-8"><a href="training-and-testing-data.html#cb254-8" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> bay_pums_language[sample, ]</span>
+<span id="cb254-9"><a href="training-and-testing-data.html#cb254-9" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> bay_pums_language[<span class="sc">!</span>sample, ]</span></code></pre></div>
 <p>Then, we run <code>svrepdesign()</code> and <code>svyglm()</code> with <code>train</code>:</p>
-<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="training-and-testing-data.html#cb256-1"></a>train_design &lt;-<span class="st"> </span><span class="kw">svrepdesign</span>(</span>
-<span id="cb256-2"><a href="training-and-testing-data.html#cb256-2"></a>  <span class="dt">data =</span> train,</span>
-<span id="cb256-3"><a href="training-and-testing-data.html#cb256-3"></a>  <span class="dt">type =</span> <span class="st">&quot;ACS&quot;</span>,</span>
-<span id="cb256-4"><a href="training-and-testing-data.html#cb256-4"></a>  <span class="dt">repweights =</span> bay_pums_language_wts[sample, ],</span>
-<span id="cb256-5"><a href="training-and-testing-data.html#cb256-5"></a>  <span class="dt">weights =</span> <span class="op">~</span><span class="kw">as.numeric</span>(PWGTP)</span>
-<span id="cb256-6"><a href="training-and-testing-data.html#cb256-6"></a>)</span>
-<span id="cb256-7"><a href="training-and-testing-data.html#cb256-7"></a></span>
-<span id="cb256-8"><a href="training-and-testing-data.html#cb256-8"></a>train_model &lt;-<span class="st"> </span><span class="kw">svyglm</span>(</span>
-<span id="cb256-9"><a href="training-and-testing-data.html#cb256-9"></a>  <span class="dt">formula =</span> english <span class="op">~</span><span class="st"> </span>AGEP <span class="op">+</span><span class="st"> </span>white <span class="op">+</span><span class="st"> </span>hispanic,</span>
-<span id="cb256-10"><a href="training-and-testing-data.html#cb256-10"></a>  <span class="dt">family =</span> <span class="kw">quasibinomial</span>(),</span>
-<span id="cb256-11"><a href="training-and-testing-data.html#cb256-11"></a>  <span class="dt">design =</span> train_design,</span>
-<span id="cb256-12"><a href="training-and-testing-data.html#cb256-12"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="training-and-testing-data.html#cb257-1"></a><span class="kw">summary</span>(train_model)</span></code></pre></div>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="training-and-testing-data.html#cb255-1" aria-hidden="true" tabindex="-1"></a>train_design <span class="ot">&lt;-</span> <span class="fu">svrepdesign</span>(</span>
+<span id="cb255-2"><a href="training-and-testing-data.html#cb255-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> train,</span>
+<span id="cb255-3"><a href="training-and-testing-data.html#cb255-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;ACS&quot;</span>,</span>
+<span id="cb255-4"><a href="training-and-testing-data.html#cb255-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">repweights =</span> bay_pums_language_wts[sample, ],</span>
+<span id="cb255-5"><a href="training-and-testing-data.html#cb255-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">weights =</span> <span class="sc">~</span><span class="fu">as.numeric</span>(PWGTP)</span>
+<span id="cb255-6"><a href="training-and-testing-data.html#cb255-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb255-7"><a href="training-and-testing-data.html#cb255-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb255-8"><a href="training-and-testing-data.html#cb255-8" aria-hidden="true" tabindex="-1"></a>train_model <span class="ot">&lt;-</span> <span class="fu">svyglm</span>(</span>
+<span id="cb255-9"><a href="training-and-testing-data.html#cb255-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> english <span class="sc">~</span> AGEP <span class="sc">+</span> white <span class="sc">+</span> hispanic,</span>
+<span id="cb255-10"><a href="training-and-testing-data.html#cb255-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">quasibinomial</span>(),</span>
+<span id="cb255-11"><a href="training-and-testing-data.html#cb255-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> train_design,</span>
+<span id="cb255-12"><a href="training-and-testing-data.html#cb255-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="training-and-testing-data.html#cb256-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(train_model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## svyglm(formula = english ~ AGEP + white + hispanic, family = quasibinomial(), 
@@ -261,21 +266,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Number of Fisher Scoring iterations: 3</code></pre>
 <p>Then, we create a set of predictions for the <code>test</code> dataset with this training model. Note that we can just feed <code>newdata = test</code> which will identify the correct fields from <code>test</code> to use for the independent variables, and the resultant predictions will be distinct from the “real” results that are untouched in the field <code>english</code>.</p>
-<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="training-and-testing-data.html#cb259-1"></a>test_predicted &lt;-</span>
-<span id="cb259-2"><a href="training-and-testing-data.html#cb259-2"></a><span class="st">  </span><span class="kw">predict</span>(train_model, <span class="dt">newdata =</span> test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="training-and-testing-data.html#cb258-1" aria-hidden="true" tabindex="-1"></a>test_predicted <span class="ot">&lt;-</span></span>
+<span id="cb258-2"><a href="training-and-testing-data.html#cb258-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(train_model, <span class="at">newdata =</span> test, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
 <p>Finally, as one way of evaluating the performance of this model, we can create a 2x2 matrix using <code>table()</code>. <code>table()</code> is a general function for doing summary statistics, but if we give it the “real” values of <code>english</code> (yes or no) as one vector and give it our predicted probabilities (true or false above 0.5), then <code>table()</code> will give us the counts of each of four possible pair combinations these two vectors.</p>
-<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="training-and-testing-data.html#cb260-1"></a>summary_2x2 &lt;-</span>
-<span id="cb260-2"><a href="training-and-testing-data.html#cb260-2"></a><span class="st">  </span>test <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb260-3"><a href="training-and-testing-data.html#cb260-3"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
-<span id="cb260-4"><a href="training-and-testing-data.html#cb260-4"></a>    <span class="dt">english =</span> <span class="kw">ifelse</span>(</span>
-<span id="cb260-5"><a href="training-and-testing-data.html#cb260-5"></a>      english <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, </span>
-<span id="cb260-6"><a href="training-and-testing-data.html#cb260-6"></a>      <span class="st">&quot;Yes (English)&quot;</span>, </span>
-<span id="cb260-7"><a href="training-and-testing-data.html#cb260-7"></a>      <span class="st">&quot;No (ESL)&quot;</span></span>
-<span id="cb260-8"><a href="training-and-testing-data.html#cb260-8"></a>    )</span>
-<span id="cb260-9"><a href="training-and-testing-data.html#cb260-9"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb260-10"><a href="training-and-testing-data.html#cb260-10"></a><span class="st">  </span><span class="kw">pull</span>(english) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb260-11"><a href="training-and-testing-data.html#cb260-11"></a><span class="st">  </span><span class="kw">table</span>(test_predicted <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="training-and-testing-data.html#cb261-1"></a>summary_2x2</span></code></pre></div>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="training-and-testing-data.html#cb259-1" aria-hidden="true" tabindex="-1"></a>summary_2x2 <span class="ot">&lt;-</span></span>
+<span id="cb259-2"><a href="training-and-testing-data.html#cb259-2" aria-hidden="true" tabindex="-1"></a>  test <span class="sc">%&gt;%</span> </span>
+<span id="cb259-3"><a href="training-and-testing-data.html#cb259-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb259-4"><a href="training-and-testing-data.html#cb259-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">english =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb259-5"><a href="training-and-testing-data.html#cb259-5" aria-hidden="true" tabindex="-1"></a>      english <span class="sc">==</span> <span class="dv">1</span>, </span>
+<span id="cb259-6"><a href="training-and-testing-data.html#cb259-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Yes (English)&quot;</span>, </span>
+<span id="cb259-7"><a href="training-and-testing-data.html#cb259-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;No (ESL)&quot;</span></span>
+<span id="cb259-8"><a href="training-and-testing-data.html#cb259-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb259-9"><a href="training-and-testing-data.html#cb259-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb259-10"><a href="training-and-testing-data.html#cb259-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(english) <span class="sc">%&gt;%</span> </span>
+<span id="cb259-11"><a href="training-and-testing-data.html#cb259-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">table</span>(test_predicted <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="training-and-testing-data.html#cb260-1" aria-hidden="true" tabindex="-1"></a>summary_2x2</span></code></pre></div>
 <pre><code>##                
 ## .               FALSE TRUE
 ##   No (ESL)       4042 1783
@@ -295,8 +300,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="survey-regression.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="survey-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="causality.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
