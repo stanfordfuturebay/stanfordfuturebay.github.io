@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
-  <meta name="description" content="1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <title>1.3 R Markdown files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="1.3 R Markdown files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:title" content="1.3 R Markdown files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="1.3 R Markdown Files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="twitter:title" content="1.3 R Markdown files | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
   
   
   
@@ -161,9 +161,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software Setup</a></li>
-<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio Interface</a></li>
-<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown Files</a></li>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown files</a></li>
 <li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
 <li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
 <li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
@@ -181,6 +181,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3" data-path="surveys.html"><a href="surveys.html"><i class="fa fa-check"></i><b>3</b> Surveys</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>3.1</b> Microdata</a></li>
+<li class="chapter" data-level="3.2" data-path="strings.html"><a href="strings.html"><i class="fa fa-check"></i><b>3.2</b> Strings</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>4</b> Distributions</a>
 <ul>
@@ -219,7 +220,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="r-markdown-files" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> R Markdown Files</h2>
+<h2><span class="header-section-number">1.3</span> R Markdown files</h2>
 <p>The two most common types of R code documents are .R or .Rmd files. First, keep in mind that in either case they’re really just text files, but fed into R development environments like RStudio, they end up “doing R things”. A normal .R file is literally just code top to bottom to execute. An .Rmd file intersperses code with space for non-code commentary (in a language called Markdown), which is especially useful for creating web documents just like the one you’re viewing right now. Since we want to teach you how to create such public-facing documents for a wide variety of uses, and because it’s often convenient anyway to intersperse code with explanatory text, we’re going to use .Rmd files as the preferred format. But that means we have a few different formatting details to explain that, from the onset, may look strange.</p>
 <p>You should have a new .Rmd file open that has a standard template. Usually, when I am starting a new .Rmd, I immediately erase this template and start to copy/paste script from other existing .Rmd files, but for now it’s useful to review this “scaffolding” to learn.</p>
 <p>At the top, between two <code>---</code> lines, is something called a YAML header (I leave you to Google to your heart’s desire for more insight, and just give you the basic orientation here), which feeds high-level information to what’s called a “knitting” operation (explained soon), which takes your document and does the “web development” (or conversion to other end formats like PDF) for you. For example, the YAML header is where you can type a preset “table of contents” parameter so you never have to bother with designing a table of contents in HTML (this extensive multi-page website, with the left sidebar navigation, is also structured using some simple YAML commands). Just know there are many cool parameters you can learn to use up there to make your web page even cooler, which you can look up when appropriate. Generally, besides many nifty HTML tricks, there are two fundamental things you should always do in the YAML:</p>
@@ -263,7 +264,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-8"><a href="r-markdown-files.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">CENSUS_KEY=</span><span class="st">&quot;c8aa67e4086b4b5ce3a8717f59faa9a28f611dab&quot;</span>)</span></code></pre></div>
 <p>All the <code>library()</code> calls are loading packages that you know you need to run the code in the rest of the script. Generally you’ll have some idea of the essential ones you always use, but as you are working on a novel problem, you may discover a new special package you want to use, and you’d scroll up and add it to this chunk. The list above happens to be the “essential” packages I’ll cover later in this chapter.</p>
 <p>You have to install packages before you can <code>library()</code> load them, and generally you just install once and you’re good to go. Packages can be installed (and updated) using the toolbar options (<code>Tools &gt; Install Packages</code>), or by typing <code>install.packages("name_of_package")</code> in the console.</p>
-<p>Usually after the <code>library()</code> calls, you would set other kinds of environmental "settings’’ that are relevant to specific code you’ll use later on; setting them here merely provides the benefit of having all these settings in one place, but they could go anywhere as long as they are executed before the relevant code they affect. Here I am calling <code>Sys.setenv()</code> which relates to the <code>censusapi</code> package, which I’ll explain in the next chapter. Other common settings you might put in this chunk:</p>
+<p>Usually after the <code>library()</code> calls, you would set other kinds of environmental “settings’’ that are relevant to specific code you’ll use later on; setting them here merely provides the benefit of having all these settings in one place, but they could go anywhere as long as they are executed before the relevant code they affect. Here I am calling <code>Sys.setenv()</code> which relates to the <code>censusapi</code> package, which I’ll explain in the next chapter. Other common settings you might put in this chunk:</p>
 <ul>
 <li>If you are sharing code between users who might have different file paths, then generally it’s a good idea to create a variable like <code>path &lt;- "G:/Shared drives/SFBI-Restricted/"</code>. This holds a string of text which will then be prefixed to other text later on, say to create a full file path to grab some CSV that is in that folder. This happens to be the right file path for me on a PC, but if somebody else has access to the same drive but is a Mac user, they might need to replace this with <code>path &lt;- "/Volumes/GoogleDrive/Shared drives/SFBI-Restricted/"</code>. So then it’s easy for somebody to make this adjustment once in this line of this early chunk. (Note that often code will sit in cloned GitHub repos that you would have set your working directory to manually, in which case any smaller and simpler files you load in from the same repo don’t need an absolute file path like this; absolute file paths tend to be for grabbing large or sensitive data from a secure server; GitHub repos will be explained more in the next section.) (Also note that “environment variables” can also be used to enable Person 1 to have a different <code>path</code> variable than Person 2, which get stored on their respective local machines and can be referenced in a generic way. This technique will not be covered in this curriculum.</li>
 <li>A few packages will have special options you need to set, but they’ll generally be options you can set inside of <code>options()</code>, delineated by commas. We’ll encounter some of these later in the curriculum.</li>
