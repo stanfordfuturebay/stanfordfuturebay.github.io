@@ -202,6 +202,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>6.1</b> Matching</a></li>
 <li class="chapter" data-level="6.2" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>6.2</b> Difference-in-differences</a></li>
 </ul></li>
+<li class="chapter" data-level="7" data-path="web-applications.html"><a href="web-applications.html"><i class="fa fa-check"></i><b>7</b> Web Applications</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="dashboards.html"><a href="dashboards.html"><i class="fa fa-check"></i><b>7.1</b> Dashboards</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -235,7 +239,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb129-4"><a href="probability-distributions.html#cb129-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb129-5"><a href="probability-distributions.html#cb129-5" aria-hidden="true" tabindex="-1"></a>time</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.61    0.01    0.62</code></pre>
+##    0.37    0.00    0.38</code></pre>
 <div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="probability-distributions.html#cb131-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(sample)</span></code></pre></div>
 <p><img src="course_files/figure-html/unnamed-chunk-154-1.png" width="672" /></p>
 <p>Notice that <code>proc.time()</code> has three named numeric values. <code>user</code> and <code>system</code> are more “machine-speak” and refer to different kinds of raw compute time that have accrued since you started your R session, while <code>elapsed</code> is what we would understand as seconds of experienced time. So when we run <code>proc.time()</code> at two different instances and get the difference, it’s the difference in <code>elapsed</code> that likely matters to us, and <code>time[3]</code> would give you that specific value. You can always use this technique to check how long any stretch of code takes; just make sure to run the code in its entirety, either the full chunk or by selecting all lines including <code>start</code> and <code>time</code> and hitting <code>Ctrl+Enter</code>.</p>

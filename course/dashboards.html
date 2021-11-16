@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</title>
+  <meta name="description" content="7.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7.1 Dashboards | Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R" />
+  
+  
+  
+
+<meta name="author" content="Stanford Future Bay Initiative" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="web-applications.html"/>
+
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.4.1/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.4.1/leaflet-providers-plugin.js"></script>
+<link href="libs/HomeButton-0.0.1/home-button.css" rel="stylesheet" />
+<script src="libs/HomeButton-0.0.1/home-button.js"></script>
+<script src="libs/HomeButton-0.0.1/easy-button-src.min.js"></script>
+<script src="libs/clipboard-0.0.1/setClipboardText.js"></script>
+<link href="libs/mapviewCSS-0.0.1/mapview-popup.css" rel="stylesheet" />
+<link href="libs/mapviewCSS-0.0.1/mapview.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://bay.stanford.edu">Stanford Future Bay Initiative</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="software-setup.html"><a href="software-setup.html"><i class="fa fa-check"></i><b>1.1</b> Software setup</a></li>
+<li class="chapter" data-level="1.2" data-path="rstudio-interface.html"><a href="rstudio-interface.html"><i class="fa fa-check"></i><b>1.2</b> RStudio interface</a></li>
+<li class="chapter" data-level="1.3" data-path="r-markdown-files.html"><a href="r-markdown-files.html"><i class="fa fa-check"></i><b>1.3</b> R Markdown files</a></li>
+<li class="chapter" data-level="1.4" data-path="github.html"><a href="github.html"><i class="fa fa-check"></i><b>1.4</b> GitHub</a></li>
+<li class="chapter" data-level="1.5" data-path="reading-and-saving-files.html"><a href="reading-and-saving-files.html"><i class="fa fa-check"></i><b>1.5</b> Reading and saving files</a></li>
+<li class="chapter" data-level="1.6" data-path="loops.html"><a href="loops.html"><i class="fa fa-check"></i><b>1.6</b> Loops</a></li>
+<li class="chapter" data-level="1.7" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>1.7</b> Manipulating data</a></li>
+<li class="chapter" data-level="1.8" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>1.8</b> Plots</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="populations.html"><a href="populations.html"><i class="fa fa-check"></i><b>2</b> Populations</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="geospatial-data.html"><a href="geospatial-data.html"><i class="fa fa-check"></i><b>2.1</b> Geospatial data</a></li>
+<li class="chapter" data-level="2.2" data-path="acs-data.html"><a href="acs-data.html"><i class="fa fa-check"></i><b>2.2</b> ACS data</a></li>
+<li class="chapter" data-level="2.3" data-path="decennial-data.html"><a href="decennial-data.html"><i class="fa fa-check"></i><b>2.3</b> Decennial Data</a></li>
+<li class="chapter" data-level="2.4" data-path="spatial-subsets.html"><a href="spatial-subsets.html"><i class="fa fa-check"></i><b>2.4</b> Spatial subsets</a></li>
+<li class="chapter" data-level="2.5" data-path="migration.html"><a href="migration.html"><i class="fa fa-check"></i><b>2.5</b> Migration</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="surveys.html"><a href="surveys.html"><i class="fa fa-check"></i><b>3</b> Surveys</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="microdata.html"><a href="microdata.html"><i class="fa fa-check"></i><b>3.1</b> Microdata</a></li>
+<li class="chapter" data-level="3.2" data-path="strings.html"><a href="strings.html"><i class="fa fa-check"></i><b>3.2</b> Strings</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>4</b> Distributions</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="equity-analysis.html"><a href="equity-analysis.html"><i class="fa fa-check"></i><b>4.1</b> Equity analysis</a></li>
+<li class="chapter" data-level="4.2" data-path="probability-distributions.html"><a href="probability-distributions.html"><i class="fa fa-check"></i><b>4.2</b> Probability distributions</a></li>
+<li class="chapter" data-level="4.3" data-path="monte-carlo-simulations.html"><a href="monte-carlo-simulations.html"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo simulations</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression.html"><a href="regression.html"><i class="fa fa-check"></i><b>5</b> Regression</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simple-linear-regression.html"><a href="simple-linear-regression.html"><i class="fa fa-check"></i><b>5.1</b> Simple linear regression</a></li>
+<li class="chapter" data-level="5.2" data-path="multiple-regression.html"><a href="multiple-regression.html"><i class="fa fa-check"></i><b>5.2</b> Multiple regression</a></li>
+<li class="chapter" data-level="5.3" data-path="autocorrelation.html"><a href="autocorrelation.html"><i class="fa fa-check"></i><b>5.3</b> Autocorrelation</a></li>
+<li class="chapter" data-level="5.4" data-path="survey-regression.html"><a href="survey-regression.html"><i class="fa fa-check"></i><b>5.4</b> Survey regression</a></li>
+<li class="chapter" data-level="5.5" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>5.5</b> Training and testing data</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="causality.html"><a href="causality.html"><i class="fa fa-check"></i><b>6</b> Causality</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>6.1</b> Matching</a></li>
+<li class="chapter" data-level="6.2" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>6.2</b> Difference-in-differences</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="web-applications.html"><a href="web-applications.html"><i class="fa fa-check"></i><b>7</b> Web Applications</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="dashboards.html"><a href="dashboards.html"><i class="fa fa-check"></i><b>7.1</b> Dashboards</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Shaping the Future of the Bay Area: Intro to Urban Data Analytics in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="dashboards" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Dashboards</h2>
+<p><a href="https://shiny.rstudio.com/">Shiny</a> is a way to create web documents that can receive inputs from a user that can trigger further R code and dynamically change what’s shown on the screen. In some sense, you’ve already experienced interactivity in individual widgets, like <code>leaflet</code> maps that let you zoom in and out, or <code>plotly</code> plots that change their look when you hover over them. But consider those self-contained widgets of interactivity, whereas Shiny completely opens up the box to allow customizable inputs and outputs across your entire document (imagine some action on the map affecting a visual on a nearby chart, which would be impossible with just <code>leaflet</code> and <code>plotly</code> alone).</p>
+<p>For our purposes, we’ll demonstrate not the most raw form of Shiny, which you can pick up on your own by following <a href="https://shiny.rstudio.com/tutorial/">online tutorials</a>, but instead a package called <code>flexdashboard</code> which provides an extra user-friendly layer on top of Shiny. It has its own detailed <a href="https://rmarkdown.rstudio.com/flexdashboard/index.html">tutorial</a>, but we’ll walk through the basics to take an analysis from this curriculum and publish it as a web app.</p>
+<p>Unlike standard Shiny documents which are written as .R files, <code>flexdashboard</code> documents are built using .Rmd files, which we’re most familiar with. In Section 1.3, we described the YAML header, between two <code>---</code> lines. For <code>flexdashboard</code>, instead of <code>output: html_document</code>, you’ll want to set <code>output: flexdashboard::flex_dashboard</code> (you can remove the standard <code>author</code>, <code>date</code>, and <code>editor options</code>). Once you’ve made these changes and save, then the next time you open this .Rmd document, you’ll notice that the “Knit” button is replaced with a “Run Document” button, which will let you preview your dashboard locally in a pop-up window.</p>
+<p><code>flexdashboard</code> standardizes certain design decisions to make your job easier. First, there’s a top navigation bar you can add buttons to by adding “level 1 markdown” headers like (<code>==================</code>) as shown <a href="https://rmarkdown.rstudio.com/flexdashboard/using.html#multiple_pages">here</a>. Whatever you write in place of “Page 1” will be the name of the button on the top navigation bar. As for each individual page, then you generally design a layout of panes on a grid of columns and rows using “level 2 markdown” headers like (<code>------------------</code>) and <code>###</code> headers as you’re familiar with; these options, implemented column-wise or row-wise, are shown <a href="https://rmarkdown.rstudio.com/flexdashboard/using.html#layout">here</a>. Having set up the layout for your panes across one or more pages, and in a grid structure on each page, then the code chunks themselves create the actual outputs in each pane.</p>
+<p>Generally, you would want to do as much pre-processing as possible in separate “processing” .Rmd scripts, so that all you’re doing in the dashboard is displaying outputs like <code>leaflet</code> maps and <code>plotly</code> charts (and, in more sophisticated dashboards, whatever interactive processing you would like the user to be able to trigger). Just like you usually have a first chunk where you load your libraries, you can start with a “global” chunk just below your YAML header, where you load libraries as well as <code>readRDS()</code> any files you’ve pre-processed. In the curly brackets that are always at the top of the chunk, after the three backticks and after the <code>r</code>, write <code>global, include = F</code>. In our demonstration, we’ll include the following within our “global” chunk, bringing back the PG&amp;E data we used in Chapter 1 (<code>pge_data_raw.rds</code> is the result of <code>rbind()</code>ing the CSVs for electricity consumption from 2017-2020):</p>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="dashboards.html#cb279-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flexdashboard)</span>
+<span id="cb279-2"><a href="dashboards.html#cb279-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb279-3"><a href="dashboards.html#cb279-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb279-4"><a href="dashboards.html#cb279-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb279-5"><a href="dashboards.html#cb279-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb279-6"><a href="dashboards.html#cb279-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb279-7"><a href="dashboards.html#cb279-7" aria-hidden="true" tabindex="-1"></a>pge_data_raw <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;pge_data_raw.rds&quot;</span>)</span>
+<span id="cb279-8"><a href="dashboards.html#cb279-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb279-9"><a href="dashboards.html#cb279-9" aria-hidden="true" tabindex="-1"></a>bay_zips <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;bay_zips.rds&quot;</span>)</span>
+<span id="cb279-10"><a href="dashboards.html#cb279-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb279-11"><a href="dashboards.html#cb279-11" aria-hidden="true" tabindex="-1"></a>pge_data <span class="ot">&lt;-</span></span>
+<span id="cb279-12"><a href="dashboards.html#cb279-12" aria-hidden="true" tabindex="-1"></a>  pge_data_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb279-13"><a href="dashboards.html#cb279-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb279-14"><a href="dashboards.html#cb279-14" aria-hidden="true" tabindex="-1"></a>    CUSTOMERCLASS <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb279-15"><a href="dashboards.html#cb279-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Elec- Commercial&quot;</span>,</span>
+<span id="cb279-16"><a href="dashboards.html#cb279-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Elec- Residential&quot;</span></span>
+<span id="cb279-17"><a href="dashboards.html#cb279-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb279-18"><a href="dashboards.html#cb279-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb279-19"><a href="dashboards.html#cb279-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(</span>
+<span id="cb279-20"><a href="dashboards.html#cb279-20" aria-hidden="true" tabindex="-1"></a>    MONTH, </span>
+<span id="cb279-21"><a href="dashboards.html#cb279-21" aria-hidden="true" tabindex="-1"></a>    YEAR, </span>
+<span id="cb279-22"><a href="dashboards.html#cb279-22" aria-hidden="true" tabindex="-1"></a>    CUSTOMERCLASS</span>
+<span id="cb279-23"><a href="dashboards.html#cb279-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb279-24"><a href="dashboards.html#cb279-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb279-25"><a href="dashboards.html#cb279-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">TOTALKBTU =</span> <span class="fu">sum</span>(TOTALKBTU, <span class="at">na.rm =</span> T)</span>
+<span id="cb279-26"><a href="dashboards.html#cb279-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb279-27"><a href="dashboards.html#cb279-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb279-28"><a href="dashboards.html#cb279-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">DATE =</span> </span>
+<span id="cb279-29"><a href="dashboards.html#cb279-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(</span>
+<span id="cb279-30"><a href="dashboards.html#cb279-30" aria-hidden="true" tabindex="-1"></a>        YEAR,</span>
+<span id="cb279-31"><a href="dashboards.html#cb279-31" aria-hidden="true" tabindex="-1"></a>        MONTH, </span>
+<span id="cb279-32"><a href="dashboards.html#cb279-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;01&quot;</span>,</span>
+<span id="cb279-33"><a href="dashboards.html#cb279-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">sep=</span><span class="st">&quot;-&quot;</span></span>
+<span id="cb279-34"><a href="dashboards.html#cb279-34" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span> <span class="fu">as.Date</span>()</span>
+<span id="cb279-35"><a href="dashboards.html#cb279-35" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Then, to show a plot and a map side-by-side, we simply have to create two Column headers and include one chunk within each. Outside of chunks, you can still write text commentary, which in a <code>flexdashboard</code> will show up as rendered text in the appropriate locations.</p>
+<p>Here’s the code to output a <code>plotly</code> object in the first column:</p>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="dashboards.html#cb280-1" aria-hidden="true" tabindex="-1"></a>chart <span class="ot">&lt;-</span> pge_data <span class="sc">%&gt;%</span> </span>
+<span id="cb280-2"><a href="dashboards.html#cb280-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb280-3"><a href="dashboards.html#cb280-3" aria-hidden="true" tabindex="-1"></a>    CUSTOMERCLASS <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb280-4"><a href="dashboards.html#cb280-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Elec- Residential&quot;</span></span>
+<span id="cb280-5"><a href="dashboards.html#cb280-5" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb280-6"><a href="dashboards.html#cb280-6" aria-hidden="true" tabindex="-1"></a>    YEAR <span class="sc">==</span> <span class="dv">2020</span></span>
+<span id="cb280-7"><a href="dashboards.html#cb280-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb280-8"><a href="dashboards.html#cb280-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb280-9"><a href="dashboards.html#cb280-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb280-10"><a href="dashboards.html#cb280-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> MONTH,</span>
+<span id="cb280-11"><a href="dashboards.html#cb280-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> TOTALKBTU<span class="sc">/</span><span class="fl">1e9</span></span>
+<span id="cb280-12"><a href="dashboards.html#cb280-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb280-13"><a href="dashboards.html#cb280-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb280-14"><a href="dashboards.html#cb280-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb280-15"><a href="dashboards.html#cb280-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb280-16"><a href="dashboards.html#cb280-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> YEAR <span class="sc">%&gt;%</span> <span class="fu">factor</span>()</span>
+<span id="cb280-17"><a href="dashboards.html#cb280-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb280-18"><a href="dashboards.html#cb280-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb280-19"><a href="dashboards.html#cb280-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(</span>
+<span id="cb280-20"><a href="dashboards.html#cb280-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(</span>
+<span id="cb280-21"><a href="dashboards.html#cb280-21" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Jan&quot;</span>,</span>
+<span id="cb280-22"><a href="dashboards.html#cb280-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Feb&quot;</span>,</span>
+<span id="cb280-23"><a href="dashboards.html#cb280-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Mar&quot;</span>,</span>
+<span id="cb280-24"><a href="dashboards.html#cb280-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Apr&quot;</span>,</span>
+<span id="cb280-25"><a href="dashboards.html#cb280-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;May&quot;</span>,</span>
+<span id="cb280-26"><a href="dashboards.html#cb280-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Jun&quot;</span>,</span>
+<span id="cb280-27"><a href="dashboards.html#cb280-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Jul&quot;</span>,</span>
+<span id="cb280-28"><a href="dashboards.html#cb280-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Aug&quot;</span>,</span>
+<span id="cb280-29"><a href="dashboards.html#cb280-29" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Sep&quot;</span>,</span>
+<span id="cb280-30"><a href="dashboards.html#cb280-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Oct&quot;</span>,</span>
+<span id="cb280-31"><a href="dashboards.html#cb280-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Nov&quot;</span>,</span>
+<span id="cb280-32"><a href="dashboards.html#cb280-32" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Dec&quot;</span></span>
+<span id="cb280-33"><a href="dashboards.html#cb280-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb280-34"><a href="dashboards.html#cb280-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb280-35"><a href="dashboards.html#cb280-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb280-36"><a href="dashboards.html#cb280-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb280-37"><a href="dashboards.html#cb280-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Total kBTUs (billions)&quot;</span>,</span>
+<span id="cb280-38"><a href="dashboards.html#cb280-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Residential Energy Consumption in the Bay Area, 2020&quot;</span>,</span>
+<span id="cb280-39"><a href="dashboards.html#cb280-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;Year&quot;</span></span>
+<span id="cb280-40"><a href="dashboards.html#cb280-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb280-41"><a href="dashboards.html#cb280-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb280-42"><a href="dashboards.html#cb280-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb280-43"><a href="dashboards.html#cb280-43" aria-hidden="true" tabindex="-1"></a>chart <span class="sc">%&gt;%</span> </span>
+<span id="cb280-44"><a href="dashboards.html#cb280-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplotly</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb280-45"><a href="dashboards.html#cb280-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">config</span>(<span class="at">displayModeBar =</span> F)</span></code></pre></div>
+<p>And here’s the code for the <code>leaflet</code> map in the second column:</p>
+<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="dashboards.html#cb281-1" aria-hidden="true" tabindex="-1"></a>pge_20_res_elec <span class="ot">&lt;-</span></span>
+<span id="cb281-2"><a href="dashboards.html#cb281-2" aria-hidden="true" tabindex="-1"></a>  pge_data_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb281-3"><a href="dashboards.html#cb281-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb281-4"><a href="dashboards.html#cb281-4" aria-hidden="true" tabindex="-1"></a>    CUSTOMERCLASS <span class="sc">==</span> <span class="st">&quot;Elec- Residential&quot;</span>,</span>
+<span id="cb281-5"><a href="dashboards.html#cb281-5" aria-hidden="true" tabindex="-1"></a>    YEAR <span class="sc">==</span> <span class="dv">2020</span></span>
+<span id="cb281-6"><a href="dashboards.html#cb281-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-7"><a href="dashboards.html#cb281-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb281-8"><a href="dashboards.html#cb281-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">ZIPCODE =</span> ZIPCODE <span class="sc">%&gt;%</span> <span class="fu">as.character</span>()</span>
+<span id="cb281-9"><a href="dashboards.html#cb281-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-10"><a href="dashboards.html#cb281-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ZIPCODE) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-11"><a href="dashboards.html#cb281-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb281-12"><a href="dashboards.html#cb281-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">TOTALKBTU =</span> <span class="fu">sum</span>(TOTALKBTU, <span class="at">na.rm =</span> T)</span>
+<span id="cb281-13"><a href="dashboards.html#cb281-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-14"><a href="dashboards.html#cb281-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">right_join</span>(</span>
+<span id="cb281-15"><a href="dashboards.html#cb281-15" aria-hidden="true" tabindex="-1"></a>    bay_zips <span class="sc">%&gt;%</span> <span class="fu">select</span>(GEOID10),</span>
+<span id="cb281-16"><a href="dashboards.html#cb281-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;ZIPCODE&quot;</span> <span class="ot">=</span> <span class="st">&quot;GEOID10&quot;</span>)</span>
+<span id="cb281-17"><a href="dashboards.html#cb281-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-18"><a href="dashboards.html#cb281-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb281-19"><a href="dashboards.html#cb281-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">4326</span>)</span>
+<span id="cb281-20"><a href="dashboards.html#cb281-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb281-21"><a href="dashboards.html#cb281-21" aria-hidden="true" tabindex="-1"></a>res_pal <span class="ot">&lt;-</span> <span class="fu">colorNumeric</span>(</span>
+<span id="cb281-22"><a href="dashboards.html#cb281-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">&quot;Reds&quot;</span>,</span>
+<span id="cb281-23"><a href="dashboards.html#cb281-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">domain =</span> </span>
+<span id="cb281-24"><a href="dashboards.html#cb281-24" aria-hidden="true" tabindex="-1"></a>    pge_20_res_elec<span class="sc">$</span>TOTALKBTU</span>
+<span id="cb281-25"><a href="dashboards.html#cb281-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb281-26"><a href="dashboards.html#cb281-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb281-27"><a href="dashboards.html#cb281-27" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb281-28"><a href="dashboards.html#cb281-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderTiles</span>(<span class="at">provider =</span> providers<span class="sc">$</span>CartoDB.Positron) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-29"><a href="dashboards.html#cb281-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
+<span id="cb281-30"><a href="dashboards.html#cb281-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> pge_20_res_elec,</span>
+<span id="cb281-31"><a href="dashboards.html#cb281-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">fillColor =</span> <span class="sc">~</span><span class="fu">res_pal</span>(TOTALKBTU),</span>
+<span id="cb281-32"><a href="dashboards.html#cb281-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb281-33"><a href="dashboards.html#cb281-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">opacity =</span> <span class="fl">0.5</span>,</span>
+<span id="cb281-34"><a href="dashboards.html#cb281-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">fillOpacity =</span> <span class="fl">0.5</span>,</span>
+<span id="cb281-35"><a href="dashboards.html#cb281-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">weight =</span> <span class="dv">1</span>,</span>
+<span id="cb281-36"><a href="dashboards.html#cb281-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="sc">~</span><span class="fu">paste0</span>(</span>
+<span id="cb281-37"><a href="dashboards.html#cb281-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">round</span>(TOTALKBTU), </span>
+<span id="cb281-38"><a href="dashboards.html#cb281-38" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot; kBTU total in &quot;</span>,</span>
+<span id="cb281-39"><a href="dashboards.html#cb281-39" aria-hidden="true" tabindex="-1"></a>      ZIPCODE</span>
+<span id="cb281-40"><a href="dashboards.html#cb281-40" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb281-41"><a href="dashboards.html#cb281-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">highlightOptions =</span> <span class="fu">highlightOptions</span>(</span>
+<span id="cb281-42"><a href="dashboards.html#cb281-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">weight =</span> <span class="dv">2</span>,</span>
+<span id="cb281-43"><a href="dashboards.html#cb281-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">opacity =</span> <span class="dv">1</span></span>
+<span id="cb281-44"><a href="dashboards.html#cb281-44" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb281-45"><a href="dashboards.html#cb281-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb281-46"><a href="dashboards.html#cb281-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLegend</span>(</span>
+<span id="cb281-47"><a href="dashboards.html#cb281-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> pge_20_res_elec,</span>
+<span id="cb281-48"><a href="dashboards.html#cb281-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">pal =</span> res_pal,</span>
+<span id="cb281-49"><a href="dashboards.html#cb281-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="sc">~</span>TOTALKBTU,</span>
+<span id="cb281-50"><a href="dashboards.html#cb281-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Total Residential&lt;br&gt;Electricity (kBTU), 2020&quot;</span></span>
+<span id="cb281-51"><a href="dashboards.html#cb281-51" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>The full code for this simple dashboard can be seen <a href="https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/course/dashboard_demo1.Rmd">here</a>, with all the formatting that we’ve just explained. Since this is a dashboard with no actual Shiny interactivity, it can be knit similarly to the knitted HTML documents you’ve created before, but you’ll need to save the .Rmd file, then write the following command in your console because the RStudio interface no longer gives you a Knit button option:</p>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="dashboards.html#cb282-1" aria-hidden="true" tabindex="-1"></a>rmarkdown<span class="sc">::</span><span class="fu">render</span>(</span>
+<span id="cb282-2"><a href="dashboards.html#cb282-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">input =</span> <span class="st">&quot;dashboard_demo1.Rmd&quot;</span>, </span>
+<span id="cb282-3"><a href="dashboards.html#cb282-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_format =</span> <span class="st">&quot;flexdashboard::flex_dashboard&quot;</span>, </span>
+<span id="cb282-4"><a href="dashboards.html#cb282-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_file =</span> <span class="st">&quot;dashboard_demo1.html&quot;</span></span>
+<span id="cb282-5"><a href="dashboards.html#cb282-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>This HTML can then be published on your personal GitHub page the same way. Our demo can be seen <a href="https://stanfordfuturebay.github.io/course/dashboard_demo1">here</a>.</p>
+<p>Going from this simplest of dashboards to one that has Shiny interactivity requires publishing with a service like <a href="https://www.shinyapps.io/">shinyapps.io</a>, with which you can sign up for a free account and publish a set number of personal dashboards. We can add interactivity to the previous dashboard, specifically a dropdown menu for selecting the specific year of data that will be displayed in the plot and the map.</p>
+<p>First, add <code>runtime: shiny</code> to the YAML section of your document.</p>
+<p>Next, for flexdashboards, the standard location for placing inputs is in a “sidebar”, which is a first column given the extra parameter <code>{.sidebar}</code> (as shown <a href="https://pkgs.rstudio.com/flexdashboard/articles/shiny.html#getting-started">here</a>). The <code>shiny</code> package has a variety of functions that specifically create interactive input widgets, like dropdown menus (the primary set are listed <a href="https://pkgs.rstudio.com/flexdashboard/articles/shiny.html#inputs-outputs">here</a>). You can learn how to use each one through practice. For our example, we use <code>selectInput()</code> as follows:</p>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="dashboards.html#cb283-1" aria-hidden="true" tabindex="-1"></a><span class="fu">selectInput</span>(</span>
+<span id="cb283-2"><a href="dashboards.html#cb283-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">inputId =</span> <span class="st">&quot;year&quot;</span>, </span>
+<span id="cb283-3"><a href="dashboards.html#cb283-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="st">&quot;Year:&quot;</span>,</span>
+<span id="cb283-4"><a href="dashboards.html#cb283-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">choices =</span> <span class="fu">c</span>(<span class="dv">2017</span>,<span class="dv">2018</span>,<span class="dv">2019</span>,<span class="dv">2020</span>), </span>
+<span id="cb283-5"><a href="dashboards.html#cb283-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">selected =</span> <span class="dv">2020</span></span>
+<span id="cb283-6"><a href="dashboards.html#cb283-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>The location you place this is where a dropdown menu will show up in the live dashboard. Using <code>inputId=</code>, you have generated an object located automatically at <code>input$year</code>, where <code>year</code> was your choice. In a Shiny app, you can imagine an empty list called <code>input</code> that is waiting to hold as many input variables as you would like it to be able to collect. When the user selects, say, “2020” (which happens to be the default selection because of <code>selected=</code>), then in real-time, the application stores “2020” in <code>input$year</code>. When the user changes the selection to “2019”, then <code>input$year</code> is updated to store “2019”. So in other parts of the script, we can refer to <code>input$year</code>, and it will be able to “observe” the change and re-execute entire sections of code with the new value of <code>input$year</code>.</p>
+<p>The following is the resulting updated structure of the <code>plotly</code> column code. We now use two chunks. The first is simply:</p>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="dashboards.html#cb284-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotlyOutput</span>(<span class="st">&quot;plot&quot;</span>)</span></code></pre></div>
+<p>Because out plot is now “dynamic”, we also need to store the plot itself in a more dynamic way. This function specifically pairs with <code>plotly</code> to create dynamic <code>plotly</code> objects, and you have instantiated the slot <code>output$plot</code>. Again, imagine an empty list called <code>output</code> that mirrors the <code>input</code> list, and is waiting to hold as many outputs as you would like to be able to dynamically display. After this “frontend” chunk”, we now need a “backend” chunk that will be prepared to update the value of <code>output$plot</code>. We establish the “backend” nature of the chunk by writing <code>context = “server”</code> where we would typically write <code>echo = F</code>. The chunk itself looks like this:</p>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="dashboards.html#cb285-1" aria-hidden="true" tabindex="-1"></a><span class="fu">observeEvent</span>(input<span class="sc">$</span>year, {</span>
+<span id="cb285-2"><a href="dashboards.html#cb285-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb285-3"><a href="dashboards.html#cb285-3" aria-hidden="true" tabindex="-1"></a>  chart <span class="ot">&lt;-</span> pge_data <span class="sc">%&gt;%</span> </span>
+<span id="cb285-4"><a href="dashboards.html#cb285-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
+<span id="cb285-5"><a href="dashboards.html#cb285-5" aria-hidden="true" tabindex="-1"></a>      CUSTOMERCLASS <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb285-6"><a href="dashboards.html#cb285-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Elec- Residential&quot;</span></span>
+<span id="cb285-7"><a href="dashboards.html#cb285-7" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb285-8"><a href="dashboards.html#cb285-8" aria-hidden="true" tabindex="-1"></a>      YEAR <span class="sc">==</span> input<span class="sc">$</span>year</span>
+<span id="cb285-9"><a href="dashboards.html#cb285-9" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb285-10"><a href="dashboards.html#cb285-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(</span>
+<span id="cb285-11"><a href="dashboards.html#cb285-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
+<span id="cb285-12"><a href="dashboards.html#cb285-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> MONTH,</span>
+<span id="cb285-13"><a href="dashboards.html#cb285-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> TOTALKBTU<span class="sc">/</span><span class="fl">1e9</span></span>
+<span id="cb285-14"><a href="dashboards.html#cb285-14" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb285-15"><a href="dashboards.html#cb285-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb285-16"><a href="dashboards.html#cb285-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(</span>
+<span id="cb285-17"><a href="dashboards.html#cb285-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
+<span id="cb285-18"><a href="dashboards.html#cb285-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> YEAR <span class="sc">%&gt;%</span> <span class="fu">factor</span>()</span>
+<span id="cb285-19"><a href="dashboards.html#cb285-19" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb285-20"><a href="dashboards.html#cb285-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb285-21"><a href="dashboards.html#cb285-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(</span>
+<span id="cb285-22"><a href="dashboards.html#cb285-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">limits =</span> <span class="fu">c</span>(</span>
+<span id="cb285-23"><a href="dashboards.html#cb285-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Jan&quot;</span>,</span>
+<span id="cb285-24"><a href="dashboards.html#cb285-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Feb&quot;</span>,</span>
+<span id="cb285-25"><a href="dashboards.html#cb285-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Mar&quot;</span>,</span>
+<span id="cb285-26"><a href="dashboards.html#cb285-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Apr&quot;</span>,</span>
+<span id="cb285-27"><a href="dashboards.html#cb285-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;May&quot;</span>,</span>
+<span id="cb285-28"><a href="dashboards.html#cb285-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Jun&quot;</span>,</span>
+<span id="cb285-29"><a href="dashboards.html#cb285-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Jul&quot;</span>,</span>
+<span id="cb285-30"><a href="dashboards.html#cb285-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Aug&quot;</span>,</span>
+<span id="cb285-31"><a href="dashboards.html#cb285-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Sep&quot;</span>,</span>
+<span id="cb285-32"><a href="dashboards.html#cb285-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Oct&quot;</span>,</span>
+<span id="cb285-33"><a href="dashboards.html#cb285-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Nov&quot;</span>,</span>
+<span id="cb285-34"><a href="dashboards.html#cb285-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Dec&quot;</span></span>
+<span id="cb285-35"><a href="dashboards.html#cb285-35" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb285-36"><a href="dashboards.html#cb285-36" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb285-37"><a href="dashboards.html#cb285-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb285-38"><a href="dashboards.html#cb285-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb285-39"><a href="dashboards.html#cb285-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;Total kBTUs (billions)&quot;</span>,</span>
+<span id="cb285-40"><a href="dashboards.html#cb285-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Residential Energy Consumption in the Bay Area, &quot;</span>, input<span class="sc">$</span>year),</span>
+<span id="cb285-41"><a href="dashboards.html#cb285-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;Year&quot;</span></span>
+<span id="cb285-42"><a href="dashboards.html#cb285-42" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span> </span>
+<span id="cb285-43"><a href="dashboards.html#cb285-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb285-44"><a href="dashboards.html#cb285-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb285-45"><a href="dashboards.html#cb285-45" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>plot <span class="ot">&lt;-</span> <span class="fu">renderPlotly</span>({</span>
+<span id="cb285-46"><a href="dashboards.html#cb285-46" aria-hidden="true" tabindex="-1"></a>    chart <span class="sc">%&gt;%</span> </span>
+<span id="cb285-47"><a href="dashboards.html#cb285-47" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggplotly</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb285-48"><a href="dashboards.html#cb285-48" aria-hidden="true" tabindex="-1"></a>      <span class="fu">config</span>(<span class="at">displayModeBar =</span> F)</span>
+<span id="cb285-49"><a href="dashboards.html#cb285-49" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb285-50"><a href="dashboards.html#cb285-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb285-51"><a href="dashboards.html#cb285-51" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<p>There are some slight cosmetic changes to properly label the dynamically changing plot, but mostly the only change is that the previous code has been placed inside of an <code>observeEvent()</code> function. This takes as its first parameter the “signal” to listen for, which we provide as <code>input$year</code>. So whenever <code>input$year</code> changes, this code will run, and will use <code>input$year</code>. The second parameter is the set of code we want to run. Where we previously hard-coded “2020”, now we use <code>input$year</code>. And at the end, we pass the output <code>leaflet</code> object into a function called <code>renderPlotly()</code>, which prepares the plot in the necessary format to be given to <code>output$plot</code>. These are some of many techniques to pick up over time when specifically creating Shiny applications.</p>
+<p>Making the map dynamic is structurally similar. First we provide the “frontend” chunk:</p>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="dashboards.html#cb286-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leafletOutput</span>(<span class="st">&quot;map&quot;</span>)</span></code></pre></div>
+<p>And then the “backend” chunk (with <code>context = “server”</code> in the first bracket):</p>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="dashboards.html#cb287-1" aria-hidden="true" tabindex="-1"></a><span class="fu">observeEvent</span>(input<span class="sc">$</span>year, {</span>
+<span id="cb287-2"><a href="dashboards.html#cb287-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb287-3"><a href="dashboards.html#cb287-3" aria-hidden="true" tabindex="-1"></a>  pge_res_elec <span class="ot">&lt;-</span></span>
+<span id="cb287-4"><a href="dashboards.html#cb287-4" aria-hidden="true" tabindex="-1"></a>    pge_data_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb287-5"><a href="dashboards.html#cb287-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
+<span id="cb287-6"><a href="dashboards.html#cb287-6" aria-hidden="true" tabindex="-1"></a>      CUSTOMERCLASS <span class="sc">==</span> <span class="st">&quot;Elec- Residential&quot;</span>,</span>
+<span id="cb287-7"><a href="dashboards.html#cb287-7" aria-hidden="true" tabindex="-1"></a>      YEAR <span class="sc">==</span> input<span class="sc">$</span>year</span>
+<span id="cb287-8"><a href="dashboards.html#cb287-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-9"><a href="dashboards.html#cb287-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb287-10"><a href="dashboards.html#cb287-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">ZIPCODE =</span> ZIPCODE <span class="sc">%&gt;%</span> <span class="fu">as.character</span>()</span>
+<span id="cb287-11"><a href="dashboards.html#cb287-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-12"><a href="dashboards.html#cb287-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(ZIPCODE) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-13"><a href="dashboards.html#cb287-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(</span>
+<span id="cb287-14"><a href="dashboards.html#cb287-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">TOTALKBTU =</span> <span class="fu">sum</span>(TOTALKBTU, <span class="at">na.rm =</span> T)</span>
+<span id="cb287-15"><a href="dashboards.html#cb287-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-16"><a href="dashboards.html#cb287-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">right_join</span>(</span>
+<span id="cb287-17"><a href="dashboards.html#cb287-17" aria-hidden="true" tabindex="-1"></a>      bay_zips <span class="sc">%&gt;%</span> <span class="fu">select</span>(GEOID10),</span>
+<span id="cb287-18"><a href="dashboards.html#cb287-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;ZIPCODE&quot;</span> <span class="ot">=</span> <span class="st">&quot;GEOID10&quot;</span>)</span>
+<span id="cb287-19"><a href="dashboards.html#cb287-19" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-20"><a href="dashboards.html#cb287-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb287-21"><a href="dashboards.html#cb287-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_transform</span>(<span class="dv">4326</span>)</span>
+<span id="cb287-22"><a href="dashboards.html#cb287-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb287-23"><a href="dashboards.html#cb287-23" aria-hidden="true" tabindex="-1"></a>  res_pal <span class="ot">&lt;-</span> <span class="fu">colorNumeric</span>(</span>
+<span id="cb287-24"><a href="dashboards.html#cb287-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Reds&quot;</span>,</span>
+<span id="cb287-25"><a href="dashboards.html#cb287-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">domain =</span> </span>
+<span id="cb287-26"><a href="dashboards.html#cb287-26" aria-hidden="true" tabindex="-1"></a>      pge_res_elec<span class="sc">$</span>TOTALKBTU</span>
+<span id="cb287-27"><a href="dashboards.html#cb287-27" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb287-28"><a href="dashboards.html#cb287-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb287-29"><a href="dashboards.html#cb287-29" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>map <span class="ot">&lt;-</span> <span class="fu">renderLeaflet</span>({</span>
+<span id="cb287-30"><a href="dashboards.html#cb287-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">leaflet</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb287-31"><a href="dashboards.html#cb287-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">addProviderTiles</span>(<span class="at">provider =</span> providers<span class="sc">$</span>CartoDB.Positron) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-32"><a href="dashboards.html#cb287-32" aria-hidden="true" tabindex="-1"></a>      <span class="fu">addPolygons</span>(</span>
+<span id="cb287-33"><a href="dashboards.html#cb287-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> pge_res_elec,</span>
+<span id="cb287-34"><a href="dashboards.html#cb287-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">fillColor =</span> <span class="sc">~</span><span class="fu">res_pal</span>(TOTALKBTU),</span>
+<span id="cb287-35"><a href="dashboards.html#cb287-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb287-36"><a href="dashboards.html#cb287-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">opacity =</span> <span class="fl">0.5</span>,</span>
+<span id="cb287-37"><a href="dashboards.html#cb287-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">fillOpacity =</span> <span class="fl">0.5</span>,</span>
+<span id="cb287-38"><a href="dashboards.html#cb287-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">weight =</span> <span class="dv">1</span>,</span>
+<span id="cb287-39"><a href="dashboards.html#cb287-39" aria-hidden="true" tabindex="-1"></a>        <span class="at">label =</span> <span class="sc">~</span><span class="fu">paste0</span>(</span>
+<span id="cb287-40"><a href="dashboards.html#cb287-40" aria-hidden="true" tabindex="-1"></a>          <span class="fu">round</span>(TOTALKBTU), </span>
+<span id="cb287-41"><a href="dashboards.html#cb287-41" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot; kBTU total in &quot;</span>,</span>
+<span id="cb287-42"><a href="dashboards.html#cb287-42" aria-hidden="true" tabindex="-1"></a>          ZIPCODE</span>
+<span id="cb287-43"><a href="dashboards.html#cb287-43" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb287-44"><a href="dashboards.html#cb287-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">highlightOptions =</span> <span class="fu">highlightOptions</span>(</span>
+<span id="cb287-45"><a href="dashboards.html#cb287-45" aria-hidden="true" tabindex="-1"></a>          <span class="at">weight =</span> <span class="dv">2</span>,</span>
+<span id="cb287-46"><a href="dashboards.html#cb287-46" aria-hidden="true" tabindex="-1"></a>          <span class="at">opacity =</span> <span class="dv">1</span></span>
+<span id="cb287-47"><a href="dashboards.html#cb287-47" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb287-48"><a href="dashboards.html#cb287-48" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span> </span>
+<span id="cb287-49"><a href="dashboards.html#cb287-49" aria-hidden="true" tabindex="-1"></a>      <span class="fu">addLegend</span>(</span>
+<span id="cb287-50"><a href="dashboards.html#cb287-50" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> pge_res_elec,</span>
+<span id="cb287-51"><a href="dashboards.html#cb287-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">pal =</span> res_pal,</span>
+<span id="cb287-52"><a href="dashboards.html#cb287-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">values =</span> <span class="sc">~</span>TOTALKBTU,</span>
+<span id="cb287-53"><a href="dashboards.html#cb287-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Total Residential&lt;br&gt;Electricity (kBTU), &quot;</span>, input<span class="sc">$</span>year)</span>
+<span id="cb287-54"><a href="dashboards.html#cb287-54" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb287-55"><a href="dashboards.html#cb287-55" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb287-56"><a href="dashboards.html#cb287-56" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb287-57"><a href="dashboards.html#cb287-57" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<p>Notice <code>leafletOutput()</code> and <code>renderLeaflet()</code> as the analogous Shiny functions to make the map dynamic. Essentially, when a year is picked from the dropdown menu, both the plot and the map are completely regenerated. There are more advanced ways to keep plots and maps “partially” existent, and only swap out individual lines or individual shapes. And beyond having just one interactive input, you can have many in the sidebar, all triggering different types of dynamic changes effectively simultaneously, and furthermore, you can trigger events through direct selections on the map which can cause changes in the plot, and vice versa.</p>
+<p>The full code for this second dashboard can be seen <a href="https://github.com/stanfordfuturebay/stanfordfuturebay.github.io/blob/master/course/dashboard_demo2.Rmd">here</a>, with all the necessary formatting. You should be able to preview this dashboard as a pop-up in RStudio, with all interactivity. To publish, you need to have created your Shinyapps.io account and <a href="https://shiny.rstudio.com/articles/shinyapps.html">configured a token</a>. Then you will find a “Publish” option on the same toolbar as the Knit button, which will let you publish a live web app your Shinyapps.io account at a specified URL. This is fundamentally different from Knitting because this app needs a server to be able to store those <code>input</code> and <code>output</code> dynamic objects. Once you start building more elaborate apps, then be prepared to pay some kind of server cost with Shinyapps.io or another provider to be able to “host” these apps online. Our live hosted dashboard can be viewed <a href="https://stanfordfuturebay.shinyapps.io/dashboard_demo2">here</a>.</p>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="web-applications.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "none",
+"scroll_highlight": true
+},
+"toolbar": {
+"position": "fixed"
+},
+"info": false
+});
+});
+</script>
+
+</body>
+
+</html>

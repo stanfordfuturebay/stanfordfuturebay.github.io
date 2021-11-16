@@ -202,6 +202,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>6.1</b> Matching</a></li>
 <li class="chapter" data-level="6.2" data-path="difference-in-differences.html"><a href="difference-in-differences.html"><i class="fa fa-check"></i><b>6.2</b> Difference-in-differences</a></li>
 </ul></li>
+<li class="chapter" data-level="7" data-path="web-applications.html"><a href="web-applications.html"><i class="fa fa-check"></i><b>7</b> Web Applications</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="dashboards.html"><a href="dashboards.html"><i class="fa fa-check"></i><b>7.1</b> Dashboards</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -369,9 +373,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="course_files/figure-html/unnamed-chunk-162-1.png" width="672" /></p>
 <p>We can find statistical measures such as the mean and MOE with a 90% confidence interval of this vector of 10,000 numbers, as desired.</p>
 <div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="monte-carlo-simulations.html#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(montecarlo_result)</span></code></pre></div>
-<pre><code>## [1] 113964.7</code></pre>
+<pre><code>## [1] 113958.3</code></pre>
 <div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="monte-carlo-simulations.html#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(montecarlo_result)<span class="sc">*</span><span class="fl">1.645</span></span></code></pre></div>
-<pre><code>## [1] 1928.214</code></pre>
+<pre><code>## [1] 1890.74</code></pre>
 <div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="monte-carlo-simulations.html#cb147-1" aria-hidden="true" tabindex="-1"></a>upper <span class="ot">&lt;-</span> <span class="fu">mean</span>(montecarlo_result) <span class="sc">+</span> <span class="fl">1.645</span><span class="sc">*</span><span class="fu">sd</span>(montecarlo_result)</span>
 <span id="cb147-2"><a href="monte-carlo-simulations.html#cb147-2" aria-hidden="true" tabindex="-1"></a>lower <span class="ot">&lt;-</span> <span class="fu">mean</span>(montecarlo_result) <span class="sc">-</span> <span class="fl">1.645</span><span class="sc">*</span><span class="fu">sd</span>(montecarlo_result)</span>
 <span id="cb147-3"><a href="monte-carlo-simulations.html#cb147-3" aria-hidden="true" tabindex="-1"></a></span>
