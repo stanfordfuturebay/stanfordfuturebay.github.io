@@ -1,0 +1,159 @@
+---
+title: "Dashboard Demo"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+---
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(plotly)
+
+pge_data_raw <- readRDS("pge_data_raw.rds")
+
+bay_zips <- readRDS("bay_zips.rds")
+
+pge_data <-
+  pge_data_raw %>% 
+  filter(
+    CUSTOMERCLASS %in% c(
+      "Elec- Commercial",
+      "Elec- Residential",
+      "Gas- Commercial",
+      "Gas- Residential"
+    )
+  ) %>% 
+  group_by(
+    MONTH, 
+    YEAR, 
+    CUSTOMERCLASS
+  ) %>% 
+  summarize(
+    TOTALKBTU = sum(TOTALKBTU, na.rm = T)
+  ) %>% 
+  mutate(
+    DATE = 
+      paste(
+        YEAR,
+        MONTH, 
+        "01",
+        sep="-"
+      ) %>% as.Date()
+  )
+```
+
+Column
+-------------------------------------
+
+### Monthly consumption
+
+```{r}
+chart <- pge_data %>% 
+  filter(
+    CUSTOMERCLASS %in% c(
+      "Elec- Residential"
+    ),
+    YEAR == 2020
+  ) %>% 
+  ggplot(
+    aes(
+      x = MONTH,
+      y = TOTALKBTU/1e9
+    )
+  ) +
+  geom_line(
+    aes(
+      color = YEAR %>% factor()
+    )
+  ) +
+  scale_x_discrete(
+    limits = c(
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    )
+  ) +
+  labs(
+    x = "",
+    y = "Total kBTUs (billions)",
+    title = "Residential Energy Consumption in the Bay Area, 2020",
+    color = "Year"
+  ) + 
+  theme(legend.position = "none")
+
+chart %>% 
+  ggplotly() %>% 
+  config(displayModeBar = F)
+```
+
+Column
+-------------------------------------
+
+### ZCTA consumption
+
+```{r}
+pge_20_res_elec <-
+  pge_data_raw %>% 
+  filter(
+    CUSTOMERCLASS == "Elec- Residential",
+    YEAR == 2020
+  ) %>% 
+  mutate(
+    ZIPCODE = ZIPCODE %>% as.character()
+  ) %>% 
+  group_by(ZIPCODE) %>% 
+  summarize(
+    TOTALKBTU = sum(TOTALKBTU, na.rm = T)
+  ) %>% 
+  right_join(
+    bay_zips %>% select(GEOID10),
+    by = c("ZIPCODE" = "GEOID10")
+  ) %>% 
+  st_as_sf() %>% 
+  st_transform(4326)
+
+res_pal <- colorNumeric(
+  palette = "Reds",
+  domain = 
+    pge_20_res_elec$TOTALKBTU
+)
+
+leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+  addPolygons(
+    data = pge_20_res_elec,
+    fillColor = ~res_pal(TOTALKBTU),
+    color = "white",
+    opacity = 0.5,
+    fillOpacity = 0.5,
+    weight = 1,
+    label = ~paste0(
+      round(TOTALKBTU), 
+      " kBTU total in ",
+      ZIPCODE
+    ),
+    highlightOptions = highlightOptions(
+      weight = 2,
+      opacity = 1
+    )
+  ) %>% 
+  addLegend(
+    data = pge_20_res_elec,
+    pal = res_pal,
+    values = ~TOTALKBTU,
+    title = "Total Residential<br>Electricity (kBTU), 2020"
+  )
+```

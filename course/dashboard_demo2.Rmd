@@ -1,0 +1,191 @@
+---
+title: "Dashboard Demo"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+---
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(plotly)
+
+pge_data_raw <- readRDS("pge_data_raw.rds")
+
+bay_zips <- readRDS("bay_zips.rds")
+
+pge_data <-
+  pge_data_raw %>% 
+  filter(
+    CUSTOMERCLASS %in% c(
+      "Elec- Commercial",
+      "Elec- Residential",
+      "Gas- Commercial",
+      "Gas- Residential"
+    )
+  ) %>% 
+  group_by(
+    MONTH, 
+    YEAR, 
+    CUSTOMERCLASS
+  ) %>% 
+  summarize(
+    TOTALKBTU = sum(TOTALKBTU, na.rm = T)
+  ) %>% 
+  mutate(
+    DATE = 
+      paste(
+        YEAR,
+        MONTH, 
+        "01",
+        sep="-"
+      ) %>% as.Date()
+  )
+```
+
+Inputs {.sidebar}
+-------------------------------------
+
+```{r}
+selectInput(
+  inputId = "year", 
+  label = "Year:",
+  choices = c(2017,2018,2019,2020), 
+  selected = 2020
+)
+```
+
+Column
+-------------------------------------
+
+### Monthly consumption
+
+```{r}
+plotlyOutput("plot")
+```
+
+```{r, context = "server"}
+observeEvent(input$year, {
+  
+  chart <- pge_data %>% 
+    filter(
+      CUSTOMERCLASS %in% c(
+        "Elec- Residential"
+      ),
+      YEAR == input$year
+    ) %>% 
+    ggplot(
+      aes(
+        x = MONTH,
+        y = TOTALKBTU/1e9
+      )
+    ) +
+    geom_line(
+      aes(
+        color = YEAR %>% factor()
+      )
+    ) +
+    scale_x_discrete(
+      limits = c(
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      )
+    ) +
+    labs(
+      x = "",
+      y = "Total kBTUs (billions)",
+      title = paste0("Residential Energy Consumption in the Bay Area, ", input$year),
+      color = "Year"
+    ) + 
+    theme(legend.position = "none")
+  
+  output$plot <- renderPlotly({
+    chart %>% 
+      ggplotly() %>% 
+      config(displayModeBar = F)
+  })
+  
+})
+```
+
+Column
+-------------------------------------
+
+### ZCTA consumption
+
+```{r}
+leafletOutput("map")
+```
+
+```{r, context = "server"}
+observeEvent(input$year, {
+  
+  pge_res_elec <-
+    pge_data_raw %>% 
+    filter(
+      CUSTOMERCLASS == "Elec- Residential",
+      YEAR == input$year
+    ) %>% 
+    mutate(
+      ZIPCODE = ZIPCODE %>% as.character()
+    ) %>% 
+    group_by(ZIPCODE) %>% 
+    summarize(
+      TOTALKBTU = sum(TOTALKBTU, na.rm = T)
+    ) %>% 
+    right_join(
+      bay_zips %>% select(GEOID10),
+      by = c("ZIPCODE" = "GEOID10")
+    ) %>% 
+    st_as_sf() %>% 
+    st_transform(4326)
+  
+  res_pal <- colorNumeric(
+    palette = "Reds",
+    domain = 
+      pge_res_elec$TOTALKBTU
+  )
+  
+  output$map <- renderLeaflet({
+    leaflet() %>% 
+      addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+      addPolygons(
+        data = pge_res_elec,
+        fillColor = ~res_pal(TOTALKBTU),
+        color = "white",
+        opacity = 0.5,
+        fillOpacity = 0.5,
+        weight = 1,
+        label = ~paste0(
+          round(TOTALKBTU), 
+          " kBTU total in ",
+          ZIPCODE
+        ),
+        highlightOptions = highlightOptions(
+          weight = 2,
+          opacity = 1
+        )
+      ) %>% 
+      addLegend(
+        data = pge_res_elec,
+        pal = res_pal,
+        values = ~TOTALKBTU,
+        title = paste0("Total Residential<br>Electricity (kBTU), ", input$year)
+      )
+  })
+  
+})
+```
