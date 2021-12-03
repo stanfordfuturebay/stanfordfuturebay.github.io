@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","4306","0",NA,NA
-"2","Age Group 10-19","6145","0",NA,NA
-"3","Age Group 20-29","10321","1",NA,NA
-"4","Age Group 30-39","9778","8",NA,NA
-"5","Age Group 40-49","8224","22",NA,NA
-"6","Age Group 50-59","7101","44",NA,NA
-"7","Age Group 60-69","4583","91",NA,NA
-"8","Age Group 70-79","2170","136",NA,NA
-"9","Age Group 80-89","1222","176",NA,NA
-"10","Age Group 90+","543","151",NA,NA
+"1","Age Group 0-9","4324","0",NA,NA
+"2","Age Group 10-19","6164","0",NA,NA
+"3","Age Group 20-29","10345","1",NA,NA
+"4","Age Group 30-39","9799","8",NA,NA
+"5","Age Group 40-49","8242","22",NA,NA
+"6","Age Group 50-59","7116","44",NA,NA
+"7","Age Group 60-69","4605","91",NA,NA
+"8","Age Group 70-79","2178","136",NA,NA
+"9","Age Group 80-89","1224","178",NA,NA
+"10","Age Group 90+","544","151",NA,NA
 "11","Age Group Unknown","8",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","75","2",NA,NA
-"13","Race/Ethnicity  Asian","6702","177",NA,NA
-"14","Race/Ethnicity  Black","1006","28",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","21171","149",NA,NA
-"16","Race/Ethnicity  Pacific Islander","1185","16",NA,NA
-"17","Race/Ethnicity  White","10133","251",NA,NA
-"18","Race/Ethnicity Multirace","1108",NA,NA,NA
-"19","Race/Ethnicity Other","1272","0",NA,NA
-"20","Race/Ethnicity Unknown","11749","6",NA,NA
-"21",NA,NA,NA,"data up to and including november 30, 2021 as of 5:00pmselect time frame for case data","death data last updated november 24, 2021."
+"12","Race/Ethnicity  American Indian/Alaska Native","76","2",NA,NA
+"13","Race/Ethnicity  Asian","6723","178",NA,NA
+"14","Race/Ethnicity  Black","1007","28",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","21201","149",NA,NA
+"16","Race/Ethnicity  Pacific Islander","1191","16",NA,NA
+"17","Race/Ethnicity  White","10182","252",NA,NA
+"18","Race/Ethnicity Multirace","1111",NA,NA,NA
+"19","Race/Ethnicity Other","1283","0",NA,NA
+"20","Race/Ethnicity Unknown","11775","6",NA,NA
+"21",NA,NA,NA,"data up to and including december 2, 2021 as of 5:00pmselect time frame for case data","death data last updated december 2, 2021."
