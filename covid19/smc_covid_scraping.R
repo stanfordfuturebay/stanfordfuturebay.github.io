@@ -601,7 +601,8 @@ for (i in 1:length(cases_result_vals_unique)) {
 # make data frame and process
 cases_clean <- data.frame(date = cases_date_vals_unique,
                           new_cases = cases_result_vals_joined) %>%
-  mutate(total_cases = cumsum(new_cases))
+  mutate(new_cases = as.numeric(str_remove(new_cases, ",")), # remove any commas
+         total_cases = cumsum(new_cases))
 
 write.csv(cases_clean, "covid19/smc_cases_scraped.csv")
 
