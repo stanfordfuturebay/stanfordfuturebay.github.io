@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","9191","0",NA,NA
-"2","Age Group 10-19","12617","0",NA,NA
-"3","Age Group 20-29","18878","1",NA,NA
-"4","Age Group 30-39","18000","8",NA,NA
-"5","Age Group 40-49","14913","22",NA,NA
-"6","Age Group 50-59","12609","48",NA,NA
-"7","Age Group 60-69","7810","93",NA,NA
-"8","Age Group 70-79","3558","143",NA,NA
-"9","Age Group 80-89","1827","186",NA,NA
-"10","Age Group 90+","799","154",NA,NA
-"11","Age Group Unknown","16",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","156","2",NA,NA
-"13","Race/Ethnicity  Asian","15386","181",NA,NA
-"14","Race/Ethnicity  Black","1883","28",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","34064","153",NA,NA
-"16","Race/Ethnicity  Pacific Islander","2132","18",NA,NA
-"17","Race/Ethnicity  White","20009","267",NA,NA
-"18","Race/Ethnicity Multirace","1256",NA,NA,NA
-"19","Race/Ethnicity Other","4443","0",NA,NA
-"20","Race/Ethnicity Unknown","20889","6",NA,NA
-"21",NA,NA,NA,"data up to and including january 27, 2022 as of 5:00pmselect time frame for case data","death data last updated january 27, 2022."
+"1","Age Group 0-9","9570","0",NA,NA
+"2","Age Group 10-19","13021","0",NA,NA
+"3","Age Group 20-29","19358","1",NA,NA
+"4","Age Group 30-39","18504","8",NA,NA
+"5","Age Group 40-49","15424","22",NA,NA
+"6","Age Group 50-59","12994","48",NA,NA
+"7","Age Group 60-69","8102","93",NA,NA
+"8","Age Group 70-79","3696","143",NA,NA
+"9","Age Group 80-89","1891","186",NA,NA
+"10","Age Group 90+","821","154",NA,NA
+"11","Age Group Unknown","17",NA,NA,NA
+"12","Race/Ethnicity  American Indian/Alaska Native","164","2",NA,NA
+"13","Race/Ethnicity  Asian","16019","181",NA,NA
+"14","Race/Ethnicity  Black","1930","28",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","34983","153",NA,NA
+"16","Race/Ethnicity  Pacific Islander","2191","18",NA,NA
+"17","Race/Ethnicity  White","20659","267",NA,NA
+"18","Race/Ethnicity Multirace","1262",NA,NA,NA
+"19","Race/Ethnicity Other","4683","0",NA,NA
+"20","Race/Ethnicity Unknown","21507","6",NA,NA
+"21",NA,NA,NA,"data up to and including january 31, 2022 as of 5:00pmselect time frame for case data","death data last updated january 27, 2022."
