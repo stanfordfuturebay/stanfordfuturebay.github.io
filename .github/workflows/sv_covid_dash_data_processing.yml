@@ -13,7 +13,9 @@ jobs:
   # This workflow contains a single job called "process"
   process:
     # The type of runner that the job will run on
-    runs-on: macos-latest
+    # changed from 'macos-latest' to 'macOS-10.15' because the latest version (11) currently does not
+    # have R on it; see https://github.com/actions/virtual-environments/issues/4060
+    runs-on: macOS-10.15
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
