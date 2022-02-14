@@ -454,7 +454,7 @@ values_header_parent <- remDr$findElements(using = "css", value = "[class='colum
 values_header <- values_header_parent[[1]]$findChildElement(using = "css", value = "[class='pivotTableCellWrap cell-interactive '")
 values_header_loc <- values_header$getElementSize()
 remDr$mouseMoveToLocation(webElement = values_header) # moves to location of header
-remDr$mouseMoveToLocation(x = round(0.5*values_header_loc$width, 0), y = 0) # moves from previous location to the edge of the header
+remDr$mouseMoveToLocation(x = round(0.5*values_header_loc$width, 0) - 1, y = 0) # moves from previous location to the edge of the header
 # press and hold, move mouse to drag that header to make it bigger
 remDr$buttondown()
 # need to offset by more since this column starts smaller
