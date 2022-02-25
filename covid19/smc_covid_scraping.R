@@ -177,7 +177,8 @@ date_vals <- c(date_vals, curr_dates)
 result_vals_unique <- unique(result_vals)
 date_vals_unique <- unique(date_vals)
 # get dates in date form and in ascending order
-date_vals_unique <- sort(as.Date(date_vals_unique, "%m/%d/%Y"))
+# date_vals_unique <- sort(as.Date(date_vals_unique, "%m/%d/%Y"))
+date_vals_unique <- sort(as.Date(date_vals_unique, "%A, %B %d, %Y"))
 
 # get results as data frame
 result_vals_joined <- NULL
