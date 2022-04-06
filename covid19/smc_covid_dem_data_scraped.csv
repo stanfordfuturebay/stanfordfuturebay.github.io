@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","11718","0",NA,NA
-"2","Age Group 10-19","15717","0",NA,NA
-"3","Age Group 20-29","22218","1",NA,NA
-"4","Age Group 30-39","21526","9",NA,NA
-"5","Age Group 40-49","18168","27",NA,NA
-"6","Age Group 50-59","15214","58",NA,NA
-"7","Age Group 60-69","9489","105",NA,NA
-"8","Age Group 70-79","4381","160",NA,NA
-"9","Age Group 80-89","2187","211",NA,NA
-"10","Age Group 90+","926","174",NA,NA
+"1","Age Group 0-9","11734","0",NA,NA
+"2","Age Group 10-19","15736","0",NA,NA
+"3","Age Group 20-29","22251","1",NA,NA
+"4","Age Group 30-39","21560","9",NA,NA
+"5","Age Group 40-49","18200","27",NA,NA
+"6","Age Group 50-59","15243","58",NA,NA
+"7","Age Group 60-69","9509","105",NA,NA
+"8","Age Group 70-79","4394","160",NA,NA
+"9","Age Group 80-89","2191","211",NA,NA
+"10","Age Group 90+","927","174",NA,NA
 "11","Age Group Unknown","22",NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native","210","3",NA,NA
-"13","Race/Ethnicity  Asian","20088","204",NA,NA
-"14","Race/Ethnicity  Black","2217","35",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","39926","182",NA,NA
-"16","Race/Ethnicity  Pacific Islander","2651","24",NA,NA
-"17","Race/Ethnicity  White","25436","291",NA,NA
-"18","Race/Ethnicity Multirace","1330",NA,NA,NA
-"19","Race/Ethnicity Other","6163","0",NA,NA
-"20","Race/Ethnicity Unknown","23545","6",NA,NA
-"21",NA,NA,NA,"data up to and including april 1, 2022 as of 1:00pmselect time frame for case data","death data last updated march 31, 2022."
+"13","Race/Ethnicity  Asian","20135","204",NA,NA
+"14","Race/Ethnicity  Black","2218","35",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","39952","182",NA,NA
+"16","Race/Ethnicity  Pacific Islander","2653","24",NA,NA
+"17","Race/Ethnicity  White","25495","291",NA,NA
+"18","Race/Ethnicity Multirace","1331",NA,NA,NA
+"19","Race/Ethnicity Other","6178","0",NA,NA
+"20","Race/Ethnicity Unknown","23595","6",NA,NA
+"21",NA,NA,NA,"data up to and including april 4, 2022 as of 1:00pmselect time frame for case data","death data last updated march 31, 2022."
