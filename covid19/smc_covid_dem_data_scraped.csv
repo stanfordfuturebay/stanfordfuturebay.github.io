@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","14660","0",NA,NA
-"2","Age Group 10-19","18924","0",NA,NA
-"3","Age Group 20-29","27046","1",NA,NA
-"4","Age Group 30-39","27782","9",NA,NA
-"5","Age Group 40-49","23389","27",NA,NA
-"6","Age Group 50-59","19808","61",NA,NA
-"7","Age Group 60-69","12674","107",NA,NA
-"8","Age Group 70-79","5960","167",NA,NA
-"9","Age Group 80-89","2910","221",NA,NA
-"10","Age Group 90+","1189","183",NA,NA
+"1","Age Group 0-9","14785","0",NA,NA
+"2","Age Group 10-19","19024","0",NA,NA
+"3","Age Group 20-29","27249","1",NA,NA
+"4","Age Group 30-39","28019","9",NA,NA
+"5","Age Group 40-49","23603","27",NA,NA
+"6","Age Group 50-59","20004","61",NA,NA
+"7","Age Group 60-69","12815","107",NA,NA
+"8","Age Group 70-79","6023","167",NA,NA
+"9","Age Group 80-89","2940","221",NA,NA
+"10","Age Group 90+","1202","183",NA,NA
 "11","Age Group Unknown","27",NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native","244","2",NA,NA
-"13","Race/Ethnicity  Asian","28833","209",NA,NA
-"14","Race/Ethnicity  Black","2671","37",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","44983","184",NA,NA
-"16","Race/Ethnicity  Pacific Islander","3093","26",NA,NA
-"17","Race/Ethnicity  White","33658","315",NA,NA
+"13","Race/Ethnicity  Asian","29190","209",NA,NA
+"14","Race/Ethnicity  Black","2693","37",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","45200","184",NA,NA
+"16","Race/Ethnicity  Pacific Islander","3120","26",NA,NA
+"17","Race/Ethnicity  White","33965","315",NA,NA
 "18","Race/Ethnicity Multirace","1411",NA,NA,NA
-"19","Race/Ethnicity Other","8080","0",NA,NA
-"20","Race/Ethnicity Unknown","31396","3",NA,NA
-"21",NA,NA,NA,"data up to and including july 8, 2022 as of 1:00pmselect time frame for case data","death data last updated july 7, 2022."
+"19","Race/Ethnicity Other","8158","0",NA,NA
+"20","Race/Ethnicity Unknown","31710","3",NA,NA
+"21",NA,NA,NA,"data up to and including july 12, 2022 as of 1:00pmselect time frame for case data","death data last updated july 7, 2022."
