@@ -1,22 +1,22 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","15882","0",NA,NA
-"2","Age Group 10-19","19990","0",NA,NA
-"3","Age Group 20-29","28970","3",NA,NA
-"4","Age Group 30-39","30377","10",NA,NA
-"5","Age Group 40-49","25665","28",NA,NA
-"6","Age Group 50-59","21887","63",NA,NA
-"7","Age Group 60-69","14291","111",NA,NA
-"8","Age Group 70-79","6964","175",NA,NA
-"9","Age Group 80-89","3405","239",NA,NA
-"10","Age Group 90+","1354","201",NA,NA
+"1","Age Group 0-9","15925","0",NA,NA
+"2","Age Group 10-19","20021","0",NA,NA
+"3","Age Group 20-29","29035","3",NA,NA
+"4","Age Group 30-39","30488","10",NA,NA
+"5","Age Group 40-49","25766","28",NA,NA
+"6","Age Group 50-59","21979","63",NA,NA
+"7","Age Group 60-69","14377","111",NA,NA
+"8","Age Group 70-79","7023","175",NA,NA
+"9","Age Group 80-89","3423","239",NA,NA
+"10","Age Group 90+","1367","201",NA,NA
 "11","Age Group Unknown","27",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","280","2",NA,NA
-"13","Race/Ethnicity  Asian","32268","219",NA,NA
-"14","Race/Ethnicity  Black","2947","38",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","47542","192",NA,NA
-"16","Race/Ethnicity  Pacific Islander","3339","27",NA,NA
-"17","Race/Ethnicity  White","36984","349",NA,NA
-"18","Race/Ethnicity Multirace","1445",NA,NA,NA
-"19","Race/Ethnicity Other","9067","0",NA,NA
-"20","Race/Ethnicity Unknown","34940","3",NA,NA
-"21",NA,NA,NA,"data up to and including september 16, 2022 as of 1:00pmselect time frame for case data","death data last updated september 15, 2022."
+"12","Race/Ethnicity  American Indian/Alaska Native","281","2",NA,NA
+"13","Race/Ethnicity  Asian","32404","219",NA,NA
+"14","Race/Ethnicity  Black","2952","38",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","47616","192",NA,NA
+"16","Race/Ethnicity  Pacific Islander","3345","27",NA,NA
+"17","Race/Ethnicity  White","37162","349",NA,NA
+"18","Race/Ethnicity Multirace","1446",NA,NA,NA
+"19","Race/Ethnicity Other","9125","0",NA,NA
+"20","Race/Ethnicity Unknown","35100","3",NA,NA
+"21",NA,NA,NA,"data up to and including september 23, 2022 as of 1:00pmselect time frame for case data","death data last updated september 22, 2022."
