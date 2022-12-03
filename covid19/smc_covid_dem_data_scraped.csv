@@ -1,23 +1,23 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","16172","0",NA,NA
-"2","Age Group 10-19","20249","0",NA,NA
-"3","Age Group 20-29","29549","3",NA,NA
-"4","Age Group 30-39","31139","10",NA,NA
-"5","Age Group 40-49","26357","28",NA,NA
-"6","Age Group 50-59","22549","64",NA,NA
-"7","Age Group 60-69","14935","113",NA,NA
-"8","Age Group 70-79","7418","177",NA,NA
-"9","Age Group 80-89","3615","244",NA,NA
-"10","Age Group 90+","1432","206",NA,NA
-"11","Age Group Unknown","28",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","287","1",NA,NA
-"13","Race/Ethnicity  Asian","33390","221",NA,NA
-"14","Race/Ethnicity  Black","3005","38",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","48123","207",NA,NA
-"16","Race/Ethnicity  Pacific Islander","3407","24",NA,NA
-"17","Race/Ethnicity  White","38241","342",NA,NA
-"18","Race/Ethnicity Multirace","1471",NA,NA,NA
-"19","Race/Ethnicity Other","9383","0",NA,NA
-"20","Race/Ethnicity Unknown","36136","2",NA,NA
+"1","Age Group 0-9","16331","0",NA,NA
+"2","Age Group 10-19","20351","0",NA,NA
+"3","Age Group 20-29","29902","3",NA,NA
+"4","Age Group 30-39","31629","10",NA,NA
+"5","Age Group 40-49","26745","28",NA,NA
+"6","Age Group 50-59","23014","64",NA,NA
+"7","Age Group 60-69","15338","114",NA,NA
+"8","Age Group 70-79","7665","179",NA,NA
+"9","Age Group 80-89","3763","247",NA,NA
+"10","Age Group 90+","1494","208",NA,NA
+"11","Age Group Unknown","29",NA,NA,NA
+"12","Race/Ethnicity  American Indian/Alaska Native","290","1",NA,NA
+"13","Race/Ethnicity  Asian","34068","225",NA,NA
+"14","Race/Ethnicity  Black","3052","39",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","48560","207",NA,NA
+"16","Race/Ethnicity  Pacific Islander","3468","24",NA,NA
+"17","Race/Ethnicity  White","38891","345",NA,NA
+"18","Race/Ethnicity Multirace","1494",NA,NA,NA
+"19","Race/Ethnicity Other","9578","0",NA,NA
+"20","Race/Ethnicity Unknown","36860","2",NA,NA
 "21","Race/Ethnicity Multi-Race",NA,"10",NA,NA
-"22",NA,NA,NA,"data up to and including november 10, 2022 as of 1:00pmselect time frame for case data","death data last updated november 9, 2022."
+"22",NA,NA,NA,"data up to and including december 1, 2022 as of 1:00pmselect time frame for case data","death data last updated november 30, 2022."
