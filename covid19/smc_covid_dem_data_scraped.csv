@@ -1,23 +1,23 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","16708","0",NA,NA
-"2","Age Group 10-19","20605","0",NA,NA
-"3","Age Group 20-29","30519","3",NA,NA
-"4","Age Group 30-39","32451","10",NA,NA
-"5","Age Group 40-49","27489","29",NA,NA
-"6","Age Group 50-59","23830","65",NA,NA
-"7","Age Group 60-69","16067","118",NA,NA
-"8","Age Group 70-79","8169","189",NA,NA
-"9","Age Group 80-89","4095","256",NA,NA
-"10","Age Group 90+","1616","219",NA,NA
+"1","Age Group 0-9","16738","0",NA,NA
+"2","Age Group 10-19","20624","0",NA,NA
+"3","Age Group 20-29","30568","3",NA,NA
+"4","Age Group 30-39","32508","10",NA,NA
+"5","Age Group 40-49","27545","29",NA,NA
+"6","Age Group 50-59","23883","65",NA,NA
+"7","Age Group 60-69","16102","118",NA,NA
+"8","Age Group 70-79","8199","189",NA,NA
+"9","Age Group 80-89","4119","258",NA,NA
+"10","Age Group 90+","1626","221",NA,NA
 "11","Age Group Unknown","31",NA,NA,NA
-"12","Race/Ethnicity  American Indian/Alaska Native","306","1",NA,NA
-"13","Race/Ethnicity  Asian","35159","234",NA,NA
-"14","Race/Ethnicity  Black","3166","41",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","49447","208",NA,NA
-"16","Race/Ethnicity  Pacific Islander","3543","26",NA,NA
-"17","Race/Ethnicity  White","40264","367",NA,NA
-"18","Race/Ethnicity Multirace","1516",NA,NA,NA
-"19","Race/Ethnicity Other","9991","0",NA,NA
-"20","Race/Ethnicity Unknown","38188","2",NA,NA
-"21","Race/Ethnicity Multi-Race",NA,"10",NA,NA
-"22",NA,NA,NA,"data up to and including january 12, 2023 as of 1:00pmselect time frame for case data","death data last updated january 11, 2023."
+"12","Race/Ethnicity  American Indian/Alaska Native","307","1",NA,NA
+"13","Race/Ethnicity  Asian","35227","235",NA,NA
+"14","Race/Ethnicity  Black","3169","41",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","49503","213",NA,NA
+"16","Race/Ethnicity  Pacific Islander","3548","26",NA,NA
+"17","Race/Ethnicity  White","40369","368",NA,NA
+"18","Race/Ethnicity Multirace","1518",NA,NA,NA
+"19","Race/Ethnicity Other","10030","0",NA,NA
+"20","Race/Ethnicity Unknown","38272","2",NA,NA
+"21","Race/Ethnicity Multi-Race",NA,"7",NA,NA
+"22",NA,NA,NA,"data up to and including january 19, 2023 as of 1:00pmselect time frame for case data","death data last updated january 18, 2023."
