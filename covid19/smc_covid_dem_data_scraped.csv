@@ -1,23 +1,23 @@
 "","demographic","Cases","Deaths","case_update_date_str","death_update_date_str"
-"1","Age Group 0-9","16861","0",NA,NA
-"2","Age Group 10-19","20746","0",NA,NA
-"3","Age Group 20-29","30741","3",NA,NA
-"4","Age Group 30-39","32747","10",NA,NA
-"5","Age Group 40-49","27788","29",NA,NA
-"6","Age Group 50-59","24093","66",NA,NA
-"7","Age Group 60-69","16296","118",NA,NA
-"8","Age Group 70-79","8323","190",NA,NA
-"9","Age Group 80-89","4195","263",NA,NA
-"10","Age Group 90+","1652","230",NA,NA
+"1","Age Group 0-9","16895","0",NA,NA
+"2","Age Group 10-19","20777","0",NA,NA
+"3","Age Group 20-29","30805","3",NA,NA
+"4","Age Group 30-39","32834","10",NA,NA
+"5","Age Group 40-49","27861","29",NA,NA
+"6","Age Group 50-59","24174","67",NA,NA
+"7","Age Group 60-69","16372","119",NA,NA
+"8","Age Group 70-79","8366","190",NA,NA
+"9","Age Group 80-89","4220","264",NA,NA
+"10","Age Group 90+","1661","230",NA,NA
 "11","Age Group Unknown","36",NA,NA,NA
 "12","Race/Ethnicity  American Indian/Alaska Native","309","1",NA,NA
-"13","Race/Ethnicity  Asian","35481","237",NA,NA
-"14","Race/Ethnicity  Black","3192","41",NA,NA
-"15","Race/Ethnicity  Latino/Hispanic","49726","215",NA,NA
-"16","Race/Ethnicity  Pacific Islander","3571","26",NA,NA
-"17","Race/Ethnicity  White","40725","380",NA,NA
-"18","Race/Ethnicity Multirace","1528",NA,NA,NA
-"19","Race/Ethnicity Other","10315","0",NA,NA
-"20","Race/Ethnicity Unknown","38631","2",NA,NA
+"13","Race/Ethnicity  Asian","35577","239",NA,NA
+"14","Race/Ethnicity  Black","3200","41",NA,NA
+"15","Race/Ethnicity  Latino/Hispanic","49823","215",NA,NA
+"16","Race/Ethnicity  Pacific Islander","3581","26",NA,NA
+"17","Race/Ethnicity  White","40863","381",NA,NA
+"18","Race/Ethnicity Multirace","1530",NA,NA,NA
+"19","Race/Ethnicity Other","10357","0",NA,NA
+"20","Race/Ethnicity Unknown","38761","2",NA,NA
 "21","Race/Ethnicity Multi-Race",NA,"7",NA,NA
-"22",NA,NA,NA,"data up to and including february 9, 2023 as of 1:00pmselect time frame for case data","death data last updated february 8, 2023."
+"22",NA,NA,NA,"data up to and including february 16, 2023 as of 1:00pmselect time frame for case data","death data last updated february 15, 2023."
